@@ -1,0 +1,6 @@
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\Sammamish\SammamishImport\ConsoleApplication1\bin\Release\SammamishImport.exe.config
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\Sammamish\SammamishImport\ConsoleApplication1\bin\Release\SammamishImport.exe
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\Sammamish\SammamishImport\ConsoleApplication1\bin\Release\SammamishImport.pdb
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\Sammamish\SammamishImport\ConsoleApplication1\obj\Release\SammamishImport.csprojResolveAssemblyReference.cache
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\Sammamish\SammamishImport\ConsoleApplication1\obj\Release\SammamishImport.exe
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\Sammamish\SammamishImport\ConsoleApplication1\obj\Release\SammamishImport.pdb
