@@ -1,0 +1,203 @@
+/* stylesheet.css */
+/* Style rule for the body element */
+body {
+ background-color: blue;
+ background-image: url(pix/bkgleather2.jpg); 
+ /* Default font styling */
+ font: 10pt Arial, Helvetica, Sans-Serif;
+ color: #5d3f25;
+}
+/* Style rule for the wrapper div */
+#wrapper {
+ width: 90%;
+ min-width: 600px;
+ max-width: 1200px;
+ margin: 1em auto;
+ background-color: white;
+ border: solid 2px #4c2e16;
+ border-radius: 20px;
+ box-shadow: 8px 8px 8px black;
+}
+/* Eliminate default margins for all heading types */
+h1, h2, h3, h4, h5, h6 {
+ margin: 0;
+}
+/* Make HTML5 layout elements block elements for older browsers */
+header, nav, aside, article, footer, section {
+ display: block;
+}
+/*================================== Layout Sections */
+/*======== Styling for page header */
+header {
+ height: 80px; 
+ /* Font size, line-height, and family */
+ font: 40px/80px Impact, Gadget, Fantasy;
+ text-align: center; 
+ /* Background color, image, position */
+ background-color: #d0ae8e;
+ background-image: url(Pix/DMKLogoSmall.png);
+ background-repeat: no-repeat;
+ background-position: 10px center; 
+ /* Round the top corners */
+ border-top-left-radius: 18px;
+ border-top-right-radius: 18px;
+}
+/*======== Styling for the sidebar section (aside) */
+aside {
+ width: 130px;
+ padding: 10px;
+ float: left;
+}
+/*======== Styling for links in the nav section */
+nav a {
+ display: block;
+ background-color: #d0ae8e;
+ color: #5d3f25;
+ font-weight: bold;
+ text-align: center; 
+ /* As wide as the content width */
+ width: 100%; 
+ /* Small vertical margin, zero side margin */
+ margin: 2px 0; 
+ /* Bigger text */
+ font-size: 22px; 
+ /* Some extra height */
+ padding: 12px 0; 
+ /* No underline or dotted outline */
+ text-decoration: none;
+ outline: none;
+}
+nav a:link, nav a:visited {
+ background-color: #d0ae8e;
+ color: #5d3f25;
+}
+nav a:hover, nav a:active {
+ background-color: #5d3f25;
+ color: #d0ae8e;
+}
+/*======== Styling for the article section */
+article {
+ padding: 10px; 
+ /* Left margin should match neighboring column full width */
+ margin-left: 150px;
+ border-left: solid 1px #d0ae8e;
+}
+/* ==== Styling for tables in the artcle section */
+/* Styling for the table as a whole */
+article table {
+ /* Remove gaps between table cells */
+ border-collapse: collapse; 
+ /* Font size, family, and color */
+ font: 12pt Times, "Times New Roman" , Serif;
+ color: #4c2e16; 
+ /* top/bottom and side margins (auto for centering) */
+ margin: 1em auto;
+}
+/* Table header cells */
+article th {
+ background-color: #4c2e16;
+ color: white;
+}
+/* Header and data cells */
+article th, article td {
+ border: solid 1px #5d3f25;
+ padding: 2px 4px;
+}
+/* Give even-numbered rows tan background color */
+article tr:nth-child(even) {
+ background-color: #c6a586;
+}
+/* Right align content in column 2 data cells */
+article td:nth-child(2) {
+ text-align: right;
+}
+/* Center content in column 3 data cells */
+article td:nth-child(3) {
+ text-align: center;
+}
+/* Highlight table row on hover */
+article tr:hover {
+ background-color: #ff6;
+ cursor: default;
+}
+/* ==== Links and link states in article section */
+/* Unvisited links */
+article a:link {
+ color: #0c391c;
+}
+/* Visited links */
+article a:visited {
+ color: #af4600;
+}
+/* Mouse pointer on link */
+article a:hover {
+ background-color: #bc9f81;
+ color: #1e2953;
+}
+/* Mouse pointer on link and left button down */
+article a:active {
+ background-color: #1e2953;
+ color: #bc9f81;
+}
+/* ==== Styling for footer */
+footer {
+ clear: both;
+ height: 35px;
+ padding: 5px;
+ background-color: #d0ae8e;
+ border-bottom-left-radius: 18px;
+ border-bottom-right-radius: 18px;
+}
+/* Styling for table in footer */
+footer table {
+ width: 98%;
+ margin: 5px auto;
+ color: #4c2e16;
+}
+/*========================= More general style rules and classes */
+/* Style for h1 headings */
+h1 {
+ font: italic small-caps bold 24px Arial Black, Gadget, Sans-Serif;
+ text-shadow: -2px -2px 2px #a48362;
+}
+/* Style for h2 headings */
+h2 {
+ font: italic small-caps bold 18px Arial Black, Gadget, Sans-Serif;
+ text-shadow: -1px -1px 1px #a48362;
+}
+/* Style for paragraphs */
+p {
+ line-height: 1.5;
+ margin-top: 0;
+}
+/* === Style classes */
+/* Highlight any span of text */
+.hilite {
+ background-color: yellow;
+}
+/* Create raised appearance with border, rounded corners, and shadow */
+/* Works with images, tables, and block elements (div, p, and headings) */
+.raised {
+ border: solid 1px gray;
+ border-radius: 5px;
+ box-shadow: 5px 5px 5px gray;
+}
+/* Image floating to the left of neighboring text */
+img.left {
+ float: left;
+ width: 30%;
+ margin-right: 10px;
+}
+/* Image floating to the left of neighboring text */
+img.right {
+ float: right;
+ width: 30%;
+ margin-left: 10px;
+}
+/* Use class="centerall" in p or div to center
+ all text and images inside the element */
+.centerall {
+ text-align: center; 
+ /* Clear any floating elements */
+ clear: both;
+}

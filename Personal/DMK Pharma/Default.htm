@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <title>layout</title>
+ <link href="./Style/DMK_Style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+ <script>
+ //Make older browser aware of new HTML5 layout tags
+ 'header nav aside article footer section'.replace(/\w+/g, function (n) { document.createElement(n) })
+ </script>
+ <div id="wrapper">
+ <!-- Page header contains branding information -->
+ <header>
+ DMK Pharmaceuticals
+ </header>
+ <!-- Sidebar content -->
+ <aside>
+ <!-- Nav section links -->
+ <nav>
+ <a href="index.htm">Home</a> 
+ <a href="products.htm">Products</a> 
+ <a href="services.htm">Services</a> 
+ <a href="contact.htm">Contact Us</a> <a href="about.htm">About Us</a>
+ </nav>
+ </aside>
+ <!-- Article is the main content, story, or article -->
+ <article>
+ <h1>DMK Pharmaceuticals</h1>
+ <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, in culpa qui officia deserunt mollit anim id est laborum</p>
+ <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, in culpa qui officia deserunt mollit anim id est laborum</p>
+ <h2>Sample h2 Heading</h2>
+ <ul>
+ <li>List item one</li>
+ <li>List item two</li>
+ <li>List item three</li>
+ </ul>
+ <div class="centerall">
+ <!--  <img src="pix/DMKLogo.gif" class="raised" style="width: 250px; padding: 10px;" alt="DMK" /> -->
+ <p>Paragraph with a <a href="http://www.w3.org/">sample link</a> to test link syles</p>
+
+ <!-- Start table -->
+ <table>
+ <!-- First row is header cells -->
+ <tr>
+ <th>House Salad</th>
+ <th>Price</th>
+ <th>Vegan</th>
+ </tr>
+ <!-- Row 2 -->
+ <tr>
+ <td>Chef Special</td>
+ <td>$8.50</td>
+ <td>
+ <img src="pix/check.png" alt="vegan" /></td>
+ </tr>
+ <!-- Row 3 -->
+ <tr>
+ <td>Cobb</td>
+ <td>$9.00</td>
+ <td></td>
+ </tr>
+ <!-- Row 4 -->
+ <tr>
+ <td>Summer Greens</td>
+ <td>$10.00</td>
+ <td>
+ <img src="pix/check.png" alt="vegan" /></td>
+ </tr>
+ </table><!-- End table -->
+ </article><!-- End main article -->
+ <!-- Footer section at page bottom -->
+ <footer>
+ <table>
+ <tr>
+ <td>Copyright &copy; 20XX, Owner, All Rights Reserved</td>
+ <td style="text-align: right">Designed by Your Name Here</td>
+ </tr>
+ </table>
+ </footer>
+ </div><!-- End wrapper -->
+</body>
+</html>
