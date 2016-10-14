@@ -14,3 +14,6 @@ C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\Navistar\Navista
 C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\Navistar\NavistarImport\NavistarImport\obj\Release\NavistarImport.application
 C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\Navistar\NavistarImport\NavistarImport\obj\Release\NavistarImport.exe
 C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\Navistar\NavistarImport\NavistarImport\obj\Release\NavistarImport.pdb
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\Navistar\NavistarImport\NavistarImport\bin\Release\NavistarImport.exe.config
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\Navistar\NavistarImport\NavistarImport\obj\Release\NavistarImport.exe
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\Navistar\NavistarImport\NavistarImport\obj\Release\NavistarImport.pdb
