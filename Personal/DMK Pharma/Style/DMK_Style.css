@@ -1,8 +1,7 @@
 /* stylesheet.css */
 /* Style rule for the body element */
 body {
- background-color: blue;
- background-image: url(pix/bkgleather2.jpg); 
+ background-color: #686EBD;
  /* Default font styling */
  font: 10pt Arial, Helvetica, Sans-Serif;
  color: #5d3f25;
@@ -29,18 +28,14 @@ header, nav, aside, article, footer, section {
 /*================================== Layout Sections */
 /*======== Styling for page header */
 header {
- height: 80px; 
+ height: 100px; 
  /* Font size, line-height, and family */
  font: 40px/80px Impact, Gadget, Fantasy;
  text-align: center; 
- /* Background color, image, position */
- background-color: #d0ae8e;
- background-image: url(Pix/DMKLogoSmall.png);
+
  background-repeat: no-repeat;
  background-position: 10px center; 
- /* Round the top corners */
- border-top-left-radius: 18px;
- border-top-right-radius: 18px;
+
 }
 /*======== Styling for the sidebar section (aside) */
 aside {
@@ -51,8 +46,8 @@ aside {
 /*======== Styling for links in the nav section */
 nav a {
  display: block;
- background-color: #d0ae8e;
- color: #5d3f25;
+ background-color: #686EBD;
+ color: #09B7BF;
  font-weight: bold;
  text-align: center; 
  /* As wide as the content width */
@@ -142,9 +137,10 @@ article a:active {
 /* ==== Styling for footer */
 footer {
  clear: both;
- height: 35px;
+ height: 25px;
  padding: 5px;
- background-color: #d0ae8e;
+ color: white;
+ background-color: #5409BF;
  border-bottom-left-radius: 18px;
  border-bottom-right-radius: 18px;
 }
@@ -173,7 +169,7 @@ p {
 /* === Style classes */
 /* Highlight any span of text */
 .hilite {
- background-color: yellow;
+ background-color: #09B7BF;
 }
 /* Create raised appearance with border, rounded corners, and shadow */
 /* Works with images, tables, and block elements (div, p, and headings) */

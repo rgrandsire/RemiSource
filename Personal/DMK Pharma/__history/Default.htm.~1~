@@ -74,7 +74,7 @@
  <table>
  <tr>
  <td>Copyright &copy; 2016, DMK Pharmaceuticals, All Rights Reserved</td>
- <td style="text-align: right">Designed by Remi G Grandsire</td>
+ <td style="text-align: right"; font-size="6pt"; color="white">Designed by Remi G Grandsire</td>
  </tr>
  </table>
  </footer>
