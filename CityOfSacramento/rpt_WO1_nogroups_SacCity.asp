@@ -4,6 +4,8 @@
 <!--#INCLUDE FILE="includes/mcReport_common.asp" -->
 <!--#INCLUDE FILE="includes/rpt_WO_common.asp" -->
 <%
+'WO87403: Add comments 10/2016 to the labor box
+
 'Response.Write("URL QueryString: <br>" & Request.QueryString)
 
 Dim WOPK, WOsql,AssetPK, RS_Parent, WellSump, IsCalibration, RS_PNR
@@ -108,7 +110,7 @@ Sub DoOutput()
     	    End If
           'END***SacCity*************************************************************************************				
 				  OutputTaskBox RS_WOTask
-				  OutputLaborBox RS_WOAssign, False 
+				  OutputLaborBoxCustom RS_WOAssign, False   'WO87403: Add comments 10/2016
 				  OutputMaterialsToolsBox RS_WOpart, RS_WOtool, False
 				  OutputOtherCostsBox RS_WOmiscCost, False
           'BEGIN***SacCity***********************************************************************************
@@ -210,8 +212,8 @@ Sub SetupWOData()
 		End If
 
 		If wostate = "WOC" Then
-			' GET ACTUAL LABOR			
-			sql = "SELECT     WOlabor.PK, WOlabor.WOPK, WOlabor.LaborPK, lt.moduleid, WOlabor.LaborID, WOlabor.LaborName, WOLabor.Comments, WOlabor.EstimatedHours, WOlabor.RegularHours, WOlabor.OvertimeHours, WOlabor.OtherHours, WOlabor.WorkDate, WOlabor.TimeIn, " & _
+			' GET ACTUAL LABOR		WO87403: Add comments 10/2016	
+			sql = "SELECT     WOlabor.PK, WOlabor.WOPK, WOlabor.LaborPK, WOlabor.LaborID, WOlabor.LaborName, WOLabor.Comments, WOlabor.EstimatedHours, WOlabor.RegularHours, WOlabor.OvertimeHours, WOlabor.OtherHours, WOlabor.WorkDate, WOlabor.TimeIn, " & _
 				  "			  WOlabor.TimeOut, WOlabor.AccountID, WOlabor.AccountName, WOlabor.CategoryID, WOlabor.CategoryName, WOlabor.TotalCost, " & _ 
 				  "			  WOlabor.TotalCharge, WOlabor.CostRegular, WOlabor.CostOvertime, WOlabor.CostOther, WOlabor.ChargeRate, WOlabor.ChargePercentage, WOlabor.RowVersionDate, Labor.Photo " & _
 				  "FROM WOlabor WITH (NOLOCK) INNER JOIN WO WITH (NOLOCK) ON WO.WOPK = WOlabor.WOPK LEFT OUTER JOIN " & _
@@ -226,11 +228,9 @@ Sub SetupWOData()
 		Else								
 			' GET ASSIGNED LABOR
 			sql = "SELECT WOassign.PK, WOassign.WOPK, WOassign.IsAssigned, Labor.LaborID, " +_
-			      "Labor.LaborName, WOLabor.Comments, Labor.LaborType, WOassign.AssignedHours, WOassign.AssignedDate " +_
-				  
+			      "Labor.LaborName, Labor.LaborType, WOassign.AssignedHours, WOassign.AssignedDate " +_
 				  "FROM WOassign WITH (NOLOCK) " +_
-				  "INNER JOIN Labor WITH (NOLOCK) ON Labor.LaborPK = WOassign.LaborPK " +_
-				  "INNER JOIN WOLabor WITH (NOLOCK) ON Labor.LaborPK = WOLabor.LaborPK "   ' Added by Remi
+				  "INNER JOIN Labor WITH (NOLOCK) ON Labor.LaborPK = WOassign.LaborPK "
 				  If Not sql_where = "" Then
 					sql = sql & "WHERE (WOassign.WOPK in (" & WOsql & ")) AND (WOassign.Active = 1 or WOassign.Active Is Null) "
 				  Else
@@ -1839,4 +1839,356 @@ Sub OutputCalibrationTaskBox
 		rw "</table>"
   rw "</td></tr></table>"
 End Sub
+
+'''''''''''
+'############################### October 2016 Added by Remi
+
+Sub OutputLaborBoxCustom(rs,nowocheck)
+
+	Dim BlankRowNum,LaborFormat,LaborCols
+	BlankRowNum = 0	
+
+	If Not WO_LABORSECTION and Not wostate = "WOC" Then
+		Exit Sub
+	End If
+
+	If rs.Eof Then 
+	  'BlankRowNum = WO_LABORSECTION_BL
+	  BlankRowNum = 2
+		If wostate = "WOC" Then
+			Exit Sub		
+		End If
+		If Not WO_LABORSECTION_B Then
+			Exit Sub
+		End If
+	End If		
+	
+	rw "<fieldset style=""padding-top:14px"">"
+		If nowocheck Then
+			'rw "<legend class=""legendHeader"">Labor Summary (for all Work Orders in Group " & NullCheck(WOGroupPK) & ")</legend>"
+			rw "<legend class=""legendHeader"">Labor (Summary)</legend>"
+		Else
+			rw "<legend class=""legendHeader"">Labor</legend>"
+		End If
+		
+		rw "<table style=""margin-top:5px;"" border=""0"" cellspacing=""3"" cellpadding=""0"" width=""98%"" align=""center"">"
+
+			Select Case wostate
+			
+			Case "WO","CC"
+				If Not rs.eof and (NullCheck(rs("WOPK")) = NullCheck(WOPK) or nowocheck) Then
+					'rs.Filter = "IsAssigned = 1"
+					If rs("IsAssigned") Then
+						LaborFormat = "ASSIGNED"
+						'If WO_REPORT_LABOR_SHOWSTARTEND = "Yes" Then
+						'  If WO_REPORT_LABOR_SHOWACCOUNT = "No" Then
+						'    LaborCols = 9
+						'  Else
+						'    LaborCols = 10
+						'  End If
+						'Else
+						  'If WO_REPORT_LABOR_SHOWACCOUNT = "No" Then
+						    LaborCols = 7
+						  'Else
+						  '  LaborCols = 8
+						  'End If
+						'End If
+					Else
+						'rs.Filter = ""
+						'rs.MoveFirst()
+						LaborFormat = "ESTIMATED"
+						'If WO_REPORT_LABOR_SHOWSTARTEND = "Yes" Then
+						'  If WO_REPORT_LABOR_SHOWACCOUNT = "No" Then
+						'    LaborCols = 9
+						'  Else
+						'    LaborCols = 10
+						'  End If
+						'Else
+						'  If WO_REPORT_LABOR_SHOWACCOUNT = "No" Then
+						    LaborCols = 7
+						'  Else
+						'    Laborcols = 8
+						'  End If
+						'End If
+					End If
+				Else
+					LaborFormat = "NONE"
+					'If WO_REPORT_LABOR_SHOWSTARTEND = "Yes" Then
+					'  If WO_REPORT_LABOR_SHOWACCOUNT = "No" Then
+					'    LaborCols = 7
+					'  Else
+					'    LaborCols = 8
+					'  End If
+					'Else
+					'  If WO_REPORT_LABOR_SHOWACCOUNT = "No" Then
+					    LaborCols = 5
+					'  Else
+					'    Laborcols = 6
+					'  End If
+					'End If
+					'BlankRowNum = WO_LABORSECTION_BL
+					BlankRowNum = 2
+				End If	
+			
+			Case "WOC"
+				LaborFormat = "NONE"
+				'If WO_REPORT_LABOR_SHOWSTARTEND = "Yes" Then
+				'  If WO_REPORT_LABOR_SHOWACCOUNT = "No" Then
+				'    LaborCols = 7
+				'  Else
+				'    LaborCols = 8
+				'  End If
+				'Else
+				'  If WO_REPORT_LABOR_SHOWACCOUNT = "No" Then
+				    LaborCols = 5
+				'  Else
+				'    LaborCols = 6
+				'  End If
+				'End If
+				'BlankRowNum = WO_LABORSECTION_BL
+			  BlankRowNum = 2
+			End Select						
+		
+			Call OutputLaborHeader(LaborFormat)
+						
+			' labor data 	
+			If Not rs.EOF Then
+				Do While Not rs.eof and (NullCheck(rs("WOPK")) = NullCheck(WOPK) or nowocheck)
+					If (wostate = "WO" or wostate = "CC") and LaborFormat = "ASSIGNED" Then
+						If Not rs("IsAssigned") Then
+							' Do not print crafts if assignments are made
+						Else
+							Call OutputLabor(LaborFormat,rs)
+						End If
+					Else
+						Call OutputLaborCustom(LaborFormat,rs)
+					End If
+					rs.MoveNext
+				Loop
+			End If
+			
+			Call OutputBlankRow(BlankRowNum,LaborCols)
+
+		rw "</table><br>"
+	rw "</fieldset>"
+End Sub
+
+
+
+Sub OutputLaborCustom(LaborFormat,RS_WOAssign)
+	rw "<tr class=""blank_row"">"
+
+	Select Case wostate
+
+	Case "WO"
+	
+		Select Case LaborFormat
+			Case "ASSIGNED"
+				rw "<td class=""data_underline"">"
+				rw NullCheck(RS_WOAssign("LaborName"))
+				rw "</td>"
+				'If WO_REPORT_LABOR_SHOWACCOUNT = "Yes" Then
+				'  rw "<td width=""120"" class=""data_underline"">&nbsp;</td>"
+				'End If
+				rw "<td width=""90"" class=""data_underline"">" & DateNullCheck(RS_WOAssign("AssignedDate")) & "&nbsp;/&nbsp;"
+				rw NullCheck(RS_WOAssign("AssignedHours")) & "&nbsp;</td>"
+				rw "<td width=""90"" class=""data_underline"">&nbsp;</td>"
+				'If WO_REPORT_LABOR_SHOWSTARTEND = "Yes" Then
+				'  rw "<td width=""90"" class=""data_underline"">&nbsp;</td>"
+				'  rw "<td width=""90"" class=""data_underline"">&nbsp;</td>"
+				'End If
+				rw "<td class=""data_underline"" align=""center"">&nbsp;</td>"
+				rw "<td class=""data_underline"" align=""center"">&nbsp;</td>"
+				rw "<td class=""data_underline"" align=""center"">&nbsp;</td>"
+				rw "<td class=""data_underline"" align=""center"">&nbsp;</td>"
+			Case "ESTIMATED"
+				rw "<td class=""data_underline"">"
+				rw NullCheck(RS_WOAssign("LaborName"))
+				rw "</td>"
+				rw "<td class=""data_underline"" align=""center"">" & NullCheck(RS_WOAssign("AssignedHours")) & "&nbsp;</td>"
+				rw "<td width=""500"" class=""data_underline"">&nbsp;</td>"
+				'If WO_REPORT_LABOR_SHOWACCOUNT = "Yes" Then
+				'  rw "<td width=""120"" class=""data_underline"">&nbsp;</td>"
+				'End If
+				rw "<td width=""90"" class=""data_underline"">&nbsp;</td>"
+				'If WO_REPORT_LABOR_SHOWSTARTEND = "Yes" Then
+				'  rw "<td width=""90"" class=""data_underline"">&nbsp;</td>"
+				'  rw "<td width=""90"" class=""data_underline"">&nbsp;</td>"
+				'End If
+				rw "<td class=""data_underline"" align=""center"">&nbsp;</td>" 
+				rw "<td class=""data_underline"" align=""center"">&nbsp;</td>"
+				rw "<td class=""data_underline"" align=""center"">&nbsp;</td>"
+				rw "<td class=""data_underline"" align=""center"">&nbsp;</td>"
+		End Select
+		
+	Case "CC"
+	
+		Select Case LaborFormat
+			Case "ASSIGNED"
+				rw "<td class=""data_underline"">"
+				rw NullCheck(RS_WOAssign("LaborName"))
+				rw "</td>"
+				'If WO_REPORT_LABOR_SHOWACCOUNT = "Yes" Then
+				'  rw "<td nowrap width=""80"" class=""data_underline"">"
+			 	'  rw "<input class=""normal"" mcType=""C"" maxlength=""25"" mcRequired=""N"" type=""text"" name=""LA_Account_" & RS_WOAssign("PK") & """ size=""6"" onChange=""top.dovalid('AC',this,'WO');"" onfocus=""top.fieldfocus(this);"" onblur=""top.fieldblur(this);"" onkeypress=""return top.checkKey(this,self);""><img src=""../../images/lookupiconxp3fk.gif"" border=""0"" align=""absbottom"" onclick=""top.dolookup('AC',LA_Account_" & RS_WOAssign("PK") & ",'WO')"" class=""lookupicon"" width=""16"" height=""20"">"
+				'	  rw "<span style=""display:none;"" id=""LA_Account_" & RS_WOAssign("PK") & "Desc"" class=""mc_lookupdesc""></span>"
+				'	  rw "<input type=""hidden"" name=""LA_Account_" & RS_WOAssign("PK") & "PK"" class=""mc_pluggedvalue"">"				
+				'  rw "</td>"
+				'End If
+				rw "<td nowrap width=""90"" class=""data_underline"">" & DateNullCheck(RS_WOAssign("Comments")) & "&nbsp;/&nbsp;"
+				rw "<td nowrap width=""90"" class=""data_underline"">" & DateNullCheck(RS_WOAssign("AssignedDate")) & "&nbsp;/&nbsp;"
+				rw "<td nowrap width=""90"" class=""data_underline"">" &NullCheck(RS_WOAssign("AssignedHours")) & "&nbsp;Hrs</td>"
+				
+				rw "<td width=""90"" class=""data_underline"">"
+					rw "<input class=""normal"" mcType=""D"" maxlength=""10"" mcRequired=""N"" type=""text"" name=""LA_WorkDate_" & RS_WOAssign("PK") & """ size=""8"" onChange=""top.fieldvalid(this);"" onfocus=""top.fieldfocus(this);"" onblur=""top.fieldblur(this);"" onkeypress=""return top.checkKey(this,self);""><img src=""../../images/lookupiconxp3.gif"" border=""0"" onclick=""top.showpopup('calendar','Calendar',172,160,this,LA_WorkDate_" & RS_WOAssign("PK") & ",self)"" align=""absbottom"" class=""lookupicon"" WIDTH=""16"" HEIGHT=""20"">"
+					rw "<span style=""display:none;"" id=""LA_WorkDate_" & RS_WOAssign("PK") & "Err"" class=""mc_lookupdesc""></span>"
+				rw "</td>"								
+				'If WO_REPORT_LABOR_SHOWSTARTEND = "Yes" Then
+				'  rw "<td width=""70"" class=""data_underline"">"
+				'	  rw "<input class=""normal"" mcType=""T"" maxlength=""10"" mcRequired=""N"" type=""text"" name=""LA_TimeIn_" & RS_WOAssign("PK") & """ size=""4"" onChange=""top.fieldvalid(this);"" onfocus=""top.fieldfocus(this);"" onblur=""top.fieldblur(this);"" onkeypress=""return top.checkKey(this,self);""><img src=""../../images/lookupiconxp3.gif"" border=""0"" onclick=""top.showpopup('timepopup','Select Time',267,205,this,LA_TimeIn_" & RS_WOAssign("PK") & ",self)"" align=""absbottom"" class=""lookupicon"" WIDTH=""16"" HEIGHT=""20"">"
+				'	  rw "<span style=""display:none;"" id=""LA_TimeIn_" & RS_WOAssign("PK") & "Err"" class=""mc_lookupdesc""></span>"
+				'  rw "</td>"								
+  				
+				'  rw "<td width=""70"" class=""data_underline"">"
+				'	  rw "<input class=""normal"" mcType=""T"" maxlength=""10"" mcRequired=""N"" type=""text"" name=""LA_TimeOut_" & RS_WOAssign("PK") & """ size=""4"" onChange=""top.fieldvalid(this);"" onfocus=""top.fieldfocus(this);"" onblur=""top.fieldblur(this);"" onkeypress=""return top.checkKey(this,self);""><img src=""../../images/lookupiconxp3.gif"" border=""0"" onclick=""top.showpopup('timepopup','Select Time',267,205,this,LA_TimeOut_" & RS_WOAssign("PK") & ",self)"" align=""absbottom"" class=""lookupicon"" WIDTH=""16"" HEIGHT=""20"">"
+				'	  rw "<span style=""display:none;"" id=""LA_TimeOut_" & RS_WOAssign("PK") & "Err"" class=""mc_lookupdesc""></span>"
+				'  rw "</td>"								
+        'End If
+				rw "<td width=""60"" class=""data_underline"" align=""right"">"
+				rw "<input name=""LA_RegularHours_" & RS_WOAssign("PK") & """ class=""normalright"" mcType=""N"" maxlength=""12"" size=""1"" type=""text"" onChange=""top.fieldvalid(this);"" onfocus=""top.fieldfocus(this);"" onblur=""top.fieldblur(this);"" onkeypress=""return top.fnTrapAlpha(this,self);""><img src=""../../images/lookupiconxp3.gif"" border=""0"" onclick=""top.showpopup('calculator','Calculator',125,100,this,LA_RegularHours_" & RS_WOAssign("PK") & ",self)"" align=""absbottom"" class=""lookupicon"" WIDTH=""16"" HEIGHT=""20"">"
+				rw "</td>"
+			
+				rw "<td width=""60"" class=""data_underline"" align=""right"">"
+				rw "<input name=""LA_OvertimeHours_" & RS_WOAssign("PK") & """ class=""normalright"" mcType=""N"" maxlength=""12"" size=""1"" type=""text"" onChange=""top.fieldvalid(this);"" onfocus=""top.fieldfocus(this);"" onblur=""top.fieldblur(this);"" onkeypress=""return top.fnTrapAlpha(this,self);""><img src=""../../images/lookupiconxp3.gif"" border=""0"" onclick=""top.showpopup('calculator','Calculator',125,100,this,LA_OvertimeHours_" & RS_WOAssign("PK") & ",self)"" align=""absbottom"" class=""lookupicon"" WIDTH=""16"" HEIGHT=""20"">"
+				rw "</td>"
+
+				rw "<td width=""60"" class=""data_underline"" align=""right"">"
+				rw "<input name=""LA_OtherHours_" & RS_WOAssign("PK") & """ class=""normalright"" mcType=""N"" maxlength=""12"" size=""1"" type=""text"" onChange=""top.fieldvalid(this);"" onfocus=""top.fieldfocus(this);"" onblur=""top.fieldblur(this);"" onkeypress=""return top.fnTrapAlpha(this,self);""><img src=""../../images/lookupiconxp3.gif"" border=""0"" onclick=""top.showpopup('calculator','Calculator',125,100,this,LA_OtherHours_" & RS_WOAssign("PK") & ",self)"" align=""absbottom"" class=""lookupicon"" WIDTH=""16"" HEIGHT=""20"""
+				rw "</td>"
+			Case "ESTIMATED"
+				rw "<td class=""data_underline"">"
+				rw NullCheck(RS_WOAssign("LaborName"))
+				rw "</td>"
+				rw "<td class=""data_underline"" align=""center"">" & NullCheck(RS_WOAssign("AssignedHours")) & "&nbsp;</td>"
+
+				rw "<td nowrap width=""70"" class=""data_underline"">"
+					rw "<input class=""normal"" mcType=""C"" maxlength=""25"" mcRequired=""N"" type=""text"" name=""LA_Labor_" & RS_WOAssign("PK") & """ size=""4"" onChange=""top.dovalid('LA',this,'WO');"" onfocus=""top.fieldfocus(this);"" onblur=""top.fieldblur(this);"" onkeypress=""return top.checkKey(this,self);""><img src=""../../images/lookupiconxp3fk.gif"" border=""0"" align=""absbottom"" onclick=""top.dolookup('LA',LA_Labor_" & RS_WOAssign("PK") & ",'WO')"" class=""lookupicon"" width=""16"" height=""20"">"
+					rw "<span style=""display:none;"" id=""LA_Labor_" & RS_WOAssign("PK") & "Desc"" class=""mc_lookupdesc""></span>"
+					rw "<input type=""hidden"" name=""LA_Labor_" & RS_WOAssign("PK") & "PK"" class=""mc_pluggedvalue"">"				
+				rw "</td>"
+				'If WO_REPORT_LABOR_SHOWACCOUNT = "Yes" Then
+				'  rw "<td nowrap width=""70"" class=""data_underline"">"
+				'	  rw "<input class=""normal"" mcType=""C"" maxlength=""25"" mcRequired=""N"" type=""text"" name=""LA_Account_" & RS_WOAssign("PK") & """ size=""4"" onChange=""top.dovalid('AC',this,'WO');"" onfocus=""top.fieldfocus(this);"" onblur=""top.fieldblur(this);"" onkeypress=""return top.checkKey(this,self);""><img src=""../../images/lookupiconxp3fk.gif"" border=""0"" align=""absbottom"" onclick=""top.dolookup('AC',LA_Account_" & RS_WOAssign("PK") & ",'WO')"" class=""lookupicon"" width=""16"" height=""20"">"
+				'	  rw "<span style=""display:none;"" id=""LA_Account_" & RS_WOAssign("PK") & "Desc"" class=""mc_lookupdesc""></span>"
+				'	  rw "<input type=""hidden"" name=""LA_Account_" & RS_WOAssign("PK") & "PK"" class=""mc_pluggedvalue"">"				
+				'  rw "</td>"
+				'End If
+				rw "<td width=""90"" class=""data_underline"">"
+					rw "<input class=""normal"" mcType=""D"" maxlength=""10"" mcRequired=""N"" type=""text"" name=""LA_WorkDate_" & RS_WOAssign("PK") & """ size=""8"" onChange=""top.fieldvalid(this);"" onfocus=""top.fieldfocus(this);"" onblur=""top.fieldblur(this);"" onkeypress=""return top.checkKey(this,self);""><img src=""../../images/lookupiconxp3.gif"" border=""0"" onclick=""top.showpopup('calendar','Calendar',172,160,this,LA_WorkDate_" & RS_WOAssign("PK") & ",self)"" align=""absbottom"" class=""lookupicon"" WIDTH=""16"" HEIGHT=""20"">"
+					rw "<span style=""display:none;"" id=""LA_WorkDate_" & RS_WOAssign("PK") & "Err"" class=""mc_lookupdesc""></span>"
+				rw "</td>"								
+				'If WO_REPORT_LABOR_SHOWSTARTEND = "Yes" Then
+				'  rw "<td width=""70"" class=""data_underline"">"
+				'	  rw "<input class=""normal"" mcType=""T"" maxlength=""10"" mcRequired=""N"" type=""text"" name=""LA_TimeIn_" & RS_WOAssign("PK") & """ size=""4"" onChange=""top.fieldvalid(this);"" onfocus=""top.fieldfocus(this);"" onblur=""top.fieldblur(this);"" onkeypress=""return top.checkKey(this,self);""><img src=""../../images/lookupiconxp3.gif"" border=""0"" onclick=""top.showpopup('timepopup','Select Time',267,205,this,LA_TimeIn_" & RS_WOAssign("PK") & ",self)"" align=""absbottom"" class=""lookupicon"" WIDTH=""16"" HEIGHT=""20"">"
+				'	  rw "<span style=""display:none;"" id=""LA_TimeIn_" & RS_WOAssign("PK") & "Err"" class=""mc_lookupdesc""></span>"
+				'  rw "</td>"								
+  				
+				'  rw "<td width=""70"" class=""data_underline"">"
+				'	  rw "<input class=""normal"" mcType=""T"" maxlength=""10"" mcRequired=""N"" type=""text"" name=""LA_TimeOut_" & RS_WOAssign("PK") & """ size=""4"" onChange=""top.fieldvalid(this);"" onfocus=""top.fieldfocus(this);"" onblur=""top.fieldblur(this);"" onkeypress=""return top.checkKey(this,self);""><img src=""../../images/lookupiconxp3.gif"" border=""0"" onclick=""top.showpopup('timepopup','Select Time',267,205,this,LA_TimeOut_" & RS_WOAssign("PK") & ",self)"" align=""absbottom"" class=""lookupicon"" WIDTH=""16"" HEIGHT=""20"">"
+				'	  rw "<span style=""display:none;"" id=""LA_TimeOut_" & RS_WOAssign("PK") & "Err"" class=""mc_lookupdesc""></span>"
+				'  rw "</td>"								
+        'End If
+				rw "<td width=""60"" class=""data_underline"" align=""right"">"
+				rw "<input name=""LA_RegularHours_" & RS_WOAssign("PK") & """ class=""normalright"" mcType=""N"" maxlength=""12"" size=""1"" type=""text"" onChange=""top.fieldvalid(this);"" onfocus=""top.fieldfocus(this);"" onblur=""top.fieldblur(this);"" onkeypress=""return top.fnTrapAlpha(this,self);""><img src=""../../images/lookupiconxp3.gif"" border=""0"" onclick=""top.showpopup('calculator','Calculator',125,100,this,LA_RegularHours_" & RS_WOAssign("PK") & ",self)"" align=""absbottom"" class=""lookupicon"" WIDTH=""16"" HEIGHT=""20"">"
+				rw "</td>"
+			
+				rw "<td width=""60"" class=""data_underline"" align=""right"">"
+				rw "<input name=""LA_OvertimeHours_" & RS_WOAssign("PK") & """ class=""normalright"" mcType=""N"" maxlength=""12"" size=""1"" type=""text"" onChange=""top.fieldvalid(this);"" onfocus=""top.fieldfocus(this);"" onblur=""top.fieldblur(this);"" onkeypress=""return top.fnTrapAlpha(this,self);""><img src=""../../images/lookupiconxp3.gif"" border=""0"" onclick=""top.showpopup('calculator','Calculator',125,100,this,LA_OvertimeHours_" & RS_WOAssign("PK") & ",self)"" align=""absbottom"" class=""lookupicon"" WIDTH=""16"" HEIGHT=""20"">"
+				rw "</td>"
+
+				rw "<td width=""60"" class=""data_underline"" align=""right"">"
+				rw "<input name=""LA_OtherHours_" & RS_WOAssign("PK") & """ class=""normalright"" mcType=""N"" maxlength=""12"" size=""1"" type=""text"" onChange=""top.fieldvalid(this);"" onfocus=""top.fieldfocus(this);"" onblur=""top.fieldblur(this);"" onkeypress=""return top.fnTrapAlpha(this,self);""><img src=""../../images/lookupiconxp3.gif"" border=""0"" onclick=""top.showpopup('calculator','Calculator',125,100,this,LA_OtherHours_" & RS_WOAssign("PK") & ",self)"" align=""absbottom"" class=""lookupicon"" WIDTH=""16"" HEIGHT=""20"""
+				rw "</td>"
+				
+		End Select
+	
+	Case "WOC"
+				rw "<td class=""data_underline"">"
+				rw NullCheck(RS_WOAssign("LaborName"))
+				rw "</td>"
+				rw "<td class=""data_underline"" align=""left"">" & NullCheckNBSP(RS_WOAssign("Comments")) & "</td>"   'WO87403: Add comments 10/2016
+				'If WO_REPORT_LABOR_SHOWACCOUNT = "Yes" Then
+				'  rw "<td width=""120"" class=""data_underline"">" & NullCheckNBSP(RS_WOAssign("AccountID")) & "</td>"
+				'End If
+				rw "<td width=""90"" class=""data_underline"">" & NullCheckNBSP(DateNullCheck(RS_WOAssign("WorkDate"))) & "</td>"
+				'If WO_REPORT_LABOR_SHOWSTARTEND = "Yes" Then
+				'  rw "<td width=""90"" class=""data_underline"">" & NullCheckNBSP(RS_WOAssign("TimeIn")) & "</td>"
+				'  rw "<td width=""90"" class=""data_underline"">" & NullCheckNBSP(RS_WOAssign("TimeOut")) & "</td>"
+				'End If
+				
+				rw "<td class=""data_underline"" align=""center"">" & NullCheckNBSP(RS_WOAssign("RegularHours")) & "</td>"
+				rw "<td class=""data_underline"" align=""center"">" & NullCheckNBSP(RS_WOAssign("OvertimeHours")) & "</td>"
+				rw "<td class=""data_underline"" align=""center"">" & NullCheckNBSP(RS_WOAssign("OtherHours")) & "</td>"
+	
+	End Select
+	
+	rw "</tr>"
+End Sub
+
+
+Sub OutputLaborHeader(LaborFormat)
+	rw "<tr>"	
+
+	Select Case LaborFormat
+		Case "NONE"
+			rw "<td class=""labels"">Labor</td>"
+			'If WO_REPORT_LABOR_SHOWACCOUNT = "Yes" Then
+			'  rw "<td class=""labels"" width=""120"">Account</td>"
+			'End If
+			If wostate = "WOC" Then
+			rw "<td class=""labels"" align=""center"" width=""50%"" nowrap>&nbsp;Comments&nbsp;</td>"   ' 'WO87403: Add comments 10/2016
+			end if
+			rw "<td class=""labels"" width=""50"">Work&nbsp;Date</td>"
+			'If WO_REPORT_LABOR_SHOWSTARTEND = "Yes" Then
+			'  rw "<td nowrap class=""labels"" width=""50"">Start</td>"
+			'  rw "<td class=""labels"" width=""50"">End</td>"
+			'End If
+			
+			rw "<td class=""labels"" align=""center"" width=""40"" nowrap>&nbsp;Reg&nbsp;Hrs&nbsp;</td>"
+			rw "<td class=""labels"" align=""center"" width=""40"" nowrap>&nbsp;OT&nbsp;Hrs&nbsp;</td>"
+			rw "<td class=""labels"" align=""center"" width=""40"" nowrap>&nbsp;Other&nbsp;Hrs&nbsp;</td>"
+		Case "ASSIGNED"
+			rw "<td class=""labels"">Labor</td>"
+			'If WO_REPORT_LABOR_SHOWACCOUNT = "Yes" Then
+			'  rw "<td class=""labels"" width=""120"">Account</td>"			
+			'End If
+			rw "<td class=""labels"" width=""50"">Assigned&nbsp;</td>"
+			rw "<td class=""labels"" width=""50"">Work&nbsp;Date</td>"
+			'If WO_REPORT_LABOR_SHOWSTARTEND = "Yes" Then
+			'  rw "<td nowrap class=""labels"" width=""50"">Start</td>"
+			'  rw "<td class=""labels"" width=""50"">End</td>"
+			'End If
+			rw "<td class=""labels"" align=""center"" width=""40"" nowrap>&nbsp;Reg&nbsp;Hrs&nbsp;</td>"
+			rw "<td class=""labels"" align=""center"" width=""40"" nowrap>&nbsp;OT&nbsp;Hrs&nbsp;</td>"
+			rw "<td class=""labels"" align=""center"" width=""40"" nowrap>&nbsp;Other&nbsp;Hrs&nbsp;</td>"
+		Case "ESTIMATED"
+			rw "<td class=""labels"">Craft</td>"
+			rw "<td nowrap class=""labels"" align=""center"" width=""40"">Est&nbsp;Hrs&nbsp;</td>"
+			rw "<td class=""labels"" width=""200"">Labor</td>"
+			'If WO_REPORT_LABOR_SHOWACCOUNT = "Yes" Then
+			'  rw "<td class=""labels"" width=""120"">Account</td>"
+			'End If
+			rw "<td class=""labels"" width=""50"">Work&nbsp;Date</td>"
+			'If WO_REPORT_LABOR_SHOWSTARTEND = "Yes" Then
+			'  rw "<td nowrap class=""labels"" width=""50"">Start</td>"
+			'  rw "<td class=""labels"" width=""50"">End</td>"
+			'End If
+			rw "<td class=""labels"" align=""center"" width=""40"" nowrap>&nbsp;Reg&nbsp;Hrs&nbsp;</td>"
+			rw "<td class=""labels"" align=""center"" width=""40"" nowrap>&nbsp;OT&nbsp;Hrs&nbsp;</td>"
+			rw "<td class=""labels"" align=""center"" width=""40"" nowrap>&nbsp;Other&nbsp;Hrs&nbsp;</td>"
+	End Select
+			
+	rw "</tr>"
+End Sub
+
 %>
