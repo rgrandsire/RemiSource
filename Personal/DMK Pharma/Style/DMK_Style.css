@@ -1,10 +1,10 @@
 /* stylesheet.css */
 /* Style rule for the body element */
 body {
- background-color: #686EBD;
+ background-color: #B7C3D0;  /*   heather blue; */
  /* Default font styling */
  font: 10pt Arial, Helvetica, Sans-Serif;
- color: #5d3f25;
+ color: #003F87;   /*sign blue; */
 }
 /* Style rule for the wrapper div */
 #wrapper {
@@ -14,7 +14,7 @@ body {
  margin: 1em auto;
  background-color: white;
  border: solid 2px #4c2e16;
- border-radius: 20px;
+ border-radius: 20;
  box-shadow: 8px 8px 8px black;
 }
 /* Eliminate default margins for all heading types */
@@ -32,21 +32,21 @@ header {
  /* Font size, line-height, and family */
  font: 40px/80px Impact, Gadget, Fantasy;
  text-align: center; 
-
  background-repeat: no-repeat;
- background-position: 10px center; 
-
+ background-position: 10px center;
+background-color: white; 
 }
 /*======== Styling for the sidebar section (aside) */
 aside {
  width: 130px;
  padding: 10px;
  float: left;
+ background-color: #FFF;
 }
 /*======== Styling for links in the nav section */
 nav a {
  display: block;
- background-color: #686EBD;
+ background-color: #FFF;
  color: #09B7BF;
  font-weight: bold;
  text-align: center; 
@@ -63,19 +63,19 @@ nav a {
  outline: none;
 }
 nav a:link, nav a:visited {
- background-color: #d0ae8e;
- color: #5d3f25;
+ background-color: #3579DC;   /*  parrot  */
+ color: #fff;
 }
 nav a:hover, nav a:active {
- background-color: #5d3f25;
- color: #d0ae8e;
+ background-color: #2B4F81;   /* Blue Angels  */
+ color: #C6E2FF;
 }
 /*======== Styling for the article section */
 article {
  padding: 10px; 
  /* Left margin should match neighboring column full width */
  margin-left: 150px;
- border-left: solid 1px #d0ae8e;
+ border-left: solid 1px #C6E2FF;
 }
 /* ==== Styling for tables in the artcle section */
 /* Styling for the table as a whole */
@@ -85,6 +85,8 @@ article table {
  /* Font size, family, and color */
  font: 12pt Times, "Times New Roman" , Serif;
  color: #4c2e16; 
+ text-decoration: none;
+ outline: none;
  /* top/bottom and side margins (auto for centering) */
  margin: 1em auto;
 }
@@ -95,12 +97,12 @@ article th {
 }
 /* Header and data cells */
 article th, article td {
- border: solid 1px #5d3f25;
+ border: solid 0px #F0FFFF;
  padding: 2px 4px;
 }
 /* Give even-numbered rows tan background color */
 article tr:nth-child(even) {
- background-color: #c6a586;
+ background-color: #F0FFFF;
 }
 /* Right align content in column 2 data cells */
 article td:nth-child(2) {
@@ -112,37 +114,62 @@ article td:nth-child(3) {
 }
 /* Highlight table row on hover */
 article tr:hover {
- background-color: #ff6;
+ background-color: #C6E2FF;
  cursor: default;
 }
 /* ==== Links and link states in article section */
 /* Unvisited links */
 article a:link {
  color: #0c391c;
+ text-decoration: none;
 }
 /* Visited links */
 article a:visited {
- color: #af4600;
+ background-color: #3579DC;   /*  parrot  */
+ color: #00868B;
+ text-decoration: none;
 }
 /* Mouse pointer on link */
 article a:hover {
  background-color: #bc9f81;
  color: #1e2953;
+ text-decoration: none;
 }
 /* Mouse pointer on link and left button down */
 article a:active {
- background-color: #1e2953;
- color: #bc9f81;
+ background-color: #2B4F81;   /* Blue Angels  */
+ color: #C6E2FF;
+ text-decoration: none;
 }
 /* ==== Styling for footer */
 footer {
  clear: both;
  height: 25px;
  padding: 5px;
- color: white;
- background-color: #5409BF;
- border-bottom-left-radius: 18px;
- border-bottom-right-radius: 18px;
+ font: 10px Arial Black, Gadget, Sans-Serif;
+ color: #fff;
+ background-color: #2B4F81;
+ border-bottom-left-radius: 0px;
+ border-bottom-right-radius: 0px;
+}
+
+footer a:link {
+    color: #39B7CD;
+}
+
+/* visited link */
+footer a:visited {
+    color: #B2DFEE;
+}
+
+/* mouse over link */
+footer a:hover {
+    color: #A4D3EE;
+}
+
+/* selected link */
+footer a:active {
+    color: #B0C4DE;
 }
 /* Styling for table in footer */
 footer table {
@@ -154,12 +181,12 @@ footer table {
 /* Style for h1 headings */
 h1 {
  font: italic small-caps bold 24px Arial Black, Gadget, Sans-Serif;
- text-shadow: -2px -2px 2px #a48362;
+ text-shadow: -2px -2px 2px #F0FFFF;
 }
 /* Style for h2 headings */
 h2 {
  font: italic small-caps bold 18px Arial Black, Gadget, Sans-Serif;
- text-shadow: -1px -1px 1px #a48362;
+ text-shadow: -1px -1px 1px #F0FFFF;
 }
 /* Style for paragraphs */
 p {
@@ -169,7 +196,7 @@ p {
 /* === Style classes */
 /* Highlight any span of text */
 .hilite {
- background-color: #09B7BF;
+ background-color: #BCD2EE;
 }
 /* Create raised appearance with border, rounded corners, and shadow */
 /* Works with images, tables, and block elements (div, p, and headings) */
