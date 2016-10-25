@@ -213,7 +213,7 @@ Sub SetupWOData()
 
 		If wostate = "WOC" Then
 			' GET ACTUAL LABOR		WO87403: Add comments 10/2016	
-			sql = "SELECT     WOlabor.PK, WOlabor.WOPK, WOlabor.LaborPK, WOlabor.LaborID, WOlabor.LaborName, WOLabor.Comments, WOlabor.EstimatedHours, WOlabor.RegularHours, WOlabor.OvertimeHours, WOlabor.OtherHours, WOlabor.WorkDate, WOlabor.TimeIn, " & _
+			sql = "SELECT     WOlabor.PK, WOlabor.WOPK, WOlabor.LaborPK, lt.moduleid, WOlabor.LaborID, WOlabor.LaborName, WOLabor.Comments, WOlabor.EstimatedHours, WOlabor.RegularHours, WOlabor.OvertimeHours, WOlabor.OtherHours, WOlabor.WorkDate, WOlabor.TimeIn, " & _
 				  "			  WOlabor.TimeOut, WOlabor.AccountID, WOlabor.AccountName, WOlabor.CategoryID, WOlabor.CategoryName, WOlabor.TotalCost, " & _ 
 				  "			  WOlabor.TotalCharge, WOlabor.CostRegular, WOlabor.CostOvertime, WOlabor.CostOther, WOlabor.ChargeRate, WOlabor.ChargePercentage, WOlabor.RowVersionDate, Labor.Photo " & _
 				  "FROM WOlabor WITH (NOLOCK) INNER JOIN WO WITH (NOLOCK) ON WO.WOPK = WOlabor.WOPK LEFT OUTER JOIN " & _
@@ -2141,12 +2141,12 @@ Sub OutputLaborHeader(LaborFormat)
 
 	Select Case LaborFormat
 		Case "NONE"
-			rw "<td class=""labels"">Labor</td>"
+			rw "<td class=""labels"" align=left width=""150"">Labor</td>"
 			'If WO_REPORT_LABOR_SHOWACCOUNT = "Yes" Then
 			'  rw "<td class=""labels"" width=""120"">Account</td>"
 			'End If
 			If wostate = "WOC" Then
-			rw "<td class=""labels"" align=""center"" width=""50%"" nowrap>&nbsp;Comments&nbsp;</td>"   ' 'WO87403: Add comments 10/2016
+			rw "<td class=""labels"" align=""left"" nowrap>&nbsp;Comments&nbsp;</td>"   ' 'WO87403: Add comments 10/2016
 			end if
 			rw "<td class=""labels"" width=""50"">Work&nbsp;Date</td>"
 			'If WO_REPORT_LABOR_SHOWSTARTEND = "Yes" Then

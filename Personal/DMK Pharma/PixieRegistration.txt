@@ -1,0 +1,10 @@
+Software is now being installed. Please make sure you have copied installation details to safe location:
+Software: Pixie
+Version: 1.04
+Installation URL: http://r3mig.bugs3.com/pixie
+Admin Login URL: http://r3mig.bugs3.com/pixie/admin/
+Admin uername: rgrandsire@gmail.com
+Admin password: 598Th0ma$
+Database Name: u906488267_dawys
+Database Username: u906488267_palab
+Database Password: venyvuQyde
