@@ -4,6 +4,7 @@
 ---------------------------------------------------------------------------------------------------------------
 | 10/11/2016    | 1.0.0.1    | Remi G Grandsire   | Original development                                      |
 | 10/12/2016    | 1.0.0.2    |                    | Added configurable offset for file parsing                |
+| 10/25/2016    | 1.0.0.3    |                    | Added filename to MC_Interfacelog table                   |
 ---------------------------------------------------------------------------------------------------------------
 
 */
@@ -28,9 +29,8 @@ namespace SammamishMeterImport
         public static string zDebug = "N";
         public static errorlogging errorLog = new errorlogging();
         public static Guid importid = System.Guid.NewGuid();
-
-
-        static void DBImport(string zSQL)       //This function updates the database with mileage and hours from Geotab
+        
+        static void DBImport(string zSQL)       //This function updates the database with mileage and hours from file
         {
             //Putting data in the database
             SqlConnection newCon = new SqlConnection(myConStr);
@@ -129,9 +129,7 @@ namespace SammamishMeterImport
                     errorLog.logMessage(myLogFile, "Error getting the entity DB info: " + v.Message);
                     connSuccess = "000|000";
                 }
-                ////// Get a reader object to get the data........
-
-                zCon.Close();
+            zCon.Close();
             }
             catch (SqlException z)
             {
@@ -225,8 +223,8 @@ namespace SammamishMeterImport
                         hourReading = words[HoursOffset].Trim();
                         zVehicle = words[VehicleOffset].Trim(new Char[] { ' ', '*', '"' });
                         errorLog.logMessage(myLogFile, zVehicle + "\t\t|" + odometerReading + "\\tt|" + hourReading);
-                        DBSql = "insert into MC_InterfaceLog (Hours, Miles,  VehicleID, ImportID, RecordData, RecordNumber) Values ('" +
-                                hourReading + "','" + odometerReading + "','" + zVehicle.Trim() + "','" + importid + "', '" + hourReading+ odometerReading +
+                        DBSql = "insert into MC_InterfaceLog (Hours, Miles,  VehicleID, ImportID, FileName, RecordData, RecordNumber) Values ('" +
+                                hourReading + "','" + odometerReading + "','" + zVehicle.Trim() + "','" + importid + "','" + Path.GetFileName(zFile) + "', '" + hourReading+ odometerReading +
                                 zVehicle + "','" + (i).ToString() + "');";
                         if (zDebug == "Y")
                         {

@@ -6,7 +6,7 @@
 | 1.0.2   |                | 10/12/2016 | Simplify and optimize queries
 | 1.0.3   |                | 10/14/2016 | Added the @AssetPK variable
 | 1.0.4   | Calvin Beck    |            | Removed "joins" to use @AssetPK
-| 1.0.5   | Remi Grandsire |            | Add Spes to asset before adding to the WO per Randy's suggestion
+| 1.0.5   | Remi Grandsire |            | Add Specs to asset before adding to the WO per Randy's suggestion
 ---------------------------------------------------------------------------------------------------------- 
 */
 

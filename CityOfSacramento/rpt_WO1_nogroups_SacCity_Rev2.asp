@@ -2146,7 +2146,7 @@ Sub OutputLaborHeader(LaborFormat)
 			'  rw "<td class=""labels"" width=""120"">Account</td>"
 			'End If
 			If wostate = "WOC" Then
-			rw "<td class=""labels"" align=""left"" nowrap>&nbsp;Comments&nbsp;</td>"   ' 'WO87403: Add comments 10/2016
+			rw "<td class=""labels"" align=""left"" nowrap>Comments</td>"   ' 'WO87403: Add comments 10/2016
 			end if
 			rw "<td class=""labels"" width=""50"">Work&nbsp;Date</td>"
 			'If WO_REPORT_LABOR_SHOWSTARTEND = "Yes" Then
