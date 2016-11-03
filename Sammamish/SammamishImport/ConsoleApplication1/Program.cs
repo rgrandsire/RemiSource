@@ -5,6 +5,9 @@
 | 10/11/2016    | 1.0.0.1    | Remi G Grandsire   | Original development                                      |
 | 10/12/2016    | 1.0.0.2    |                    | Added configurable offset for file parsing                |
 | 10/25/2016    | 1.0.0.3    |                    | Added filename to MC_Interfacelog table                   |
+| 10/28/2016    | 1.0.0.4    |                    | Replaced deprecated ConfigurationSettings with            |
+|               |            |                    | ConfigurationManager                                      |
+| 11/02/2016    | 1.0.0.5    |                    | Remove 3 custom fields from table to use RecordData       |
 ---------------------------------------------------------------------------------------------------------------
 
 */
@@ -16,6 +19,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Data.SqlClient;
+using System.Configuration;
 
 namespace SammamishMeterImport
 {
@@ -87,8 +91,8 @@ namespace SammamishMeterImport
         static string getMC_DB()
         {
             string connSuccess = "";
-            string connKey = System.Configuration.ConfigurationSettings.AppSettings["connectionkey"];
-            string econnStr = System.Configuration.ConfigurationSettings.AppSettings["regdb"];
+            string connKey = System.Configuration.ConfigurationManager.AppSettings["connectionkey"];
+            string econnStr = System.Configuration.ConfigurationManager.AppSettings["regdb"];
             string entcontainercode = "";
             string zServer = "";
             string zSql = "SELECT [cr].[dbserver_name], rtrim([c].[container_type_code]) + [c].[Container_Code] FROM [dbo].[Container] [c] INNER JOIN [dbo].[container_resource] [cr] WITH (NOLOCK) ON [c].[container_guid]= [cr].[container_guid] WHERE [cr].[connection_key]=@conKey";
@@ -174,11 +178,11 @@ namespace SammamishMeterImport
             }
             myLogFile = "C:\\temp\\SammamishMeterImport_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".log";
             errorLog.logMessage(myLogFile, "Data extraction tool started");
-            int days4Files = Convert.ToInt16(System.Configuration.ConfigurationSettings.AppSettings["DaysToKeep"]);
+            int days4Files = Convert.ToInt16(System.Configuration.ConfigurationManager.AppSettings["DaysToKeep"]);
             // Get the connection stuff
-           string MCUserName = System.Configuration.ConfigurationSettings.AppSettings["entusername"];
-           string MCPassword = System.Configuration.ConfigurationSettings.AppSettings["entpassword"];
-           string zFile = System.Configuration.ConfigurationSettings.AppSettings["ImportFilePath"]; 
+           string MCUserName = System.Configuration.ConfigurationManager.AppSettings["entusername"];
+           string MCPassword = System.Configuration.ConfigurationManager.AppSettings["entpassword"];
+           string zFile = System.Configuration.ConfigurationManager.AppSettings["ImportFilePath"]; 
            string DBSql = "";
            string odometerReading = "";
            string hourReading = "";
@@ -186,10 +190,10 @@ namespace SammamishMeterImport
            int i = 0;
            int zGood = 0;
            int zBad = 0;
-           int VehicleOffset = Convert.ToInt16(System.Configuration.ConfigurationSettings.AppSettings["VehicleOffset"]);
-            int MilesOffset = Convert.ToInt16(System.Configuration.ConfigurationSettings.AppSettings["MilesOffset"]);
-            int HoursOffset = Convert.ToInt16(System.Configuration.ConfigurationSettings.AppSettings["HoursOffset"]);
-            zDebug = System.Configuration.ConfigurationSettings.AppSettings["Debug"];
+            int VehicleOffset =Convert.ToInt16(System.Configuration.ConfigurationManager.AppSettings["VehicleOffset"]);
+           int MilesOffset = Convert.ToInt16(System.Configuration.ConfigurationManager.AppSettings["MilesOffset"]);
+           int HoursOffset = Convert.ToInt16(System.Configuration.ConfigurationManager.AppSettings["HoursOffset"]);
+           zDebug = System.Configuration.ConfigurationManager.AppSettings["Debug"];
            var utcNow = DateTime.UtcNow;
            string[] arr1 = new string[] { "", "" };
            // Let's cleanup the log folder before doing anything
@@ -223,8 +227,8 @@ namespace SammamishMeterImport
                         hourReading = words[HoursOffset].Trim();
                         zVehicle = words[VehicleOffset].Trim(new Char[] { ' ', '*', '"' });
                         errorLog.logMessage(myLogFile, zVehicle + "\t\t|" + odometerReading + "\\tt|" + hourReading);
-                        DBSql = "insert into MC_InterfaceLog (Hours, Miles,  VehicleID, ImportID, FileName, RecordData, RecordNumber) Values ('" +
-                                hourReading + "','" + odometerReading + "','" + zVehicle.Trim() + "','" + importid + "','" + Path.GetFileName(zFile) + "', '" + hourReading+ odometerReading +
+                        DBSql = "insert into MC_InterfaceLog (ImportID, FileName, RecordData, RecordNumber) Values ('" +
+                                importid + "','" + Path.GetFileName(zFile) + "', '" + hourReading+","+ odometerReading +","+
                                 zVehicle + "','" + (i).ToString() + "');";
                         if (zDebug == "Y")
                         {

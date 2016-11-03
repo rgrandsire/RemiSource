@@ -75,8 +75,7 @@ Sub DoOutput()
         Response.Write "<div id='loadingArea' name='loadingArea' style='position:absolute; width:100%; height:100%; overflow:hidden; background-color:#ffffff; display:none; z-index:1000;'><div style='text-align:center;position:relative; top:25%;'><img src='logo.gif' alt='' title='' style='border:none;' /><br /><br /><br /><img src='progress.gif' alt='' title='' style='border:none;' /></div></div> "
         'End buffer
         End If
-        
-        	
+        		
 		If Not RS_WO.EOF Then
 
             'Begin Buffer Code: 
@@ -167,7 +166,7 @@ Sub DoOutput()
 				Call NewOutputMaterialsToolsBox(RS_WOPart,RS_WOTool,False)
 				Call NewOutputOtherCostsBox(RS_WOMiscCost,False)
 				Call NewOutputGrandTotalBox(False)
-				Call OutputDocumentsBox(RS_WODocument,False)	
+				Call OutputDocumentsBoxCustom(RS_WODocument,False)			
 				If Not reporthasfields Then
 					Call OutputReportBox()
 				End If
@@ -218,8 +217,6 @@ End Sub
 Sub SetupWOGroupData()
 
 	Dim RecordType
-	
-	
 	
 	If errormessage = "" Then
 		' Set RecordType	
@@ -1402,20 +1399,6 @@ Sub OutputMaintDetails()
 	rw "</table>"
 End Sub
 
-'Sub OutputReportBox()
-
-'	If Not WO_REPORTSECTION and Not wostate = "WOC" Then
-'		Exit Sub
-'	End If
-
-'	rw "<fieldset style=""padding-top:10px; margin-bottom:7px;"">"
-'		rw "<legend class=""legendHeader"">Labor Report</legend>"
-'		Call OutputWOReport(RS_WOApproval)
-'		rw "<br>"
-'	rw "</fieldset>"
-
-'End Sub
-
 Sub OutputWOReport()
 
 	Dim compdate,closestate
@@ -2327,5 +2310,49 @@ Sub OutputWOHeaderRight(htype)
 				
 	End Select
 
-End Sub								
+End Sub	
+
+Sub OutputDocumentsBoxCustom(rs,nowocheck)   'Moved function from Core common page to this report added WOCCS check for third tab
+		
+	Dim DocCounter
+	If NOT wostate = "WO" Then    	
+		Exit Sub					
+	End If							
+
+	If Not WO_DOCUMENTSECTION Then
+		Exit Sub
+	End If
+	
+	If Not rs.EOF Then 
+		If NullCheck(rs("WOPK")) = NullCheck(WOPK) or nowocheck Then
+		rw "<fieldset style=""padding-top:14px"">"
+			If nowocheck Then
+				'rw "<legend class=""legendHeader"">Documents (for all Work Orders in Group " & NullCheck(WOGroupPK) & ")</legend>"
+				rw "<legend class=""legendHeader"">Documents(Summary)</legend>"
+			Else
+				rw "<legend class=""legendHeader"">Documents</legend>"
+			End If
+			rw "<table style=""margin-top:5px;"" border=""0"" cellspacing=""3"" cellpadding=""0"" width=""98%"" align=""center"">"
+
+				Call OutputDocumentsHeader()
+
+				DocCounter = 0
+
+				Do While Not rs.eof and (NullCheck(rs("WOPK")) = NullCheck(WOPK) or nowocheck)
+					Call OutputDocuments(rs)
+					rs.MoveNext
+					DocCounter = DocCounter + 1
+				Loop
+				
+				' This is to make sure we output any documentation				
+				If DocCounter > 0 Then
+					rs.Move (DocCounter * -1)
+				End If
+
+			rw "</table><br>"
+		rw "</fieldset>"
+		End If 
+	End If 
+End Sub
+					
 %>

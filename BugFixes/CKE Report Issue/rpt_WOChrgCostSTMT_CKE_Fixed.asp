@@ -7,9 +7,13 @@
 'Response.Write("URL QueryString: <br>" & Request.QueryString)
 
 Dim WOPK, WOsql, WOGroupPK
-Dim RS_WO, RS_WOassign, RS_Asset, RS_WOtask, RS_WOpart, RS_WOmiscCost, RS_WOTool, RS_WODocument, RS_WOPref
+Dim RS_WO, RS_WOassign, RS_Asset, RS_WOtask, RS_WOpart, RS_WOmiscCost, RS_WOTool, RS_WODocument, RS_WOApproval, RS_WOPref, RS_WOImages, RS_WOSignatureImages
 Dim AssetName, IconFile, NoIconFile_Location, NoIconFile_Asset, skipfirstrow, AssetOutput
 Dim LaborTotal, MaterialsTotal, OtherCostsTotal, isCharge, WOStatus
+Dim WO_REPORT_UDF_DISPLAY_1, WO_REPORT_UDF_DISPLAY_2, WO_REPORT_UDF_DISPLAY_3, WO_REPORT_UDF_DISPLAY_4, WO_REPORT_UDF_DISPLAY_5
+Dim WO_REPORT_LABOR_COMMENTS, WO_REPORT_IMAGES_SECTION
+Dim RS_UDFLabel1, RS_UDFLabel2, RS_UDFLabel3, RS_UDFLabel4, RS_UDFLabel5
+
 isCharge = false
 
 'Buffer code begin
@@ -96,6 +100,17 @@ Sub DoOutput()
             If InStr(RS_WO("RepairCenterID"),"R99") > 0 Then
                 isCharge = true
             End If
+
+            'Response.Write "wostate: " & wostate & "<br>"
+            If (NullCheck(RS_WO("Closed")) <> "") Then
+                wostate = "CC"
+            ElseIf (NullCheck(RS_WO("Complete")) <> "") Then
+                wostate = "WOC"
+            Else
+                wostate = "WO"
+            End If
+            'Response.Write "wostate: " & wostate & "<br>"
+
             'Begin Buffer Code: Buffer flush before and during report output loop
             BufferCount = BufferCount + 1
             If BufferCount > 20 Then
@@ -130,7 +145,7 @@ Sub DoOutput()
 					rw "</td>"
 				rw "</tr>"
 			rw "</table>"
-									
+			'Response.Write "wostate: " & wostate & "<br>"					
 			' ====================================================================
 			' INDIVIDUAL WORK ORDER
 			' ====================================================================
@@ -155,7 +170,12 @@ Sub DoOutput()
 				If Not reporthasfields Then
 					Call OutputReportBox()
 				End If
-			
+				'If WO_APPROVALSECTION <> "NONE" Then
+				'  OutputApprovalsBox
+				'End If
+				'If LEFT(WO_REPORT_IMAGES_SECTION,1) = "A" Then
+				'	OutputImagesBox
+				'End If			
 
 						
 			RS_WO.MoveNext
@@ -409,23 +429,150 @@ Sub SetupWOGroupData()
 		Set RS_WOdocument = db.runSQLReturnRS(sql,"")				
 		Call dok_check_afterflush(db,"Report Message","There was a problem building the report. The details of the problem are described below. You can try again but if this message continues to appear, you may want to exit the Maintenance Connection and try again later.")	
 
-		Set RS_WOPref = db.runSPReturnRS("MC_GetWorkOrderPrefs",Array(Array("@LaborPK", adInteger, adParamInput, 4, GetSession("USERPK")),Array("@RepairCenterPK", adInteger, adParamInput, 4, GetSession("RCPK"))),"")
-		Call dok_check_afterflush(db,"Report Message","There was a problem retrieving the Work Order Preferences. The details of the problem are described below. You can try again but if this message continues to appear, you may want to exit the Maintenance Connection and try again later.")	
+		'WO Prefs
+		CSVPreferenceList = _
+		"WO_LABORSECTION" &_
+		",WO_MATERIALSECTION" &_
+		",WO_OTHERCOSTSECTION" &_
+		",WO_LABORSECTION_B" &_
+		",WO_MATERIALSECTION_B" &_
+		",WO_OTHERCOSTSECTION_B" &_
+		",WO_TASKSECTION" &_
+		",WO_TASKSECTION_B" &_
+		",WO_REPORT_UDF_DISPLAY_1" &_
+		",WO_REPORT_UDF_DISPLAY_2" &_
+		",WO_REPORT_UDF_DISPLAY_3" &_
+		".WO_REPORT_UDF_DISPLAY_4" &_
+		",WO_REPORT_UDF_DISPLAY_5" &_
+		",WO_REPORT_LABOR_COMMENTS" &_
+		",WO_REPORT_IMAGES_SECTION"
 
-		If Not RS_WOPref.Eof Then
-			WO_LABORSECTION = RS_WOPref("WO_LABORSECTION")
-			WO_MATERIALSECTION = RS_WOPref("WO_MATERIALSECTION")
-			WO_OTHERCOSTSECTION = RS_WOPref("WO_OTHERCOSTSECTION")
-			WO_DOCUMENTSECTION = RS_WOPref("WO_DOCUMENTSECTION")
-			WO_REPORTSECTION = RS_WOPref("WO_REPORTSECTION")
-			WO_LABORSECTION_B = RS_WOPref("WO_LABORSECTION_B")
-			WO_MATERIALSECTION_B = RS_WOPref("WO_MATERIALSECTION_B")
-			WO_OTHERCOSTSECTION_B = RS_WOPref("WO_OTHERCOSTSECTION_B")
-			WO_TASKSECTION = RS_WOPref("WO_TASKSECTION")
-			WO_TASKSECTION_B = RS_WOPref("WO_TASKSECTION_B")
+		Set RS_WOPref = db.runSPReturnRS("MC_GetMultiplePreferences",Array(Array("@LaborPK", adInteger, adParamInput, 4, GetSession("USERPK")),Array("@RepairCenterPK", adInteger, adParamInput, 4, GetSession("RCPK")),Array("@CSVPreferenceList", adVarWChar, adParamInput, 4000, CSVPreferenceList)),"")
+		Call dok_check_afterflush(db,"Report Message","There was a problem retrieving the Work Order Preferences. The details of the problem are described below. You can try again but if this message continues to appear, you may want to exit the Maintenance Connection and try again later.")
+
+		If db.dok Then
+			Do While Not RS_WOPref.Eof
+				Select Case UCASE(RS_WOPref("PreferenceName"))
+					Case "WO_LABORSECTION"
+						WO_LABORSECTION = RS_WOPref("PreferenceValue")
+					Case "WO_MATERIALSECTION"
+						WO_MATERIALSECTION = RS_WOPref("PreferenceValue")
+					Case "WO_OTHERCOSTSECTION"
+						WO_OTHERCOSTSECTION = RS_WOPref("PreferenceValue")
+					Case "WO_LABORSECTION_B"
+						WO_LABORSECTION_B = RS_WOPref("PreferenceValue")
+					Case "WO_MATERIALSECTION_B"
+						WO_MATERIALSECTION_B = RS_WOPref("PreferenceValue")
+					Case "WO_OTHERCOSTSECTION_B"
+						WO_OTHERCOSTSECTION_B = RS_WOPref("PreferenceValue")
+					Case "WO_TASKSECTION"
+						WO_TASKSECTION = RS_WOPref("PreferenceValue")
+					Case "WO_TASKSECTION_B"
+						WO_TASKSECTION_B = RS_WOPref("PreferenceValue")
+					Case "WO_REPORT_UDF_DISPLAY_1"
+						WO_REPORT_UDF_DISPLAY_1 = RS_WOPref("PreferenceValue")
+					Case "WO_REPORT_UDF_DISPLAY_2"
+						WO_REPORT_UDF_DISPLAY_2 = RS_WOPref("PreferenceValue")
+					Case "WO_REPORT_UDF_DISPLAY_3"
+						WO_REPORT_UDF_DISPLAY_3 = RS_WOPref("PreferenceValue")
+					Case "WO_REPORT_UDF_DISPLAY_4"
+						WO_REPORT_UDF_DISPLAY_4 = RS_WOPref("PreferenceValue")
+					Case "WO_REPORT_UDF_DISPLAY_5"
+						WO_REPORT_UDF_DISPLAY_5 = RS_WOPref("PreferenceValue")
+					Case "WO_REPORT_LABOR_COMMENTS"
+						WO_REPORT_LABOR_COMMENTS = RS_WOPref("PreferenceValue")
+					Case "WO_REPORT_IMAGES_SECTION"
+						WO_REPORT_IMAGES_SECTION = RS_WOPref("PreferenceValue")
+				End Select
+			RS_WOPref.MoveNext
+			Loop
+		End If
+
+		If UCASE(NullCheck(WO_LABORSECTION)) = "YES" Then
+			WO_LABORSECTION = True
+		Else
+			WO_LABORSECTION = False
+		End If
+		If UCASE(NullCheck(WO_MATERIALSECTION)) = "YES" Then
+			WO_MATERIALSECTION = True
+		Else
+			WO_MATERIALSECTION = False
+		End If
+		If UCASE(NullCheck(WO_OTHERCOSTSECTION)) = "YES" Then
+			WO_OTHERCOSTSECTION = True
+		Else
+			WO_OTHERCOSTSECTION = False
+		End If
+		If UCASE(NullCheck(WO_LABORSECTION_B)) = "YES" Then
+			WO_LABORSECTION_B = True
+		Else
+			WO_LABORSECTION_B = False
+		End If
+		If UCASE(NullCheck(WO_MATERIALSECTION_B)) = "YES" Then
+			WO_MATERIALSECTION_B = True
+		Else
+			WO_MATERIALSECTION_B = False
+		End If
+		If UCASE(NullCheck(WO_OTHERCOSTSECTION_B)) = "YES" Then
+			WO_OTHERCOSTSECTION_B = True
+		Else
+			WO_OTHERCOSTSECTION_B = False
+		End If
+		If UCASE(NullCheck(WO_TASKSECTION)) = "YES" Then
+			WO_TASKSECTION = True
+		Else
+			WO_TASKSECTION = False
+		End If
+		If UCASE(NullCheck(WO_TASKSECTION_B)) = "YES" Then
+			WO_TASKSECTION_B = True
+		Else
+			WO_TASKSECTION_B = False
+		End If
+		If UCASE(NullCheck(WO_REPORT_LABOR_COMMENTS)) = "" Then
+			WO_REPORT_LABOR_COMMENTS = "No"
+		End If
+		If UCASE(NullCheck(WO_REPORT_IMAGES_SECTION)) = "" Then
+			WO_REPORT_IMAGES_SECTION = "None"
 		End If
 
 		CloseObj RS_WOPref
+
+		'WO IMAGES
+		sql = _
+		"SELECT " &_
+		"  Photo " &_
+		"  ,WO.WOPK " &_
+		"FROM " &_
+		"  WOPhoto WITH (NOLOCK) " &_
+		"  INNER JOIN WO ON WOPhoto.WOPK = WO.WOPK " &_
+		"WHERE "
+		If Not sql_where = "" Then
+		  sql = sql & "(WO.WOPK in (" & WOsql & ")) "
+		  If WO_REPORT_IMAGES_SECTION = "ACTIVE" Then
+		  	sql = sql &_
+		  	"  AND Active = 1 "
+		  End If
+		Else
+		  If WO_REPORT_IMAGES_SECTION = "ACTIVE" Then
+		  	sql = sql &_
+		  	"  Active = 1 "
+		  End If
+		End If
+		sql = sql &_
+		"ORDER BY " &_
+		"   WO.WOPK " &_
+		"  ,ReportOrder " &_
+		"  ,PhotoDate "
+	
+		'Response.Write "<textarea rows=12 cols=100>" & sql & "</textarea>"
+		'Response.End
+
+		Set RS_WOImages = db.runSQLReturnRS(sql,"")
+		If Trim(Request.QueryString("sqlwhere")) = "" Then
+			Call dok_check_afterflush(db,"Report Message","There was a problem building the report. The details of the problem are described below. You can try again but if this message continues to appear, you may want to exit the Maintenance Connection and try again later.")
+		Else
+			Call dok_check_afterflush_noinfo(db,"Report Message","You have chosen to run a report that is not compatible with the current module criteria. You can either choose a different report, or you can run the selected report from the Maintenance Reporter applicaiton by clicking the Reports button on the toolbar.")
+		End If
 
 	End If
 
@@ -705,8 +852,8 @@ Sub NewOutputOtherCostBlankRow()
 	rw "<tr>"
 		rw "<td class=""data_underline"">&nbsp;</td>"
 		rw "<td class=""data_underline"">&nbsp;</td>"
-		rw "<td class=""data_underline"">&nbsp;</td>"
-		'rw "<td class=""data_underline"">&nbsp;</td>"  --> Removed extra column 10/25/2016 Remi
+		'rw "<td class=""data_underline"">&nbsp;</td>"
+		'rw "<td class=""data_underline"">&nbsp;</td>"
 		rw "<td class=""data_underline"" align=""right"">$0.00</td>"
 	rw "</tr>"
 End Sub
@@ -1151,7 +1298,15 @@ Sub OutputMaintDetails()
                         Call OutputBit(NullCheck(RS_WO("Chargeable")))
 				        rw "Credit"
 					rw "</td>"
-				rw "</tr>"			
+				rw "</tr>"		
+				rw "<tr>"
+					rw "<td class=""labels"" valign=""top"">Project:</td>"
+					rw "<td class=""data"" valign=""top"">" & NullCheck(RS_WO("ProjectName"))
+					If Not NullCheck(RS_WO("ProjectID")) = "" Then
+						rw " (" & NullCheck(RS_WO("ProjectID")) & ")"
+					End If
+					rw "</td>"
+				rw "</tr>"	                	
 				'If Not NullCheck(RS_WO("SupervisorName")) = "" Then					
 				'rw "<tr>"
 				'	rw "<td class=""labels"" valign=""top"">Supervisor:&nbsp;</td>"
@@ -1395,32 +1550,280 @@ Sub OutputWOReport()
 			rw "</td>"					
 		rw "</tr>"
 		'If WO_REPORT_LABORRPT_SHOWSIGNATURE = "Yes" Then
-		rw "<tr style=""padding-top:40px;"">"
+		rw "<tr><td colspan=""4"">&nbsp;</td></tr>"
+        rw "<tr>"
 			rw "<td colspan=""4"" class=""labels"">"
 				rw "<table style=""margin-top:10px;"" width=""100%"" border=""0"" cellspacing=""0"" cellpadding=""0"">"
 				  rw "<tr>"
-		            rw "<td class=""data_underline"" width=""60%"">&nbsp;</td>"
-		            rw "<td width=""2%"">&nbsp;</td>"
-		            rw "<td class=""data_underline"" width=""38%"">&nbsp;</td>"
+                  Call WOSignatureImages()
+
 		            'rw "<td width=""4%"">&nbsp;</td>"
 		            'rw "<td class=""data_underline"" width=""30%"">&nbsp;</td>"
 		            'rw "<td width=""2%"">&nbsp;</td>"
 		            'rw "<td class=""data_underline"" width=""16%"">&nbsp;</td>"
 		          rw "</tr>"
 		          rw "<tr>"
-		            rw "<td valigh=""top"" class=""labels"" align=""center"">Signature / Name</td>"
+		            rw "<td valigh=""top"" class=""labels"" style=""font-size:x-small;"" align=""center"">Signature / Name</td>"
 		            rw "<td valigh=""top"" style=""font-size:xx-small;"" align=""center""></td>"
-		            rw "<td valigh=""top"" class=""labels"" align=""center"">Date</td>"
+		            rw "<td valigh=""top"" class=""labels"" style=""font-size:x-small;"" align=""center"">Date</td>"
 		            'rw "<td valigh=""top"" style=""font-size:xx-small;"" align=""center""></td>"
-		            'rw "<td valigh=""top"" style=""font-size:xx-small;"" align=""center"">Signature / Name</td>"
+		            'rw "<td valigh=""top"" class=""labels"" style=""font-size:x-small;"" align=""center"">Signature / Name</td>"
 		            'rw "<td valigh=""top"" style=""font-size:xx-small;"" align=""center""></td>"
-		            'rw "<td valigh=""top"" style=""font-size:xx-small;"" align=""center"">Date</td>"
+		            'rw "<td valigh=""top"" class=""labels"" style=""font-size:x-small;"" align=""center"">Date</td>"
 		          rw "</tr>"
 		        rw "</table>"
 		      rw "</td>"
 		    rw "</tr>"
 		    'End If
 	rw "</table>"
+End Sub
+
+Sub WOSignatureImages()
+	Dim SignatureImage, url
+    'TOP 1 for now, but coded to allow for more in the future
+	'res: 300 x 100
+	sql = _
+	"SELECT TOP 1 " &_
+	"  Location " &_
+	"  ,Document.RowVersionDate " &_
+	"  ,WO.WOPK " &_
+	"FROM " &_
+	"  Document WITH (NOLOCK) " &_
+	"  INNER JOIN WODocument ON Document.DocumentPK = WODocument.DocumentPK " &_
+	"  INNER JOIN WO ON WODocument.WOPK = WO.WOPK " &_
+	"WHERE " &_
+	"  WO.WOPK = " & wopk & " " &_
+	"  AND DocumentName LIKE 'signature_%' " &_
+	"  AND LocationType = 'HTTPLIBRARY' " &_
+	"ORDER BY " &_
+	"   WO.WOPK " &_
+	"  ,Document.RowVersionDate "
+	
+	'Response.Write "<textarea rows=12 cols=100>" & sql & "</textarea>"
+	'Response.End
+	
+	Set RS_WOSignatureImages = db.runSQLReturnRS(sql,"")
+
+	If Not RS_WOSignatureImages.EOF Then
+		If NullCheck(RS_WOSignatureImages("WOPK")) = NullCheck(WOPK) Then
+			' CHANGE THE url COMMENT AFTER CHRIS FIXES Document.Location
+			url = GetSession("webHTTP") & Replace(GetWebServer() & Application("ImageServer") & GetSession("DB") & "/fileStore/" & NullCheck(RS_WOSignatureImages("Location")),"//","/")
+			SignatureImage = "<img align=""top"" style=""width: 150px; height: 50px;"" src='" & url & "'>"
+		End If
+	End If
+
+	If NullCheck(SignatureImage) <> "" Then
+		rw "<td class=""data_underline"" width=""30%"" align=""center""><div style=""position: relative; bottom: -10px;"">" & SignatureImage & "</div></td>"
+		rw "<td width=""2%"">&nbsp;</td>"
+		rw "<td class=""data_underline"" width=""16%"" align=""center"" valign=""bottom"">" & DateNullCheck(RS_WOSignatureImages("RowVersionDate")) & "&nbsp;</td>"
+	Else
+		rw "<td class=""data_underline"" width=""30%"" align=""center"" style=""padding-top:30px;"">&nbsp;</td>"
+		rw "<td width=""2%"" style=""padding-top:30px;"">&nbsp;</td>"
+		rw "<td class=""data_underline"" width=""16%"" align=""center"" style=""padding-top:30px;"">&nbsp;</td>"
+	End If
+
+End Sub
+
+Sub OutputApprovalsBox()
+  If WO_APPROVALSECTION <> "NONE" Then
+	  ' Get Work Order Approvals
+    sql = "SELECT a.*, Labor.Initials, Labor.LaborName FROM dbo.MCUDF_GetWOApprovals("&WOPK&") a INNER JOIN Labor ON Labor.LaborPK = a.LAPK"
+    'Response.Write "<textarea rows=6 cols=100>" & sql & "</textarea>"
+    'Response.End
+	  Set RS_WOApproval = db.runSQLReturnRS(sql,"")
+
+	  Dim BlankRowNum
+
+	  rw "<fieldset style=""padding-top:14px"">"
+		  rw "<legend style=""font-size:9pt;"" class=""legendHeader"">Approvals</legend>"
+		  rw "<table style=""margin-top:5px;"" border=""0"" cellspacing=""3"" cellpadding=""0"" width=""98%"" align=""center"">"
+
+	    If WO_APPROVALSECTION = "STATIC" Then
+            Call OutputStaticApporvalHeader()
+            Dim cnt
+            cnt=0
+
+            Do While cnt < ApprovalCount
+			    Call OutputBlankRow(1,2)
+			    cnt = cnt+1
+			Loop
+	    Else 'If WO_APPROVALSECTION = "Enhanced" Then
+            Call OutputApprovalHeader()
+			' Approval data
+			If Not RS_WOApproval.EOF Then
+				Do While NullCheck(RS_WOApproval("WOPK")) = NullCheck(WOPK)
+					Call OutputApproval(RS_WOApproval)
+					RS_WOApproval.MoveNext
+				Loop
+			Else
+	            Call OutputBlankRow(1,3)
+			End If
+	    End If
+
+		  rw "</table>"
+		  rw "<br>"
+	  rw "</fieldset>"
+  End If
+End Sub
+
+Sub OutputApprovalHeader
+	rw "<tr>"
+		rw "<td class=""labels"" width=""330"">Name</td>"
+		rw "<td class=""labels"" width=""190"">Approval Date</td>"
+		rw "<td class=""labels"">Description</td>"
+	rw "</tr>"
+End Sub
+
+Sub OutputStaticApporvalHeader()
+	rw "<tr>"
+		rw "<td class=""labels"">Signature / Name</td>"
+		rw "<td class=""labels"" width=""200"">Approval Date</td>"
+	rw "</tr>"
+End Sub
+
+Sub OutputApproval(rs)
+  rw "<tr>"
+	  rw "<td valign=""bottom"" class=""data_underline"" align=""left"">" & NullCheck(rs("LaborName")) & "&nbsp;</td>"
+	  rw "<td valign=""top"" class=""data_underline"">" & DateTimeNullCheckAT(rs("StatusDate")) & "&nbsp;</td>"
+	  rw "<td valign=""top"" class=""data_underline"">" & NullCheck(rs("WOStatus")) & "&nbsp;</td>"
+  rw "</tr>"
+End Sub
+
+Sub OutputImagesBox()
+		
+	Dim url, imagepath
+
+	If Not RS_WOImages.EOF Then 
+		rw "<fieldset style=""padding-top:14px"">"
+			rw "<legend class=""legendHeader"">Images</legend>"
+			rw "<table style=""margin-top:5px;"" border=""0"" cellspacing=""3"" cellpadding=""0"" width=""98%"" align=""center"">"
+				rw "<tr>"
+					rw "<td align=""center"" width=""100%"">"
+						rw "<div  width=""100%"">"
+												
+						Do While Not RS_WOImages.EOF
+							If NullCheck(RS_WOImages("WOPK")) = NullCheck(WOPK) Then
+								url = GetSession("webHTTP") & Replace(GetWebServer() & Application("ImageServer") & GetSession("DB") & "/WO/" & NullCheck(WOPK) & "/" & NullCheck(RS_WOImages("photo")),"//","/")
+								imagepath = FixMapPath(Server.MapPath(Application("imageserver"))) & "\" & GetSession("DB") & "\WO\" & NullCheck(WOPK) & "\" & NullCheck(RS_WOImages("photo"))
+							'rw imagepath
+							
+							image.ReadFile imagepath
+
+							x = Image.Width
+							y = Image.Height
+							
+							If (x > 350) OR (y > 350) Then
+								If x > y Then
+									ScaleFactor = (350 / x)
+								    x = x * ScaleFactor
+								    y = y * ScaleFactor
+								Else
+									ScaleFactor = (350 / y)
+								    x = x * ScaleFactor
+								    y = y * ScaleFactor
+							    End If
+							End If
+
+							rw "<img align=""top"" style=""width=" & x & "; height:" & y & "; margin:5px 5px 5px 5px;"" src='" & url & "'>"
+							End If
+							RS_WOImages.MoveNext
+						Loop
+						rw "</div>"
+					rw "</td>"
+				rw "</tr>"
+			rw "</table><br>"
+		rw "</fieldset>"
+	End If 
+End Sub
+
+Sub OutputLogoOrName()
+    Dim sql, rs, GotLogo
+    GotLogo = False
+
+	If (Not SDCode = "") Then
+		Response.Write "<div ondblclick=""toggleIFRAME();"">"
+	End If
+
+
+    If WOStatus = "CLOSED" Then
+        GotLogo = True
+        'Response.Write "<div style=""font-family:Arial;font-size:10.5px;color:#333333;font-weight:bold;"">REMIT TO: CKE RESTAURANTS HOLDINGS INC. PO BOX 843832, LOS ANGELES, CA 90084-3832</div>"
+        rw "<img border=""0"" src=""" & GetSession("webHTTP") & GetWebServer() & "/mc_imageserver/entcke/AS/1/final_logo4_20151223085043.jpg""><br clear=""all"">"
+    'End If
+    'http://www.maintenanceconnection.com/mc_imageserver/entcke/AS/1/final_logo4_20151223085043.jpg
+
+
+	ElseIf Not NullCheck(RPT_REPLACELOGO) = "" Then
+		If InStr(UCase(RPT_REPLACELOGO),"HTTP://") > 0 or InStr(UCase(RPT_REPLACELOGO),"HTTPS://") > 0 Then
+			rw "<img border=""0"" src=""" & RPT_REPLACELOGO & """><br clear=""all"">"
+            GotLogo = True
+
+			Else
+                    SELECT CASE UCase(RPT_REPLACELOGO)
+                        CASE "REPAIR CENTER PHOTO" 
+                            sql = "SELECT photo FROM RepairCenter WITH (NOLOCK) WHERE RepairCenterPK = " & GetSession("RCPK")
+                            Set rs = db.RunSQLReturnRS(sql,"")
+                            If Not NullCheck(rs("photo")) = "" Then
+                                rw "<img border=""0"" src=""" & Replace(getclientimage(rs("photo")),"_main.",".") & """><br clear=""all"">"
+                                GotLogo = True
+                            End If
+                        CASE "LABOR LOCATION PHOTO"
+                            sql = "SELECT asset.assetname,asset.photo FROM Asset WITH (NOLOCK) INNER JOIN Labor WITH (NOLOCK) ON Labor.WorkLocationPK = Asset.AssetPK WHERE LaborPK = " & GetSession("UserPK")
+                            Set rs = db.RunSQLReturnRS(sql,"")
+                            If Not NullCheck(rs("photo")) = "" Then
+                                rw "<img border=""0"" src=""" & Replace(getclientimage(rs("photo")),"_main.",".") & """><br clear=""all"">"
+                                GotLogo = True
+                            ElseIf Not NullCheck(rs("assetname")) = "" Then
+			                    rw "<font face=""Arial"" size=""4"" color=""navy"">" & NullCheck(rs("assetname")) & "</font><br>"
+                                GotLogo = True
+                            End If
+                        CASE Else
+				                rw "<img border=""0"" src=""" & GetSession("webHTTP") & GetWebServer() & showclientimg(RPT_REPLACELOGO) & """><br clear=""all"">"
+                            GotLogo = True
+                    END SELECT
+
+                If Not GotLogo Then
+	                If Not GetSession("el") = "" Then
+		                rw "<img border=""0"" src=""" & GetSession("webHTTP") & GetWebServer() & showclientimg(GetSession("el")) & """><br clear=""all"">"
+	                Else
+		                If Not GetSession("en") = "" Then
+			                rw "<font face=""Arial"" size=""4"" color=""navy"">" & GetSession("en") & "</font><br>"
+		                Else
+			                rw "<img border=""0"" src=""" & ImagesFullPath & "images/mc_logonewsmall2.gif""><br clear=""all"">"
+		                End If
+	                End If
+               End If
+            
+			
+			If (Not SDCode = "") Then
+				Response.Write "</div>"
+			End If
+
+
+
+			Exit Sub
+		End If
+	End If
+
+
+    If GotLogo = False Then
+	    If Not GetSession("el") = "" Then
+		    rw "<img border=""0"" src=""" & GetSession("webHTTP") & GetWebServer() & showclientimg(GetSession("el")) & """><br clear=""all"">"
+	    Else
+		    If Not GetSession("en") = "" Then
+			    rw "<font face=""Arial"" size=""4"" color=""navy"">" & GetSession("en") & "</font><br>"
+		    Else
+			    rw "<img border=""0"" src=""" & ImagesFullPath & "images/mc_logonewsmall2.gif""><br clear=""all"">"
+		    End If
+	    End If
+    End If
+
+	If (Not SDCode = "") Then
+		Response.Write "</div>"
+	End If
+
+
+
 End Sub
 
 Sub OutputHeader()
