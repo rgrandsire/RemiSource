@@ -97,6 +97,7 @@ Sub DoOutput()
                 WOStatus = "OPEN"
             End If
             'Response.write "WOStatus: " & WOStatus & "<br>"
+			'Response.write  wostate & "<br>"
             If InStr(RS_WO("RepairCenterID"),"R99") > 0 Then
                 isCharge = true
             End If
@@ -166,7 +167,8 @@ Sub DoOutput()
 				Call NewOutputMaterialsToolsBox(RS_WOPart,RS_WOTool,False)
 				Call NewOutputOtherCostsBox(RS_WOMiscCost,False)
 				Call NewOutputGrandTotalBox(False)
-				Call OutputDocumentsBoxCustom(RS_WODocument,False)			
+				Call OutputDocumentsBoxCustom(RS_WODocument,False)
+                			
 				If Not reporthasfields Then
 					Call OutputReportBox()
 				End If
@@ -176,7 +178,7 @@ Sub DoOutput()
 				'If LEFT(WO_REPORT_IMAGES_SECTION,1) = "A" Then
 				'	OutputImagesBox
 				'End If			
-
+        Call OutputDocumentText (RS_WODocument,False, "WO")
 						
 			RS_WO.MoveNext
 			
@@ -194,12 +196,14 @@ Sub DoOutput()
 
 	Call OutputSQL()
 	Call OutputFormHelper()	
-	
-	If wostate = "CC" Then
-		Call DoMCDivs()
-		Call DoIFrame
-	End If
-
+	If SubReport or FromAgent or (Trim(UCase(Request("EmailReport"))) = "Y") or (Not Request.QueryString("ExportReportOutputType") = "") Then
+	'No script
+	Else 
+		IF wostate = "CC" Then
+			Call DoMCDivs()
+			Call DoIFrame
+		End If
+	End IF
 	Call OutputFooter()
 	Call EndFile()
 
@@ -217,6 +221,8 @@ End Sub
 Sub SetupWOGroupData()
 
 	Dim RecordType
+	
+	
 	
 	If errormessage = "" Then
 		' Set RecordType	
@@ -1399,6 +1405,20 @@ Sub OutputMaintDetails()
 	rw "</table>"
 End Sub
 
+'Sub OutputReportBox()
+
+'	If Not WO_REPORTSECTION and Not wostate = "WOC" Then
+'		Exit Sub
+'	End If
+
+'	rw "<fieldset style=""padding-top:10px; margin-bottom:7px;"">"
+'		rw "<legend class=""legendHeader"">Labor Report</legend>"
+'		Call OutputWOReport(RS_WOApproval)
+'		rw "<br>"
+'	rw "</fieldset>"
+
+'End Sub
+
 Sub OutputWOReport()
 
 	Dim compdate,closestate
@@ -1417,15 +1437,15 @@ Sub OutputWOReport()
 					rw "<tr>"
 						rw "<td nowrap class=""labels"" valign=""bottom"">Completed:&nbsp;</td>"
 						Select Case wostate
-						Case "WO"						
-						rw "<td class=""data_underline"" width=""100%"">&nbsp;</td>"
-						'Case "CC"
+						'Case "WO"						
+						'rw "<td class=""data_underline"" width=""100%"">&nbsp;</td>"
+						Case "WOCCS", "WO"
 						
 						'rw "<td class=""data_underline"" width=""100%"">"
 						'	rw "<input class=""normal"" mcType=""D"" maxlength=""10"" mcRequired=""N"" type=""text"" name=""WO_Completed_" & RS_WO("WOPK") & """ value=""" & compdate & """ size=""8"" onChange=""top.fieldvalid(this);"" onfocus=""top.fieldfocus(this);"" onblur=""top.fieldblur(this);"" onkeypress=""return top.checkKey(this,self);""><img src=""../../images/lookupiconxp3.gif"" border=""0"" onclick=""top.showpopup('calendar','Calendar',172,160,this,WO_Completed_" & RS_WO("WOPK") & ",self)"" align=""absbottom"" class=""lookupicon"" WIDTH=""16"" HEIGHT=""20"">"
-						'	rw "<span style=""display:none;"" id=""WO_Completed_" & RS_WO("WOPK") & "Err"" class=""mc_lookupdesc""></span>"
+							rw "<td class=""data_underline"" width=""100%"">" & NullCheckNBSP(DateTimeNullCheckAT(RS_WO("Complete"))) & "</td>"	
 						'rw "</td>"												
-						Case "WOC", "CC"
+						Case "WOC"
 						rw "<td class=""data_underline"" width=""100%"">" & NullCheckNBSP(DateTimeNullCheckAT(RS_WO("Complete"))) & "</td>"						
 						End Select						
 					rw "</tr>"
@@ -1489,19 +1509,18 @@ Sub OutputWOReport()
 		rw "<tr style=""margin-bottom:20px;"">"
 			rw "<td class=""labels"">"
 				rw "<table style=""margin-top:10px;"" width=""100%"" border=""0"" cellspacing=""0"" cellpadding=""0"">"
-					'If wostate = "CC" Then
-					'	rw "<tr>"
-					'	rw "<td colspan=""3"" width=""100%"" align=""right"">"
-					'	rw "<img border=""0"" src=""../../images/button_addarrow.gif"" onclick=""top.showpopup('actions','Actions',266,100,this,WO_LaborReport_" & RS_WO("WOPK") & ",self)"" WIDTH=""80"" HEIGHT=""15"">"
-					'	rw "</td>"
-					'	rw "</tr>"
-					'End If
+					If wostate = "CC" Then
+						rw "<tr>"
+						rw "<td colspan=""3"" width=""100%"" align=""right"">"
+						'rw "<img border=""0"" src=""../../images/button_addarrow.gif"" onclick=""top.showpopup('actions','Actions',266,100,this,WO_LaborReport_" & RS_WO("WOPK") & ",self)"" WIDTH=""80"" HEIGHT=""15"">"
+						rw "</td>"
+						rw "</tr>"
+					End If
 					rw "<tr>"
 					rw "<td valign=""top"" style=""padding-left:3px;"" style=""width:10%;"" nowrap class=""labels"">"
 						rw "Report:&nbsp;&nbsp;"
 					rw "</td>"
-                    Select Case wostate
-                        Case "WO"
+                    if WOStatus = "OPEN" Then
                         rw "<td style=""width:100%"">"
                             rw "<table style=""width:100%"">"
 		                        rw "<tr class=""blank_row"">"
@@ -1512,9 +1531,9 @@ Sub OutputWOReport()
 		                        rw "</tr>"
                             rw "</table>"
                         rw "</td>"
-                        Case "CC","WOC"
+                    Else
                     	rw "<td class=""data_underline"" width=""100%"">" & Replace(NullCheckNBSP(RS_WO("LaborReport")),"%0D%0A","<br>") & "</td>"						
-                    End Select
+                    End If
 					'Select Case wostate
 					'Case "WO"	
 					  'If WO_REPORT_LABORRPT_SHOWBLANKLINES > 0 Then
@@ -2193,6 +2212,7 @@ Sub OutputWOHeaderRight(htype)
         Else
             rw "INVOICE"
         End If
+		'Response.Write "wostate: " & wostate & "<br>"
         rw "</div>"
 		rw "<div style=""font-family:Arial;font-size:16px;color:#333333;font-weight:bold;margin-bottom:4px;"">" & _
 		   NullCheck(RS_WO("WOID")) & _
@@ -2315,9 +2335,9 @@ End Sub
 Sub OutputDocumentsBoxCustom(rs,nowocheck)   'Moved function from Core common page to this report added WOCCS check for third tab
 		
 	Dim DocCounter
-	If NOT wostate = "WO" Then    	
-		Exit Sub					
-	End If							
+	'If not (wostate = "WO" or wostate = "WOCCS") Then    	
+	'	Exit Sub					
+	'End If							
 
 	If Not WO_DOCUMENTSECTION Then
 		Exit Sub
@@ -2328,8 +2348,10 @@ Sub OutputDocumentsBoxCustom(rs,nowocheck)   'Moved function from Core common pa
 		rw "<fieldset style=""padding-top:14px"">"
 			If nowocheck Then
 				'rw "<legend class=""legendHeader"">Documents (for all Work Orders in Group " & NullCheck(WOGroupPK) & ")</legend>"
-				rw "<legend class=""legendHeader"">Documents(Summary)</legend>"
+				rw "<legend class=""legendHeader"">Documents(Summary) </legend>"
+				'rw "<legend class=""legendHeader"">Documents(Summary) " & wostate & " </legend>"
 			Else
+				'rw "<legend class=""legendHeader"">Documents " & wostate & " </legend>"
 				rw "<legend class=""legendHeader"">Documents</legend>"
 			End If
 			rw "<table style=""margin-top:5px;"" border=""0"" cellspacing=""3"" cellpadding=""0"" width=""98%"" align=""center"">"
@@ -2354,5 +2376,5 @@ Sub OutputDocumentsBoxCustom(rs,nowocheck)   'Moved function from Core common pa
 		End If 
 	End If 
 End Sub
-					
+							
 %>
