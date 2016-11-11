@@ -43,8 +43,8 @@ Call CloseDown()
 
 Sub DoOutput()
 
-    Dim LaborRS, PartRS, ToolRS, OtherCostRS, DocumentRS, Field, IsGroup
-    
+	Dim LaborRS, PartRS, ToolRS, OtherCostRS, DocumentRS, Field, IsGroup
+	
 	Call OutputHeader()
 	Call OutputStandardBodyTag()		
 	Call OutputEmailMessage()
@@ -61,64 +61,64 @@ Sub DoOutput()
 			Response.Write("<form id=""mcform"" name=""mcform"" method=""post"">")			
 		End If
 
-        If SubReport or FromAgent or (Trim(UCase(Request("EmailReport"))) = "Y") or (Not Request.QueryString("ExportReportOutputType") = "") Then
-    	' ----- No Script -----
-        Else
-        'BEGIN Buffer code
-        Response.Write "<script type='text/javascript'> "
-        Response.Write "function ShowHideLoading(inShow){ "
-        Response.Write "if (inShow=='1'){try{document.getElementById('loadingArea').style.display='';} catch(e){}} "
-        Response.Write "else{try{document.getElementById('loadingArea').style.display='none';} catch(e){}} "
-        Response.Write "} "
-        Response.Write "</script> "
-        'Div tag above Header code
-        Response.Write "<div id='loadingArea' name='loadingArea' style='position:absolute; width:100%; height:100%; overflow:hidden; background-color:#ffffff; display:none; z-index:1000;'><div style='text-align:center;position:relative; top:25%;'><img src='logo.gif' alt='' title='' style='border:none;' /><br /><br /><br /><img src='progress.gif' alt='' title='' style='border:none;' /></div></div> "
-        'End buffer
-        End If
-        		
+		If SubReport or FromAgent or (Trim(UCase(Request("EmailReport"))) = "Y") or (Not Request.QueryString("ExportReportOutputType") = "") Then
+		' ----- No Script -----
+		Else
+		'BEGIN Buffer code
+		Response.Write "<script type='text/javascript'> "
+		Response.Write "function ShowHideLoading(inShow){ "
+		Response.Write "if (inShow=='1'){try{document.getElementById('loadingArea').style.display='';} catch(e){}} "
+		Response.Write "else{try{document.getElementById('loadingArea').style.display='none';} catch(e){}} "
+		Response.Write "} "
+		Response.Write "</script> "
+		'Div tag above Header code
+		Response.Write "<div id='loadingArea' name='loadingArea' style='position:absolute; width:100%; height:100%; overflow:hidden; background-color:#ffffff; display:none; z-index:1000;'><div style='text-align:center;position:relative; top:25%;'><img src='logo.gif' alt='' title='' style='border:none;' /><br /><br /><br /><img src='progress.gif' alt='' title='' style='border:none;' /></div></div> "
+		'End buffer
+		End If
+				
 		If Not RS_WO.EOF Then
 
-            'Begin Buffer Code: 
-            Response.Flush
-            BufferCount = 0
-            If SubReport or FromAgent or (Trim(UCase(Request("EmailReport"))) = "Y") or (Not Request.QueryString("ExportReportOutputType") = "") Then
-    	    ' ----- No Script -----
-            Else
-            Response.Write "<script type='text/javascript'>try{ShowHideLoading('1');} catch(e){} </script> "
-            End If
-            'End buffer
+			'Begin Buffer Code: 
+			Response.Flush
+			BufferCount = 0
+			If SubReport or FromAgent or (Trim(UCase(Request("EmailReport"))) = "Y") or (Not Request.QueryString("ExportReportOutputType") = "") Then
+			' ----- No Script -----
+			Else
+			Response.Write "<script type='text/javascript'>try{ShowHideLoading('1');} catch(e){} </script> "
+			End If
+			'End buffer
 
 		'loop through all WO
 		Do While Not RS_WO.EOF
-		    isCharge = false
-            If ( (Not RS_WO("IsOpen")) Or (NullCheck(RS_WO("Canceled")) <> "") OR (NullCheck(RS_WO("Denied")) <> "") ) Then
-                WOStatus = "CLOSED"
-            Else
-                WOStatus = "OPEN"
-            End If
-            'Response.write "WOStatus: " & WOStatus & "<br>"
+			isCharge = false
+			If ( (Not RS_WO("IsOpen")) Or (NullCheck(RS_WO("Canceled")) <> "") OR (NullCheck(RS_WO("Denied")) <> "") ) Then
+				WOStatus = "CLOSED"
+			Else
+				WOStatus = "OPEN"
+			End If
+			'Response.write "WOStatus: " & WOStatus & "<br>"
 			'Response.write  wostate & "<br>"
-            If InStr(RS_WO("RepairCenterID"),"R99") > 0 Then
-                isCharge = true
-            End If
+			If InStr(RS_WO("RepairCenterID"),"R99") > 0 Then
+				isCharge = true
+			End If
 
-            'Response.Write "wostate: " & wostate & "<br>"
-            If (NullCheck(RS_WO("Closed")) <> "") Then
-                wostate = "CC"
-            ElseIf (NullCheck(RS_WO("Complete")) <> "") Then
-                wostate = "WOC"
-            Else
-                wostate = "WO"
-            End If
-            'Response.Write "wostate: " & wostate & "<br>"
+			'Response.Write "wostate: " & wostate & "<br>"
+			If (NullCheck(RS_WO("Closed")) <> "") Then
+				wostate = "CC"
+			ElseIf (NullCheck(RS_WO("Complete")) <> "") Then
+				wostate = "WOC"
+			Else
+				wostate = "WO"
+			End If
+			'Response.Write "wostate: " & wostate & "<br>"
 
-            'Begin Buffer Code: Buffer flush before and during report output loop
-            BufferCount = BufferCount + 1
-            If BufferCount > 20 Then
-                BufferCount = 0
-                Response.Flush
-            End If
-            'End buffer
+			'Begin Buffer Code: Buffer flush before and during report output loop
+			BufferCount = BufferCount + 1
+			If BufferCount > 20 Then
+				BufferCount = 0
+				Response.Flush
+			End If
+			'End buffer
 
 			'set work order PK
 			WOPK = RS_WO("WOPK")
@@ -130,12 +130,12 @@ Sub DoOutput()
 						Call OutputLogoOrName()
 					rw "</td>"
 					rw "<td class=""no-print"" align=""center"" valign=""bottom""><nobr><span style=""font-family:Arial;font-size:20px;color:#333333;font-weight:bold"">"
-                    If isCharge Then
-                        rw "Charge Statement"
-                    Else
-                        rw "Cost Statement"
-                    End If
-                    rw "</span></nobr><br></td>"					
+					If isCharge Then
+						rw "Charge Statement"
+					Else
+						rw "Cost Statement"
+					End If
+					rw "</span></nobr><br></td>"					
 					rw "<td valign=""top"" align=""right"">"
 						If NullCheck(RS_WO("WOGroupPK")) = "" or _
 						   NullCheck(RS_WO("WOGroupPK")) = "-1" Then
@@ -168,7 +168,7 @@ Sub DoOutput()
 				Call NewOutputOtherCostsBox(RS_WOMiscCost,False)
 				Call NewOutputGrandTotalBox(False)
 				Call OutputDocumentsBoxCustom(RS_WODocument,False)
-                			
+							
 				If Not reporthasfields Then
 					Call OutputReportBox()
 				End If
@@ -178,7 +178,7 @@ Sub DoOutput()
 				'If LEFT(WO_REPORT_IMAGES_SECTION,1) = "A" Then
 				'	OutputImagesBox
 				'End If			
-        Call OutputDocumentText (RS_WODocument,False, "WO")
+		Call OutputDocumentText (RS_WODocument,False, "WO")
 						
 			RS_WO.MoveNext
 			
@@ -226,10 +226,10 @@ Sub SetupWOGroupData()
 	
 	If errormessage = "" Then
 		' Set RecordType	
-        'If WOStatus = "OPEN" Then
-        '    RecordType = "1"
-        'Else
-            RecordType = "2"		
+		'If WOStatus = "OPEN" Then
+		'    RecordType = "1"
+		'Else
+			RecordType = "2"		
 		'End If
 
 		If InStr(UCase(sql_where),"LEFT OUTER JOIN ") > 0 or InStr(UCase(sql_where),"INNER JOIN ") > 0 Then
@@ -257,7 +257,7 @@ Sub SetupWOGroupData()
 		End If
 
 
-        ' GET ACTUAL LABOR
+		' GET ACTUAL LABOR
 		sql = "SELECT   WO.ChargeLaborActual, WO.CostLaborActual, WOlabor.PK, WOlabor.WOPK, WOlabor.LaborPK, lt.moduleid, WOlabor.LaborID, WOlabor.LaborName, WOlabor.EstimatedHours, WOlabor.RegularHours, WOlabor.OvertimeHours, WOlabor.OtherHours, WOlabor.WorkDate, WOlabor.TimeIn, " & _
 		"			  WOlabor.TimeOut, WOlabor.AccountID, WOlabor.AccountName, WOlabor.CategoryID, WOlabor.CategoryName, WOlabor.TotalCost, " & _ 
 		"			  WOlabor.TotalCharge, WOlabor.CostRegular, WOlabor.CostOvertime, WOlabor.CostOther, WOlabor.ChargeRate, WOlabor.ChargePercentage, WOlabor.RowVersionDate, Labor.Photo, wolabor.comments " & _
@@ -277,7 +277,7 @@ Sub SetupWOGroupData()
 		' Get Work Order Asset Heirarchy
 		sql = "SELECT WO.WOPK, Asset.Icon, Asset.AssetPK, Asset.AssetID, Asset.AssetName, Asset.IsLocation, Asset.IsUp " +_
 			  "FROM AssetAncestor WITH (NOLOCK) INNER JOIN " +_
-	          "Asset WITH (NOLOCK) ON AssetAncestor.AncestorPK = Asset.AssetPK INNER JOIN " +_
+			  "Asset WITH (NOLOCK) ON AssetAncestor.AncestorPK = Asset.AssetPK INNER JOIN " +_
 			  "WO WITH (NOLOCK) ON AssetAncestor.AssetPK = WO.AssetPK " +_
 			  "WHERE     (AssetAncestor.System = N'MC') "
 			  If Not sql_where = "" Then
@@ -336,7 +336,7 @@ Sub SetupWOGroupData()
 		' Get Work Order Estimated Tools
 		sql = "SELECT WOtool.WOPK, WOtool.ToolID, WOtool.ToolName, WOtool.LocationID, WOtool.LocationName, WOtool.QuantityEstimated " +_
 			  "FROM WOtool WITH (NOLOCK) LEFT OUTER JOIN " +_
-	          "Tool WITH (NOLOCK) ON WOtool.ToolPK = Tool.ToolPK INNER JOIN WO WITH (NOLOCK) ON WO.WOPK = WOtool.WOPK " +_
+			  "Tool WITH (NOLOCK) ON WOtool.ToolPK = Tool.ToolPK INNER JOIN WO WITH (NOLOCK) ON WO.WOPK = WOtool.WOPK " +_
 			  "WHERE (WOtool.RecordType = " & RecordType & ") "
 			  If Not sql_where = "" Then
 				sql = sql & "AND (WOtool.WOPK in (" & WOsql & ")) "
@@ -553,13 +553,13 @@ Sub SetupWOGroupData()
 		If Not sql_where = "" Then
 		  sql = sql & "(WO.WOPK in (" & WOsql & ")) "
 		  If WO_REPORT_IMAGES_SECTION = "ACTIVE" Then
-		  	sql = sql &_
-		  	"  AND Active = 1 "
+			sql = sql &_
+			"  AND Active = 1 "
 		  End If
 		Else
 		  If WO_REPORT_IMAGES_SECTION = "ACTIVE" Then
-		  	sql = sql &_
-		  	"  Active = 1 "
+			sql = sql &_
+			"  Active = 1 "
 		  End If
 		End If
 		sql = sql &_
@@ -602,11 +602,11 @@ Sub NewOutputOtherCosts(RS_WOmiscCost)
 		rw "<td class=""data_underline"">" & NullCheckNBSP(RS_WOmiscCost("MiscCostDesc")) & "</td>"
 		'rw "<td class=""data_underline"">" & NullCheckNBSP(RS_WOmiscCost("InvoiceNumber")) & "</td>"
 		'rw "<td class=""data_underline"">" & NullCheckNBSP(DateNullCheck(RS_WOmiscCost("MiscCostDate"))) & "</td>"
-        If isCharge Then
-		    rw "<td class=""data_underline"" align=""right"">" & FormatCurrency(NullCheck(RS_WOmiscCost("TotalCharge"))) & "</td>"
-        Else
-		    rw "<td class=""data_underline"" align=""right"">" & FormatCurrency(NullCheck(RS_WOmiscCost("ActualCost"))) & "</td>"
-        End If
+		If isCharge Then
+			rw "<td class=""data_underline"" align=""right"">" & FormatCurrency(NullCheck(RS_WOmiscCost("TotalCharge"))) & "</td>"
+		Else
+			rw "<td class=""data_underline"" align=""right"">" & FormatCurrency(NullCheck(RS_WOmiscCost("ActualCost"))) & "</td>"
+		End If
 	rw "</tr>"
 End Sub
 
@@ -637,11 +637,11 @@ Sub NewOutputOtherCostsBox(rs,nowocheck)
 			If Not rs.eof and (NullCheck(rs("WOPK")) = NullCheck(WOPK) or nowocheck) Then
 				Do While Not rs.eof and (NullCheck(rs("WOPK")) = NullCheck(WOPK) or nowocheck)
 					Call NewOutputOtherCosts(rs)
-                    If ischarge Then
-					    GrandTotal = GrandTotal + rs("TotalCharge")
-                    Else
-					    GrandTotal = GrandTotal + rs("ActualCost")
-                    End If
+					If ischarge Then
+						GrandTotal = GrandTotal + rs("TotalCharge")
+					Else
+						GrandTotal = GrandTotal + rs("ActualCost")
+					End If
 					rs.MoveNext
 				Loop
 			Else
@@ -688,10 +688,10 @@ Sub NewOutputLaborBox(rs,nowocheck)
 				Do While Not rs.eof and (NullCheck(rs("WOPK")) = NullCheck(WOPK) or nowocheck)
 					Call NewOutputLabor(LaborFormat,rs)
 					If ischarge Then
-                        GrandTotal = GrandTotal + rs("TotalCharge")
-                    Else
-                        GrandTotal = GrandTotal + rs("TotalCost")
-                    End If
+						GrandTotal = GrandTotal + rs("TotalCharge")
+					Else
+						GrandTotal = GrandTotal + rs("TotalCost")
+					End If
 					rs.MoveNext
 				Loop
 			Else
@@ -724,12 +724,12 @@ Sub NewOutputMaterialsToolsBox(matRS,tlsRS,nowocheck)
 				Do While Not matRS.eof and (NullCheck(matRS("WOPK")) = NullCheck(WOPK) or nowocheck)
 					Call NewOutputMaterials(matRS)
 					If isCharge Then
-                    ChargeTotal = ChargeTotal + matRS("TotalCharge")
+					ChargeTotal = ChargeTotal + matRS("TotalCharge")
 					OtherCostTotal = OtherCostTotal + matRS("OtherCost")
-                    Else
-                    ChargeTotal = ChargeTotal + matRS("TotalCost")
+					Else
+					ChargeTotal = ChargeTotal + matRS("TotalCost")
 					OtherCostTotal = OtherCostTotal + matRS("OtherCost")
-                    End If
+					End If
 					matRS.MoveNext
 				Loop
 			else
@@ -806,11 +806,11 @@ Sub NewOutputMaterials(RS_WOPart)
 		rw "<td class=""data_underline"">" & NullCheck(RS_WOPart("LocationID")) & "&nbsp;</td>"
 		rw "<td class=""data_underline"" align=""center"">" & NullCheck(RS_WOPart("QuantityActual")) & "</td>"
 		'rw "<td class=""data_underline"" align=""right"">" & FormatCurrency(NullCheck(RS_WOPart("OtherCost"))) & "</td>"
-        If isCharge Then
-		    rw "<td class=""data_underline"" align=""right"">" & FormatCurrency(NullCheck(RS_WOPart("TotalCharge"))) & "</td>"
-        Else
-		    rw "<td class=""data_underline"" align=""right"">" & FormatCurrency(NullCheck(RS_WOPart("TotalCost"))) & "</td>"
-        End If
+		If isCharge Then
+			rw "<td class=""data_underline"" align=""right"">" & FormatCurrency(NullCheck(RS_WOPart("TotalCharge"))) & "</td>"
+		Else
+			rw "<td class=""data_underline"" align=""right"">" & FormatCurrency(NullCheck(RS_WOPart("TotalCost"))) & "</td>"
+		End If
 	rw "</tr>"
 End Sub
 
@@ -874,11 +874,11 @@ Sub NewOutputLabor(LaborFormat,RS_WOAssign)
 		rw "<td class=""data_underline"" align=""center"">" & NullCheckNBSP(RS_WOAssign("OvertimeHours")) & "</td>"
 		rw "<td class=""data_underline"" align=""center"">" & NullCheckNBSP(RS_WOAssign("OtherHours")) & "</td>"				
 		rw "<td class=""data_underline"" align=""left"">" & DateNullCheck(RS_WOAssign("WorkDate")) & "</td>"
-        If isCharge then
-		    rw "<td class=""data_underline"" align=""right"">" & FormatCurrency(NullCheck(RS_WOAssign("TotalCharge"))) & "</td>"
-        Else
-		    rw "<td class=""data_underline"" align=""right"">" & FormatCurrency(NullCheck(RS_WOAssign("TotalCost"))) & "</td>"
-        End If
+		If isCharge then
+			rw "<td class=""data_underline"" align=""right"">" & FormatCurrency(NullCheck(RS_WOAssign("TotalCharge"))) & "</td>"
+		Else
+			rw "<td class=""data_underline"" align=""right"">" & FormatCurrency(NullCheck(RS_WOAssign("TotalCost"))) & "</td>"
+		End If
 	rw "</tr>"
 End Sub
 
@@ -962,15 +962,15 @@ Sub NewOutputTasks(RS_WOTask)
 		End Select		
 		rw "<td" & LineStyle & " valign=""top"" class=""data_underline"">" & Replace(NullCheck(RS_WOTask("TaskAction")),vbCrLf,"<br/>") & "&nbsp;"
 
-        If Not NullCheck(RS_WOTask("Comments")) = "" Then
-            If BitNullCheck(RS_WOTask("Fail")) Then
-                rw "<br/><span style=""color:red; font-weight:bold;"">Comments: " & NullCheck(RS_WOTask("Comments")) & "</span>"
-            Else
-                rw "<br/><span style=""color:green; font-weight:bold;"">Comments: " & NullCheck(RS_WOTask("Comments")) & "</span>"
-            End If
-        End If
+		If Not NullCheck(RS_WOTask("Comments")) = "" Then
+			If BitNullCheck(RS_WOTask("Fail")) Then
+				rw "<br/><span style=""color:red; font-weight:bold;"">Comments: " & NullCheck(RS_WOTask("Comments")) & "</span>"
+			Else
+				rw "<br/><span style=""color:green; font-weight:bold;"">Comments: " & NullCheck(RS_WOTask("Comments")) & "</span>"
+			End If
+		End If
 
-        rw "</td>"
+		rw "</td>"
 		Select Case wostate
 
 		Case "WO","WOC"
@@ -1013,16 +1013,16 @@ End Sub
 
 Sub OutputMaintDetails()
 
-    Dim RS_AssetTempValue
-    RS_AssetTempValue = NullCheck(RS_WO("AssetPK"))
-    If RS_AssetTempValue = "" Then
-        RS_AssetTempValue = "-1"
-    End If
-    
+	Dim RS_AssetTempValue
+	RS_AssetTempValue = NullCheck(RS_WO("AssetPK"))
+	If RS_AssetTempValue = "" Then
+		RS_AssetTempValue = "-1"
+	End If
+	
 	sql = "SELECT Asset.Icon, Asset.AssetPK, Asset.AssetID, Asset.AssetName, Asset.IsLocation, Asset.IsUp, Asset.Address, Asset.City, Asset.State, Asset.Zip " +_
 		  "FROM Asset WITH (NOLOCK) INNER JOIN MC_GetAssetParentPK('" & RS_AssetTempValue & "') b On b.AssetPK = Asset.AssetPK " &_
 		  "ORDER BY b.lvl DESC"
-    
+	
 	Set RS_Asset = db.runSQLReturnRS(sql,"")
 	Call dok_check_afterflush(db,"Report Message","There was a problem building the report. The details of the problem are described below. You can try again but if this message continues to appear, you may want to exit the Maintenance Connection and try again later.")	
 
@@ -1041,7 +1041,7 @@ Sub OutputMaintDetails()
 					rw "<td valign=""top"" colspan=""2"">"
 					rw "<table border=""0"" cellspacing=""0"" cellpadding=""0"">"
 					'Do While (NullCheck(RS_Asset("WOPK")) = NullCheck(WOPK)) and (Not RS_Asset.Eof)
-                    Do While (Not RS_Asset.Eof)							
+					Do While (Not RS_Asset.Eof)							
 						If RS_Asset("IsUp") Then
 							stclass = "assetUp"												
 						Else
@@ -1079,8 +1079,8 @@ Sub OutputMaintDetails()
 							If (Not RS_Asset.Eof) Then
 								stclass = "asset"
 							Else
-                                AssetOutput = Left(AssetOutput,(Len(AssetOutput)-4)) & "-" & RS_WO("LeaseNumber")
-                            End If
+								AssetOutput = Left(AssetOutput,(Len(AssetOutput)-4)) & "-" & RS_WO("LeaseNumber")
+							End If
 							rw "<td class=""" & stclass & """ valign=""top"">"
 							rw AssetOutput
 							rw "</td>"
@@ -1095,78 +1095,78 @@ Sub OutputMaintDetails()
 					
 					'rw "<tr>"
 					'  rw "<td valign=""top"">"
-				    '  rw "<table cellspacing=""0"" cellpadding=""0"" border=""0"">"
-				      'If WO_REPORT_MAINTDETAIL_SHOWASADDRESS = "Yes" Then
-				      '  If NullCheck(RS_WO("Address")) <> "" Then
-				      '    rw "<tr>"
-					    '      rw "<td valign=""top"" class=""labels"">Address:&nbsp;</td>"
-					    '      rw "<td valign=""top"" class=""data"">" 
-					    '          rw NullCheck(RS_WO("Address")) 
-					    '      rw "</td>"
-				      '    rw "</tr>"	
-			        '  End If
-				      'End If
-				      'If Not IsLocation Then
-				      '  If WO_REPORT_MAINTDETAIL_SHOWASDETAILS = "Yes" Then
-			            'If NullCheck(RS_WO("Model")) <> "" Then
-			        '      rw "<tr>"
-				      '        rw "<td valign=""top"" class=""labels"">Model:&nbsp;</td>"
-				      '        rw "<td valign=""top"" class=""data"">" & NullCheck(RS_WO("Model")) & "</td>"
-			        '      rw "</tr>"
-			            'End If
-			            'If NullCheck(RS_WO("Serial")) <> "" Then
-			        '      rw "<tr>"
-				      '        rw "<td valign=""top"" class=""labels"">Serial:</td>"
-				      '        rw "<td valign=""top"" class=""data"">" & NullCheck(RS_WO("Serial")) & "</td>"
-			        '      rw "</tr>"
-			            'End If
-			            'If NullCheck(RS_WO("ManufacturerName")) <> "" Then
-			        '      rw "<tr>"
-				      '        rw "<td valign=""top"" class=""labels"">Manufacturer:&nbsp;</td>"
-				      '        rw "<td valign=""top"" class=""data"">" & NullCheck(RS_WO("ManufacturerName")) & "</td>"
-			        '      rw "</tr>"
-			            'End If
-			            'If NullCheck(RS_WO("Vicinity")) <> "" Then							
-			        '      rw "<tr>"
-				      '        rw "<td valign=""top"" class=""labels"">Vicinity:</td>"
-				      '        rw "<td valign=""top"" class=""data"">" & NullCheck(RS_WO("Vicinity")) & "</td>"
-			        '      rw "</tr>"
-			            'End If	
-  			          			      
-  				        
-				      '  End If
-				      'End If
-				      'If WO_REPORT_MAINTDETAIL_SHOWREQUESTBYALLIN1PLACE = "No" Then
-			          'rw "<tr>"
-				      '    rw "<td valign=""top"" class=""labels"">Contact:&nbsp;</td>"
-				      '    rw "<td valign=""top"" class=""data"">" & NullCheck(RS_WO("RequesterName")) & "</td>"
-			          'rw "</tr>"							
-			          'rw "<tr>"
-				      '    rw "<td valign=""top"" class=""labels"">Phone:</td>"
-				      '    rw "<td valign=""top"" class=""data"">" & NullCheck(RS_WO("RequesterPhone")) & "</td>"
-			          'rw "</tr>"
-				      'End If  						
-				      'rw "</table>"
+					'  rw "<table cellspacing=""0"" cellpadding=""0"" border=""0"">"
+					  'If WO_REPORT_MAINTDETAIL_SHOWASADDRESS = "Yes" Then
+					  '  If NullCheck(RS_WO("Address")) <> "" Then
+					  '    rw "<tr>"
+						'      rw "<td valign=""top"" class=""labels"">Address:&nbsp;</td>"
+						'      rw "<td valign=""top"" class=""data"">" 
+						'          rw NullCheck(RS_WO("Address")) 
+						'      rw "</td>"
+					  '    rw "</tr>"	
+					'  End If
+					  'End If
+					  'If Not IsLocation Then
+					  '  If WO_REPORT_MAINTDETAIL_SHOWASDETAILS = "Yes" Then
+						'If NullCheck(RS_WO("Model")) <> "" Then
+					'      rw "<tr>"
+					  '        rw "<td valign=""top"" class=""labels"">Model:&nbsp;</td>"
+					  '        rw "<td valign=""top"" class=""data"">" & NullCheck(RS_WO("Model")) & "</td>"
+					'      rw "</tr>"
+						'End If
+						'If NullCheck(RS_WO("Serial")) <> "" Then
+					'      rw "<tr>"
+					  '        rw "<td valign=""top"" class=""labels"">Serial:</td>"
+					  '        rw "<td valign=""top"" class=""data"">" & NullCheck(RS_WO("Serial")) & "</td>"
+					'      rw "</tr>"
+						'End If
+						'If NullCheck(RS_WO("ManufacturerName")) <> "" Then
+					'      rw "<tr>"
+					  '        rw "<td valign=""top"" class=""labels"">Manufacturer:&nbsp;</td>"
+					  '        rw "<td valign=""top"" class=""data"">" & NullCheck(RS_WO("ManufacturerName")) & "</td>"
+					'      rw "</tr>"
+						'End If
+						'If NullCheck(RS_WO("Vicinity")) <> "" Then							
+					'      rw "<tr>"
+					  '        rw "<td valign=""top"" class=""labels"">Vicinity:</td>"
+					  '        rw "<td valign=""top"" class=""data"">" & NullCheck(RS_WO("Vicinity")) & "</td>"
+					'      rw "</tr>"
+						'End If	
+									  
+						
+					  '  End If
+					  'End If
+					  'If WO_REPORT_MAINTDETAIL_SHOWREQUESTBYALLIN1PLACE = "No" Then
+					  'rw "<tr>"
+					  '    rw "<td valign=""top"" class=""labels"">Contact:&nbsp;</td>"
+					  '    rw "<td valign=""top"" class=""data"">" & NullCheck(RS_WO("RequesterName")) & "</td>"
+					  'rw "</tr>"							
+					  'rw "<tr>"
+					  '    rw "<td valign=""top"" class=""labels"">Phone:</td>"
+					  '    rw "<td valign=""top"" class=""data"">" & NullCheck(RS_WO("RequesterPhone")) & "</td>"
+					  'rw "</tr>"
+					  'End If  						
+					  'rw "</table>"
 					  'rw "</td>"
 					  'If WO_REPORT_MAINTDETAIL_SHOWASDETAILS = "Yes" Then
 					  '  rw "<td style=""padding-left:10px;"">"
-					    'If NullCheck(RS_WO("assetphoto")) <> "" Then
-				      '  rw "<img src="""&assetphoto&""">"
-				      'End If
+						'If NullCheck(RS_WO("assetphoto")) <> "" Then
+					  '  rw "<img src="""&assetphoto&""">"
+					  'End If
 					  '  rw "</td>"
-				    'End If
+					'End If
 					'rw "</tr>"
 			  rw "</table>"					
 		  rw "</td>"
 		rw "<td valign=""top"" width=""33%"">"		
 			rw "<table border=""0"" cellspacing=""1"" cellpadding=""1"">"
-			    rw "<tr><td class=""labels"">Address:</td></tr>"
-                rw "<tr>"
-			      
-			      rw "<td valign=""top"" class=""data"" colspan=""2"">" 
-			          rw NullCheck(RS_WO("Address")) 
-			      rw "</td>"
-			    rw "</tr>"
+				rw "<tr><td class=""labels"">Address:</td></tr>"
+				rw "<tr>"
+				  
+				  rw "<td valign=""top"" class=""data"" colspan=""2"">" 
+					  rw NullCheck(RS_WO("Address")) 
+				  rw "</td>"
+				rw "</tr>"
 				'If Not NullCheck(RS_WO("RequesterName")) = "" Then			
 				'rw "<tr>"
 				'	rw "<td nowrap class=""labels"" valign=""top"">Requested By:&nbsp;</td>"
@@ -1184,18 +1184,18 @@ Sub OutputMaintDetails()
 				'	rw "</td>"
 				'rw "</tr>"
 				'End If
-        'If WO_REPORT_MAINTDETAIL_SHOWREQUESTBYALLIN1PLACE = "Yes" Then
-        '  rw "<tr>"
-	      '    rw "<td valign=""top"" class=""labels"">Phone:</td>"
-	      '    rw "<td valign=""top"" class=""data"">" & NullCheck(RS_WO("RequesterPhone")) & "</td>"
-        '  rw "</tr>"  
-        '  rw "<tr>"
-	      '    rw "<td valign=""top"" class=""labels"">Email:</td>"
-	      '    rw "<td valign=""top"" class=""data"">" & NullCheck(RS_WO("RequesterEmail")) & "</td>"
-        '  rw "</tr>"  
-        'End If
+		'If WO_REPORT_MAINTDETAIL_SHOWREQUESTBYALLIN1PLACE = "Yes" Then
+		'  rw "<tr>"
+		  '    rw "<td valign=""top"" class=""labels"">Phone:</td>"
+		  '    rw "<td valign=""top"" class=""data"">" & NullCheck(RS_WO("RequesterPhone")) & "</td>"
+		'  rw "</tr>"  
+		'  rw "<tr>"
+		  '    rw "<td valign=""top"" class=""labels"">Email:</td>"
+		  '    rw "<td valign=""top"" class=""data"">" & NullCheck(RS_WO("RequesterEmail")) & "</td>"
+		'  rw "</tr>"  
+		'End If
 
-        'If CheckIfFieldExists(RS_WO,"TakenByName") Then
+		'If CheckIfFieldExists(RS_WO,"TakenByName") Then
 				'If Not NullCheck(RS_WO("TakenByName")) = "" Then	
 				'  If WO_REPORT_MAINTDETAIL_SHOWTAKENBY = "Yes" then
 				'    If Trim(NullCheck(RS_WO("RequesterName"))) <> Trim(NullCheck(RS_WO("TakenByName"))) Then
@@ -1230,8 +1230,8 @@ Sub OutputMaintDetails()
 				'rw "</tr>"		
 				'End If
 				
-                'If WO_REPORT_TASK_SHOWPMINFO = "No" Then
-                '  If Not NullCheck(RS_WO("ProcedureID")) = "" Then													
+				'If WO_REPORT_TASK_SHOWPMINFO = "No" Then
+				'  If Not NullCheck(RS_WO("ProcedureID")) = "" Then													
 				'  rw "<tr>"
 				'	  rw "<td class=""labels"" valign=""top"">Procedure:</td>"
 				'	  rw "<td valign=""top"" class=""data"">" & NullCheck(RS_WO("ProcedureName"))
@@ -1274,10 +1274,10 @@ Sub OutputMaintDetails()
 						rw "</td>"
 					End If
 				rw "</tr>"
-		        rw "<tr>"
-			        rw "<td class=""labels"" valign=""top"">Reason:</td>"
-                    rw "<td class=""data"">" & Replace(NullCheck(RS_WO("Reason")),"%0D%0A"," ") & "</td>"
-		        rw "</tr>"
+				rw "<tr>"
+					rw "<td class=""labels"" valign=""top"">Reason:</td>"
+					rw "<td class=""data"">" & Replace(NullCheck(RS_WO("Reason")),"%0D%0A"," ") & "</td>"
+				rw "</tr>"
 				'rw "<tr>"
 				'	rw "<td class=""labels"" valign=""top"">Target:</td>"
 				'	rw "<td class=""data"" valign=""top"">" & DateNullCheck(RS_WO("TargetDate")) & "&nbsp;"
@@ -1295,12 +1295,12 @@ Sub OutputMaintDetails()
 				rw "<tr>"
 					rw "<td class=""labels"" valign=""top"">Priority/Type:&nbsp;</td>"
 					rw "<td class=""data"" valign=""top"">" & NullCheck(RS_WO("PriorityDesc")) 
-					    If Not NullCheck(RS_WO("TypeDesc")) = "" Then
-					        rw "/ " & NullCheck(RS_WO("TypeDesc")) 
-					    End If
-				        rw "&nbsp;&nbsp;&nbsp;"
-                        Call OutputBit(NullCheck(RS_WO("Chargeable")))
-				        rw "Credit"
+						If Not NullCheck(RS_WO("TypeDesc")) = "" Then
+							rw "/ " & NullCheck(RS_WO("TypeDesc")) 
+						End If
+						rw "&nbsp;&nbsp;&nbsp;"
+						Call OutputBit(NullCheck(RS_WO("Chargeable")))
+						rw "Credit"
 					rw "</td>"
 				rw "</tr>"		
 				rw "<tr>"
@@ -1356,7 +1356,7 @@ Sub OutputMaintDetails()
 		'End If
 		'If NullCheck(RS_WO("InstructionsAsset")) <> "" Then
 		'  CombinedInstructions = CombinedInstructions + "&nbsp;&nbsp;" + Trim(NullCheck(RS_WO("InstructionsAsset")))
-	    'End If
+		'End If
 		'If NullCheck(CombinedInstructions) <> "" Then
 		'  rw "<tr>"
 		'    rw "<td valign=""top"" colspan=""2""><span class=""labels"">Special Instructions:&nbsp;</span><span class=""data"">" & Replace(CombinedInstructions,"%0D%0A"," ") & "</span>"
@@ -1436,18 +1436,18 @@ Sub OutputWOReport()
 				rw "<table border=""0"" cellspacing=""3"" cellpadding=""0"">"
 					rw "<tr>"
 						rw "<td nowrap class=""labels"" valign=""bottom"">Completed:&nbsp;</td>"
-						Select Case wostate
+						'Select Case wostate
 						'Case "WO"						
 						'rw "<td class=""data_underline"" width=""100%"">&nbsp;</td>"
-						Case "WOCCS", "WO"
+						'Case "WOCCS", "WO", "WOC", "CC"
 						
 						'rw "<td class=""data_underline"" width=""100%"">"
 						'	rw "<input class=""normal"" mcType=""D"" maxlength=""10"" mcRequired=""N"" type=""text"" name=""WO_Completed_" & RS_WO("WOPK") & """ value=""" & compdate & """ size=""8"" onChange=""top.fieldvalid(this);"" onfocus=""top.fieldfocus(this);"" onblur=""top.fieldblur(this);"" onkeypress=""return top.checkKey(this,self);""><img src=""../../images/lookupiconxp3.gif"" border=""0"" onclick=""top.showpopup('calendar','Calendar',172,160,this,WO_Completed_" & RS_WO("WOPK") & ",self)"" align=""absbottom"" class=""lookupicon"" WIDTH=""16"" HEIGHT=""20"">"
 							rw "<td class=""data_underline"" width=""100%"">" & NullCheckNBSP(DateTimeNullCheckAT(RS_WO("Complete"))) & "</td>"	
 						'rw "</td>"												
-						Case "WOC"
-						rw "<td class=""data_underline"" width=""100%"">" & NullCheckNBSP(DateTimeNullCheckAT(RS_WO("Complete"))) & "</td>"						
-						End Select						
+						'Case "WOC"
+							'rw "<td class=""data_underline"" width=""100%"">" & NullCheckNBSP(DateTimeNullCheckAT(RS_WO("Complete"))) & "</td>"						
+						'End Select						
 					rw "</tr>"
 				rw "</table>"
 			rw "</td>"
@@ -1507,33 +1507,33 @@ Sub OutputWOReport()
 		rw "</tr>"
 
 		rw "<tr style=""margin-bottom:20px;"">"
-			rw "<td class=""labels"">"
+			rw "<td>"
 				rw "<table style=""margin-top:10px;"" width=""100%"" border=""0"" cellspacing=""0"" cellpadding=""0"">"
-					If wostate = "CC" Then
-						rw "<tr>"
-						rw "<td colspan=""3"" width=""100%"" align=""right"">"
-						'rw "<img border=""0"" src=""../../images/button_addarrow.gif"" onclick=""top.showpopup('actions','Actions',266,100,this,WO_LaborReport_" & RS_WO("WOPK") & ",self)"" WIDTH=""80"" HEIGHT=""15"">"
-						rw "</td>"
-						rw "</tr>"
-					End If
+					'If wostate = "CC" Then
+					'    rw "<tr>"
+					'    rw "<td colspan=""3"" width=""100%"" align=""right"">"
+					'    rw "<img border=""0"" src=""../../images/button_addarrow.gif"" onclick=""top.showpopup('actions','Actions',266,100,this,WO_LaborReport_" & RS_WO("WOPK") & ",self)"" WIDTH=""80"" HEIGHT=""15"">"
+					'    rw "</td>"
+					'    rw "</tr>"
+					'End If
 					rw "<tr>"
 					rw "<td valign=""top"" style=""padding-left:3px;"" style=""width:10%;"" nowrap class=""labels"">"
 						rw "Report:&nbsp;&nbsp;"
 					rw "</td>"
-                    if WOStatus = "OPEN" Then
-                        rw "<td style=""width:100%"">"
-                            rw "<table style=""width:100%"">"
-		                        rw "<tr class=""blank_row"">"
-			                        rw "<td class='data_underline'>&nbsp;</td>"
-		                        rw "</tr>"
-		                        rw "<tr class=""blank_row"">"
-			                        rw "<td class='data_underline'>&nbsp;</td>"
-		                        rw "</tr>"
-                            rw "</table>"
-                        rw "</td>"
-                    Else
-                    	rw "<td class=""data_underline"" width=""100%"">" & Replace(NullCheckNBSP(RS_WO("LaborReport")),"%0D%0A","<br>") & "</td>"						
-                    End If
+					if WOStatus = "OPEN" Then
+						rw "<td style=""width:100%"">"
+							rw "<table style=""width:100%"">"
+								rw "<tr class=""blank_row"">"
+									rw "<td class='data_underline'>&nbsp;</td>"
+								rw "</tr>"
+								rw "<tr class=""blank_row"">"
+									rw "<td class='data_underline'>&nbsp;</td>"
+								rw "</tr>"
+							rw "</table>"
+						rw "</td>"
+					Else
+						rw "<td class=""data_underline"" width=""100%"">" & Replace(NullCheckNBSP(RS_WO("LaborReport")),"%0D%0A","<br>") & "</td>"						
+					End If
 					'Select Case wostate
 					'Case "WO"	
 					  'If WO_REPORT_LABORRPT_SHOWBLANKLINES > 0 Then
@@ -1569,36 +1569,36 @@ Sub OutputWOReport()
 		rw "</tr>"
 		'If WO_REPORT_LABORRPT_SHOWSIGNATURE = "Yes" Then
 		rw "<tr><td colspan=""4"">&nbsp;</td></tr>"
-        rw "<tr>"
+		rw "<tr>"
 			rw "<td colspan=""4"" class=""labels"">"
 				rw "<table style=""margin-top:10px;"" width=""100%"" border=""0"" cellspacing=""0"" cellpadding=""0"">"
 				  rw "<tr>"
-                  Call WOSignatureImages()
+				  Call WOSignatureImages()
 
-		            'rw "<td width=""4%"">&nbsp;</td>"
-		            'rw "<td class=""data_underline"" width=""30%"">&nbsp;</td>"
-		            'rw "<td width=""2%"">&nbsp;</td>"
-		            'rw "<td class=""data_underline"" width=""16%"">&nbsp;</td>"
-		          rw "</tr>"
-		          rw "<tr>"
-		            rw "<td valigh=""top"" class=""labels"" style=""font-size:x-small;"" align=""center"">Signature / Name</td>"
-		            rw "<td valigh=""top"" style=""font-size:xx-small;"" align=""center""></td>"
-		            rw "<td valigh=""top"" class=""labels"" style=""font-size:x-small;"" align=""center"">Date</td>"
-		            'rw "<td valigh=""top"" style=""font-size:xx-small;"" align=""center""></td>"
-		            'rw "<td valigh=""top"" class=""labels"" style=""font-size:x-small;"" align=""center"">Signature / Name</td>"
-		            'rw "<td valigh=""top"" style=""font-size:xx-small;"" align=""center""></td>"
-		            'rw "<td valigh=""top"" class=""labels"" style=""font-size:x-small;"" align=""center"">Date</td>"
-		          rw "</tr>"
-		        rw "</table>"
-		      rw "</td>"
-		    rw "</tr>"
-		    'End If
+					'rw "<td width=""4%"">&nbsp;</td>"
+					'rw "<td class=""data_underline"" width=""30%"">&nbsp;</td>"
+					'rw "<td width=""2%"">&nbsp;</td>"
+					'rw "<td class=""data_underline"" width=""16%"">&nbsp;</td>"
+				  rw "</tr>"
+				  rw "<tr>"
+					rw "<td valigh=""top"" class=""labels"" style=""font-size:x-small;"" align=""center"">Signature / Name</td>"
+					rw "<td valigh=""top"" style=""font-size:xx-small;"" align=""center""></td>"
+					rw "<td valigh=""top"" class=""labels"" style=""font-size:x-small;"" align=""center"">Date</td>"
+					'rw "<td valigh=""top"" style=""font-size:xx-small;"" align=""center""></td>"
+					'rw "<td valigh=""top"" class=""labels"" style=""font-size:x-small;"" align=""center"">Signature / Name</td>"
+					'rw "<td valigh=""top"" style=""font-size:xx-small;"" align=""center""></td>"
+					'rw "<td valigh=""top"" class=""labels"" style=""font-size:x-small;"" align=""center"">Date</td>"
+				  rw "</tr>"
+				rw "</table>"
+			  rw "</td>"
+			rw "</tr>"
+			'End If
 	rw "</table>"
 End Sub
 
 Sub WOSignatureImages()
 	Dim SignatureImage, url
-    'TOP 1 for now, but coded to allow for more in the future
+	'TOP 1 for now, but coded to allow for more in the future
 	'res: 300 x 100
 	sql = _
 	"SELECT TOP 1 " &_
@@ -1645,9 +1645,9 @@ End Sub
 Sub OutputApprovalsBox()
   If WO_APPROVALSECTION <> "NONE" Then
 	  ' Get Work Order Approvals
-    sql = "SELECT a.*, Labor.Initials, Labor.LaborName FROM dbo.MCUDF_GetWOApprovals("&WOPK&") a INNER JOIN Labor ON Labor.LaborPK = a.LAPK"
-    'Response.Write "<textarea rows=6 cols=100>" & sql & "</textarea>"
-    'Response.End
+	sql = "SELECT a.*, Labor.Initials, Labor.LaborName FROM dbo.MCUDF_GetWOApprovals("&WOPK&") a INNER JOIN Labor ON Labor.LaborPK = a.LAPK"
+	'Response.Write "<textarea rows=6 cols=100>" & sql & "</textarea>"
+	'Response.End
 	  Set RS_WOApproval = db.runSQLReturnRS(sql,"")
 
 	  Dim BlankRowNum
@@ -1656,17 +1656,17 @@ Sub OutputApprovalsBox()
 		  rw "<legend style=""font-size:9pt;"" class=""legendHeader"">Approvals</legend>"
 		  rw "<table style=""margin-top:5px;"" border=""0"" cellspacing=""3"" cellpadding=""0"" width=""98%"" align=""center"">"
 
-	    If WO_APPROVALSECTION = "STATIC" Then
-            Call OutputStaticApporvalHeader()
-            Dim cnt
-            cnt=0
+		If WO_APPROVALSECTION = "STATIC" Then
+			Call OutputStaticApporvalHeader()
+			Dim cnt
+			cnt=0
 
-            Do While cnt < ApprovalCount
-			    Call OutputBlankRow(1,2)
-			    cnt = cnt+1
+			Do While cnt < ApprovalCount
+				Call OutputBlankRow(1,2)
+				cnt = cnt+1
 			Loop
-	    Else 'If WO_APPROVALSECTION = "Enhanced" Then
-            Call OutputApprovalHeader()
+		Else 'If WO_APPROVALSECTION = "Enhanced" Then
+			Call OutputApprovalHeader()
 			' Approval data
 			If Not RS_WOApproval.EOF Then
 				Do While NullCheck(RS_WOApproval("WOPK")) = NullCheck(WOPK)
@@ -1674,9 +1674,9 @@ Sub OutputApprovalsBox()
 					RS_WOApproval.MoveNext
 				Loop
 			Else
-	            Call OutputBlankRow(1,3)
+				Call OutputBlankRow(1,3)
 			End If
-	    End If
+		End If
 
 		  rw "</table>"
 		  rw "<br>"
@@ -1733,13 +1733,13 @@ Sub OutputImagesBox()
 							If (x > 350) OR (y > 350) Then
 								If x > y Then
 									ScaleFactor = (350 / x)
-								    x = x * ScaleFactor
-								    y = y * ScaleFactor
+									x = x * ScaleFactor
+									y = y * ScaleFactor
 								Else
 									ScaleFactor = (350 / y)
-								    x = x * ScaleFactor
-								    y = y * ScaleFactor
-							    End If
+									x = x * ScaleFactor
+									y = y * ScaleFactor
+								End If
 							End If
 
 							rw "<img align=""top"" style=""width=" & x & "; height:" & y & "; margin:5px 5px 5px 5px;"" src='" & url & "'>"
@@ -1755,63 +1755,63 @@ Sub OutputImagesBox()
 End Sub
 
 Sub OutputLogoOrName()
-    Dim sql, rs, GotLogo
-    GotLogo = False
+	Dim sql, rs, GotLogo
+	GotLogo = False
 
 	If (Not SDCode = "") Then
 		Response.Write "<div ondblclick=""toggleIFRAME();"">"
 	End If
 
 
-    If WOStatus = "CLOSED" Then
-        GotLogo = True
-        'Response.Write "<div style=""font-family:Arial;font-size:10.5px;color:#333333;font-weight:bold;"">REMIT TO: CKE RESTAURANTS HOLDINGS INC. PO BOX 843832, LOS ANGELES, CA 90084-3832</div>"
-        rw "<img border=""0"" src=""" & GetSession("webHTTP") & GetWebServer() & "/mc_imageserver/entcke/AS/1/final_logo4_20151223085043.jpg""><br clear=""all"">"
-    'End If
-    'http://www.maintenanceconnection.com/mc_imageserver/entcke/AS/1/final_logo4_20151223085043.jpg
+	If WOStatus = "CLOSED" Then
+		GotLogo = True
+		'Response.Write "<div style=""font-family:Arial;font-size:10.5px;color:#333333;font-weight:bold;"">REMIT TO: CKE RESTAURANTS HOLDINGS INC. PO BOX 843832, LOS ANGELES, CA 90084-3832</div>"
+		rw "<img border=""0"" src=""" & GetSession("webHTTP") & GetWebServer() & "/mc_imageserver/entcke/AS/1/final_logo4_20151223085043.jpg""><br clear=""all"">"
+	'End If
+	'http://www.maintenanceconnection.com/mc_imageserver/entcke/AS/1/final_logo4_20151223085043.jpg
 
 
 	ElseIf Not NullCheck(RPT_REPLACELOGO) = "" Then
 		If InStr(UCase(RPT_REPLACELOGO),"HTTP://") > 0 or InStr(UCase(RPT_REPLACELOGO),"HTTPS://") > 0 Then
 			rw "<img border=""0"" src=""" & RPT_REPLACELOGO & """><br clear=""all"">"
-            GotLogo = True
+			GotLogo = True
 
 			Else
-                    SELECT CASE UCase(RPT_REPLACELOGO)
-                        CASE "REPAIR CENTER PHOTO" 
-                            sql = "SELECT photo FROM RepairCenter WITH (NOLOCK) WHERE RepairCenterPK = " & GetSession("RCPK")
-                            Set rs = db.RunSQLReturnRS(sql,"")
-                            If Not NullCheck(rs("photo")) = "" Then
-                                rw "<img border=""0"" src=""" & Replace(getclientimage(rs("photo")),"_main.",".") & """><br clear=""all"">"
-                                GotLogo = True
-                            End If
-                        CASE "LABOR LOCATION PHOTO"
-                            sql = "SELECT asset.assetname,asset.photo FROM Asset WITH (NOLOCK) INNER JOIN Labor WITH (NOLOCK) ON Labor.WorkLocationPK = Asset.AssetPK WHERE LaborPK = " & GetSession("UserPK")
-                            Set rs = db.RunSQLReturnRS(sql,"")
-                            If Not NullCheck(rs("photo")) = "" Then
-                                rw "<img border=""0"" src=""" & Replace(getclientimage(rs("photo")),"_main.",".") & """><br clear=""all"">"
-                                GotLogo = True
-                            ElseIf Not NullCheck(rs("assetname")) = "" Then
-			                    rw "<font face=""Arial"" size=""4"" color=""navy"">" & NullCheck(rs("assetname")) & "</font><br>"
-                                GotLogo = True
-                            End If
-                        CASE Else
-				                rw "<img border=""0"" src=""" & GetSession("webHTTP") & GetWebServer() & showclientimg(RPT_REPLACELOGO) & """><br clear=""all"">"
-                            GotLogo = True
-                    END SELECT
+					SELECT CASE UCase(RPT_REPLACELOGO)
+						CASE "REPAIR CENTER PHOTO" 
+							sql = "SELECT photo FROM RepairCenter WITH (NOLOCK) WHERE RepairCenterPK = " & GetSession("RCPK")
+							Set rs = db.RunSQLReturnRS(sql,"")
+							If Not NullCheck(rs("photo")) = "" Then
+								rw "<img border=""0"" src=""" & Replace(getclientimage(rs("photo")),"_main.",".") & """><br clear=""all"">"
+								GotLogo = True
+							End If
+						CASE "LABOR LOCATION PHOTO"
+							sql = "SELECT asset.assetname,asset.photo FROM Asset WITH (NOLOCK) INNER JOIN Labor WITH (NOLOCK) ON Labor.WorkLocationPK = Asset.AssetPK WHERE LaborPK = " & GetSession("UserPK")
+							Set rs = db.RunSQLReturnRS(sql,"")
+							If Not NullCheck(rs("photo")) = "" Then
+								rw "<img border=""0"" src=""" & Replace(getclientimage(rs("photo")),"_main.",".") & """><br clear=""all"">"
+								GotLogo = True
+							ElseIf Not NullCheck(rs("assetname")) = "" Then
+								rw "<font face=""Arial"" size=""4"" color=""navy"">" & NullCheck(rs("assetname")) & "</font><br>"
+								GotLogo = True
+							End If
+						CASE Else
+								rw "<img border=""0"" src=""" & GetSession("webHTTP") & GetWebServer() & showclientimg(RPT_REPLACELOGO) & """><br clear=""all"">"
+							GotLogo = True
+					END SELECT
 
-                If Not GotLogo Then
-	                If Not GetSession("el") = "" Then
-		                rw "<img border=""0"" src=""" & GetSession("webHTTP") & GetWebServer() & showclientimg(GetSession("el")) & """><br clear=""all"">"
-	                Else
-		                If Not GetSession("en") = "" Then
-			                rw "<font face=""Arial"" size=""4"" color=""navy"">" & GetSession("en") & "</font><br>"
-		                Else
-			                rw "<img border=""0"" src=""" & ImagesFullPath & "images/mc_logonewsmall2.gif""><br clear=""all"">"
-		                End If
-	                End If
-               End If
-            
+				If Not GotLogo Then
+					If Not GetSession("el") = "" Then
+						rw "<img border=""0"" src=""" & GetSession("webHTTP") & GetWebServer() & showclientimg(GetSession("el")) & """><br clear=""all"">"
+					Else
+						If Not GetSession("en") = "" Then
+							rw "<font face=""Arial"" size=""4"" color=""navy"">" & GetSession("en") & "</font><br>"
+						Else
+							rw "<img border=""0"" src=""" & ImagesFullPath & "images/mc_logonewsmall2.gif""><br clear=""all"">"
+						End If
+					End If
+			   End If
+			
 			
 			If (Not SDCode = "") Then
 				Response.Write "</div>"
@@ -1824,17 +1824,17 @@ Sub OutputLogoOrName()
 	End If
 
 
-    If GotLogo = False Then
-	    If Not GetSession("el") = "" Then
-		    rw "<img border=""0"" src=""" & GetSession("webHTTP") & GetWebServer() & showclientimg(GetSession("el")) & """><br clear=""all"">"
-	    Else
-		    If Not GetSession("en") = "" Then
-			    rw "<font face=""Arial"" size=""4"" color=""navy"">" & GetSession("en") & "</font><br>"
-		    Else
-			    rw "<img border=""0"" src=""" & ImagesFullPath & "images/mc_logonewsmall2.gif""><br clear=""all"">"
-		    End If
-	    End If
-    End If
+	If GotLogo = False Then
+		If Not GetSession("el") = "" Then
+			rw "<img border=""0"" src=""" & GetSession("webHTTP") & GetWebServer() & showclientimg(GetSession("el")) & """><br clear=""all"">"
+		Else
+			If Not GetSession("en") = "" Then
+				rw "<font face=""Arial"" size=""4"" color=""navy"">" & GetSession("en") & "</font><br>"
+			Else
+				rw "<img border=""0"" src=""" & ImagesFullPath & "images/mc_logonewsmall2.gif""><br clear=""all"">"
+			End If
+		End If
+	End If
 
 	If (Not SDCode = "") Then
 		Response.Write "</div>"
@@ -1854,143 +1854,143 @@ Sub OutputHeader()
 	If BatchReportMode Then
 		'Exit Sub
 	Else
-        If UCase(GetSession("WEBHTTP")) = "HTTPS://" and _
-           Not Request.QueryString("ExportReportOutputType") = "" and _
-           Not Request.QueryString("ExportReportOutputType") = "HTM" Then
-            ' Do not add the cache-control as IE has a bug with SSL and downloads
-            ' http://support.microsoft.com/default.aspx?kbid=323308
-        Else
-    		Response.AddHeader "cache-control","no-store"
-        End If
+		If UCase(GetSession("WEBHTTP")) = "HTTPS://" and _
+		   Not Request.QueryString("ExportReportOutputType") = "" and _
+		   Not Request.QueryString("ExportReportOutputType") = "HTM" Then
+			' Do not add the cache-control as IE has a bug with SSL and downloads
+			' http://support.microsoft.com/default.aspx?kbid=323308
+		Else
+			Response.AddHeader "cache-control","no-store"
+		End If
 	End If
 	' BRAD ENDSPAN
 
-    rw "<!DOCTYPE html>"
-    rw "<html dir=""ltr"" lang=""en-us"">"
-    rw "<head>"
-    rw "<meta content=""IE=edge"" http-equiv=""X-UA-Compatible"" />"
-    rw "<meta content=""text/html;charset=UTF-8"" http-equiv=""Content-type"" />"
-    rw "<meta content=""text/javascript"" http-equiv=""content-script-type"" />"
-    rw "<meta content=""text/css"" http-equiv=""content-style-type"" />"
-    rw "<meta content=""favorite"" name=""save"">"
-    rw "<meta content=""noindex"" name=""robots"">"
-    rw "<meta content=""no"" name=""allow-search"" />"
-    rw "<meta content=""yes"" name=""apple-mobile-web-app-capable"" />"
-    rw "<meta content=""black"" name=""apple-mobile-web-app-status-bar-style"" />"
+	rw "<!DOCTYPE html>"
+	rw "<html dir=""ltr"" lang=""en-us"">"
+	rw "<head>"
+	rw "<meta content=""IE=edge"" http-equiv=""X-UA-Compatible"" />"
+	rw "<meta content=""text/html;charset=UTF-8"" http-equiv=""Content-type"" />"
+	rw "<meta content=""text/javascript"" http-equiv=""content-script-type"" />"
+	rw "<meta content=""text/css"" http-equiv=""content-style-type"" />"
+	rw "<meta content=""favorite"" name=""save"">"
+	rw "<meta content=""noindex"" name=""robots"">"
+	rw "<meta content=""no"" name=""allow-search"" />"
+	rw "<meta content=""yes"" name=""apple-mobile-web-app-capable"" />"
+	rw "<meta content=""black"" name=""apple-mobile-web-app-status-bar-style"" />"
 	rw "<title>" & reportName & "</title>"
 	If Not FromAgent Then
 		If Not Request.QueryString("ExportReportOutputType") = "HTM" Then %>
 			<script type="text/javascript" SRC="../../javascript/normal/mc_rpt_common.js"></script>
-            <script type="text/javascript" SRC="../../javascript/normal/mc_flashobject.js"></script>
-            <% If SCSearchAny Then %>
+			<script type="text/javascript" SRC="../../javascript/normal/mc_flashobject.js"></script>
+			<% If SCSearchAny Then %>
 			<script type="text/javascript" SRC="../../javascript/normal/mc_tablefilter_all.js"></script>
 			<% End If %>
 
 			<script type="text/javascript">
 				//window.onerror = top.doError;
 
-			    var reportid = "<% =reportid %>";
-			    var reportidc = "<% =reportidc %>";
+				var reportid = "<% =reportid %>";
+				var reportidc = "<% =reportidc %>";
 				var reportname = "<% =reportName %>";
 				var custom = <% =LCase(custom) %>;
 				var reportcopy = <% =LCase(reportcopy) %>;
 				var showSQL = "<% =Request.QueryString("showSQL") %>";
 				var reporthasfields = <% =LCase(reporthasfields) %>;
 
-                try{
-                var sql_where = '<% =JSEncode(SQL_Where) %>';
-                //alert(sql_where);
-                } catch(e) {};
+				try{
+				var sql_where = '<% =JSEncode(SQL_Where) %>';
+				//alert(sql_where);
+				} catch(e) {};
 
-	            function psr(ReportID,extracrit)
-	            {
-	                try {
-	                //alert(extracrit);
-	            	event.stopPropagation();
-	            	url = 'modules/reports/rpt_check.asp?rptID='+ReportID+'&noprompt=true&showSQL=false&popupreport=Y&sqlwhere='+self.sql_where+' '+extracrit;
-                    //alert(self.location.href);
-                    //alert(self.sql_where);
-	            	var param = new Object();
-	            	param.caller = mcmain;
-	            	param.mcmain = mcmain;
-	            	aW = screen.availWidth;
-	            	aH = screen.availHeight;
-	            	if (aW >= ((1024*2)-0) || aH >= ((768*2)-0))
-	            	{
-	            	 	if (aW >= ((1024*2)-0))
-	            	 	{aW = aW / 2;}
-	            	 	else
-	            	 	{aH = aH / 2;}
-	            	}
-	            	aW -= 0;
-	            	aH -= 0;
-                    var finalurl = mcmain.path + 'modules/common/mc_dialogrefreshable.asp?scroll=auto&title=Report+Preview&url='+escape(mcmain.path) + url;
-                    //alert(finalurl.length);
-                    //alert(finalurl);
-	                    //mcmain.showModelessDialog(finalurl, param,'dialogHeight: ' + aH + 'px; dialogWidth: ' + aW + 'px; dialogTop: 0px; dialogLeft: 0px; center: No; help: No; resizable: No; status: No; scroll: Auto' );
-                    //alert(top.path + url);
-                    top.opendhtmlwin(top.path + url, param, 0, 0, aW, aH, true, false);
-	            	} catch(e) {};
-	            }
+				function psr(ReportID,extracrit)
+				{
+					try {
+					//alert(extracrit);
+					event.stopPropagation();
+					url = 'modules/reports/rpt_check.asp?rptID='+ReportID+'&noprompt=true&showSQL=false&popupreport=Y&sqlwhere='+self.sql_where+' '+extracrit;
+					//alert(self.location.href);
+					//alert(self.sql_where);
+					var param = new Object();
+					param.caller = mcmain;
+					param.mcmain = mcmain;
+					aW = screen.availWidth;
+					aH = screen.availHeight;
+					if (aW >= ((1024*2)-0) || aH >= ((768*2)-0))
+					{
+						if (aW >= ((1024*2)-0))
+						{aW = aW / 2;}
+						else
+						{aH = aH / 2;}
+					}
+					aW -= 0;
+					aH -= 0;
+					var finalurl = mcmain.path + 'modules/common/mc_dialogrefreshable.asp?scroll=auto&title=Report+Preview&url='+escape(mcmain.path) + url;
+					//alert(finalurl.length);
+					//alert(finalurl);
+						//mcmain.showModelessDialog(finalurl, param,'dialogHeight: ' + aH + 'px; dialogWidth: ' + aW + 'px; dialogTop: 0px; dialogLeft: 0px; center: No; help: No; resizable: No; status: No; scroll: Auto' );
+					//alert(top.path + url);
+					top.opendhtmlwin(top.path + url, param, 0, 0, aW, aH, true, false);
+					} catch(e) {};
+				}
 
-                function fixedEncodeURIComponent(str){
-                     return encodeURIComponent(str).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
-                }
+				function fixedEncodeURIComponent(str){
+					 return encodeURIComponent(str).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
+				}
 
 				function checkhandle()
 				{
-				    try {
-		            var x = window.event.clientX;
-		            var y = window.event.clientY;
+					try {
+					var x = window.event.clientX;
+					var y = window.event.clientY;
 
-                    if (x < 8)
-                    {
-                        parent.togglesmartcritpane(reportid,'ON',false);
-                    }
-                    window.event.returnValue = true;
-                    } catch(e) {};
-				    return true;
+					if (x < 8)
+					{
+						parent.togglesmartcritpane(reportid,'ON',false);
+					}
+					window.event.returnValue = true;
+					} catch(e) {};
+					return true;
 				}
 
 				function doonload()
 				{
-				    // the try must be in there for Smart Criteria Left Pane Reports
-				    // as togglesmartcritpane would not exist...etc.
-				    if (document.getElementById('tbl-container-div'))
-				    {
-				        if (self.innerWidth > parseFloat(document.getElementById('tbl-container-div').style.width))
-				        {
-				            document.getElementById('tbl-container-div').style.width = self.innerWidth - 30 + 'px';
-				        }
-				    }
+					// the try must be in there for Smart Criteria Left Pane Reports
+					// as togglesmartcritpane would not exist...etc.
+					if (document.getElementById('tbl-container-div'))
+					{
+						if (self.innerWidth > parseFloat(document.getElementById('tbl-container-div').style.width))
+						{
+							document.getElementById('tbl-container-div').style.width = self.innerWidth - 30 + 'px';
+						}
+					}
 
-				    try {
-				    <% If (SCDefault = "S" or SCDefault = "F") and SCAvailable Then %>
-		            parent.togglesmartcritpane(reportid,'ON',true);
-				    <% Else %>
-				    <% If (SCDefault = "H" or SCDefault = "C") and SCAvailable Then %>
-		            parent.togglesmartcritpane(reportid,'OFF',true);
-				    <% Else %>
-		            parent.togglesmartcritpane(reportid,'DISABLED',true);
-			        <% End If %>
-				    <% End If %>
-				    } catch(e) {};
-				    try {
-				    if (self.fixscroll)
-				    {
-				        fixscroll();
-				    }
-				    } catch(e) {};
+					try {
+					<% If (SCDefault = "S" or SCDefault = "F") and SCAvailable Then %>
+					parent.togglesmartcritpane(reportid,'ON',true);
+					<% Else %>
+					<% If (SCDefault = "H" or SCDefault = "C") and SCAvailable Then %>
+					parent.togglesmartcritpane(reportid,'OFF',true);
+					<% Else %>
+					parent.togglesmartcritpane(reportid,'DISABLED',true);
+					<% End If %>
+					<% End If %>
+					} catch(e) {};
+					try {
+					if (self.fixscroll)
+					{
+						fixscroll();
+					}
+					} catch(e) {};
 
-				    <% If wtf Then %>
+					<% If wtf Then %>
 					if (top.topwin.sendend)
 					{
-					    top.topwin.sendend();
+						top.topwin.sendend();
 					}
-				    <% Else %>
-                    <% If Not InlineCriteria > 0 Then %>
+					<% Else %>
+					<% If Not InlineCriteria > 0 Then %>
 					self.focus();
-                    <% End If %>
+					<% End If %>
 					<% End If %>
 
 					<% If InWOModule and Not wtf Then %>
@@ -2022,147 +2022,147 @@ Sub OutputHeader()
 					}
 					catch(e) {}
 					<% End If %>
-            		<% If (Not SubReport) and (SLDefault) and (Not SDCode = "") Then %>
-                    try {
-                    var ctall=document.body.all;
-                    for(i=0;i<ctall.length;i++){
-                    if(((ctall(i).tagName.toUpperCase()=="INPUT"&&ctall(i).type.toUpperCase()=="TEXT")||ctall(i).tagName.toUpperCase()=="TEXTAREA")&&(ctall(i).disabled==false)&&(ctall(i).style.display==''))
-                    {
-                        try {
-                            //alert(ctall(i).outerHTML);                            
-                            ctall(i).focus();
-                            break;
-                        }
-                        catch(e) { break; };
-                    }
-                    }
-                    } catch(e) {};
-                    <% End If %>
+					<% If (Not SubReport) and (SLDefault) and (Not SDCode = "") Then %>
+					try {
+					var ctall=document.body.all;
+					for(i=0;i<ctall.length;i++){
+					if(((ctall(i).tagName.toUpperCase()=="INPUT"&&ctall(i).type.toUpperCase()=="TEXT")||ctall(i).tagName.toUpperCase()=="TEXTAREA")&&(ctall(i).disabled==false)&&(ctall(i).style.display==''))
+					{
+						try {
+							//alert(ctall(i).outerHTML);                            
+							ctall(i).focus();
+							break;
+						}
+						catch(e) { break; };
+					}
+					}
+					} catch(e) {};
+					<% End If %>
 
-                    <% If SCSearchAny and Not recordCount = 0 Then %>
-                    //try {
-                    var tfConfig = {highlight_keywords: true, 
-                                        alternate_rows: true,  
-                                        selectable: false,  
-                                        <% If SCSearch = "YS" or SCSearch = "YSS" Then %>
-                                        single_search_filter: true,
-                                        <% End If %>
-                                        enable_empty_option: true,
-                                        empty_text: '(No Value)',
-                                        enable_non_empty_option: false,
-                                        <% If GetSession("dff") = "Y" Then %>
-                                        default_date_type: 'DMY',
-                                        <% End If %>
-                                        non_empty_text: '(Any Value)',
-                                        filters_row_index: 1,
-                                        <% If SCRpt Then %>
-                                        odd_row_css_class: "ReportRowCrit1",
-                                        even_row_css_class: "ReportRowCrit2",
-                                        <% Else %>
-                                        odd_row_css_class: "ReportRow1",
-                                        even_row_css_class: "ReportRow2",
-                                        <% End If %>
-                                        <% If RecordCount <= 2500 Then %>
-                                        on_keyup: true,  
-                                        on_keyup_delay: 100,
-                                        <% End If %>
-                                        loader: false<%
-                                        Dim scsearchrows, scsearchrow,scsearchids,scsearchcols,scsearchops,scsearchdecs
-                                        If Not RecordCount = 0 Then
-                                            scsearchrows = UBound(ReportFields,2)
-                                            For scsearchrow = 0 to scsearchrows
-                                                If ReportFields(4,scsearchrow) Then
-                                                    If scsearchids = "" Then
-                                                        scsearchids = """gtot" & CStr(scsearchrow) & """"
-                                                        scsearchcols = CStr(scsearchrow)
-                                                        scsearchops = """sum"""
-                                                        scsearchdecs = "0"
-                                                    Else
-                                                        scsearchids = scsearchids & "," & """gtot" & CStr(scsearchrow) & """"
-                                                        scsearchcols = scsearchcols & "," & CStr(scsearchrow)
-                                                        scsearchops = scsearchops & "," & """sum"""
-                                                        scsearchdecs = scsearchdecs & "," & "0"
-                                                    End If
-                                                End If
-		                                        Select Case NullCheck(ReportFields(26,scsearchrow))
-                                                    Case "1"
-                                                    Response.Write ",col_" & CStr(scsearchrow) & ": ""select"""
-                                                    Case "2"
-                                                    Response.Write ",col_" & CStr(scsearchrow) & ": ""multiple"""
-                                                    Case "3"
-                                                    Response.Write ",col_" & CStr(scsearchrow) & ": ""checklist"""
-                                                    Case "4"
-                                                    Response.Write ",col_" & CStr(scsearchrow) & ": ""none"""
-                                                    End Select
-                                            Next
-                                        End If %>
-                                        <% If Not scsearchids = "" Then %>,
-                                        col_operation: {   
-                                            id: [<% =scsearchids %>],  
-                                            col: [<% =scsearchcols %>],  
-                                            operation: [<% =scsearchops %>],  
-                                            exclude_row: ["totRowIndex"],  
-                                            tot_row_index: ["totRowIndex"],
-                                            decimal_precision: [<% =scsearchdecs %>]  
-                                        }
-                                        <% End If %>
-                    };
-                    var tf1 = setFilterGrid("tbl",tfConfig);                
+					<% If SCSearchAny and Not recordCount = 0 Then %>
+					//try {
+					var tfConfig = {highlight_keywords: true, 
+										alternate_rows: true,  
+										selectable: false,  
+										<% If SCSearch = "YS" or SCSearch = "YSS" Then %>
+										single_search_filter: true,
+										<% End If %>
+										enable_empty_option: true,
+										empty_text: '(No Value)',
+										enable_non_empty_option: false,
+										<% If GetSession("dff") = "Y" Then %>
+										default_date_type: 'DMY',
+										<% End If %>
+										non_empty_text: '(Any Value)',
+										filters_row_index: 1,
+										<% If SCRpt Then %>
+										odd_row_css_class: "ReportRowCrit1",
+										even_row_css_class: "ReportRowCrit2",
+										<% Else %>
+										odd_row_css_class: "ReportRow1",
+										even_row_css_class: "ReportRow2",
+										<% End If %>
+										<% If RecordCount <= 2500 Then %>
+										on_keyup: true,  
+										on_keyup_delay: 100,
+										<% End If %>
+										loader: false<%
+										Dim scsearchrows, scsearchrow,scsearchids,scsearchcols,scsearchops,scsearchdecs
+										If Not RecordCount = 0 Then
+											scsearchrows = UBound(ReportFields,2)
+											For scsearchrow = 0 to scsearchrows
+												If ReportFields(4,scsearchrow) Then
+													If scsearchids = "" Then
+														scsearchids = """gtot" & CStr(scsearchrow) & """"
+														scsearchcols = CStr(scsearchrow)
+														scsearchops = """sum"""
+														scsearchdecs = "0"
+													Else
+														scsearchids = scsearchids & "," & """gtot" & CStr(scsearchrow) & """"
+														scsearchcols = scsearchcols & "," & CStr(scsearchrow)
+														scsearchops = scsearchops & "," & """sum"""
+														scsearchdecs = scsearchdecs & "," & "0"
+													End If
+												End If
+												Select Case NullCheck(ReportFields(26,scsearchrow))
+													Case "1"
+													Response.Write ",col_" & CStr(scsearchrow) & ": ""select"""
+													Case "2"
+													Response.Write ",col_" & CStr(scsearchrow) & ": ""multiple"""
+													Case "3"
+													Response.Write ",col_" & CStr(scsearchrow) & ": ""checklist"""
+													Case "4"
+													Response.Write ",col_" & CStr(scsearchrow) & ": ""none"""
+													End Select
+											Next
+										End If %>
+										<% If Not scsearchids = "" Then %>,
+										col_operation: {   
+											id: [<% =scsearchids %>],  
+											col: [<% =scsearchcols %>],  
+											operation: [<% =scsearchops %>],  
+											exclude_row: ["totRowIndex"],  
+											tot_row_index: ["totRowIndex"],
+											decimal_precision: [<% =scsearchdecs %>]  
+										}
+										<% End If %>
+					};
+					var tf1 = setFilterGrid("tbl",tfConfig);                
 
-                    for(var w = 0; w < document.getElementById('tbl').rows[1].cells.length; w++) 
-                    {
-                        //console.log(document.getElementById('tbl').rows[1].cells[w]);
-                        document.getElementById('tbl').rows[0].cells[w].className = document.getElementById('tbl').rows[1].cells[w].className + ' headingfixed'; // + tbl.rows[1].cells[w].className;
-                    }
+					for(var w = 0; w < document.getElementById('tbl').rows[1].cells.length; w++) 
+					{
+						//console.log(document.getElementById('tbl').rows[1].cells[w]);
+						document.getElementById('tbl').rows[0].cells[w].className = document.getElementById('tbl').rows[1].cells[w].className + ' headingfixed'; // + tbl.rows[1].cells[w].className;
+					}
 
-                    //vartotrow = document.getElementById('totRowIndex');
-                    //if (vartotrow) {
-                        //for(var w = 0; w < vartotrow.cells.length; w++) 
-                        //{
-                            //vartotrow.cells[w].className = vartotrow.cells[w].className + ' footerfixed'; // + tbl.rows[1].cells[w].className;
-                        //}
-                    //}
-                    //alert(vartotrow.outerHTML);
+					//vartotrow = document.getElementById('totRowIndex');
+					//if (vartotrow) {
+						//for(var w = 0; w < vartotrow.cells.length; w++) 
+						//{
+							//vartotrow.cells[w].className = vartotrow.cells[w].className + ' footerfixed'; // + tbl.rows[1].cells[w].className;
+						//}
+					//}
+					//alert(vartotrow.outerHTML);
 
-                    //} catch(e) {alert('Problem with Smart Search');}
-                    <% End If %>
+					//} catch(e) {alert('Problem with Smart Search');}
+					<% End If %>
 
-                    try {
-                    //new way to handle print events for chrome and other modern browsers
-                    if (window.matchMedia) {
-                        var mediaQueryList = window.matchMedia('print');
-                        mediaQueryList.addListener(function(mql) {
-                            if (mql.matches) {
-                                rpt_onbeforeprint();
-                            } else {
-                                rpt_onafterprint();
-                            }
-                        });
-                    }
-                    } catch(e) {}
+					try {
+					//new way to handle print events for chrome and other modern browsers
+					if (window.matchMedia) {
+						var mediaQueryList = window.matchMedia('print');
+						mediaQueryList.addListener(function(mql) {
+							if (mql.matches) {
+								rpt_onbeforeprint();
+							} else {
+								rpt_onafterprint();
+							}
+						});
+					}
+					} catch(e) {}
 
-			        try {
-			            //top.walk(self.document.body, null, self);
-			            top.walk(self.document.getElementById('actionbar'), null, self);
-                    } catch(e) { }
+					try {
+						//top.walk(self.document.body, null, self);
+						top.walk(self.document.getElementById('actionbar'), null, self);
+					} catch(e) { }
 				}
 			</script>
 
-            <% If SCSearchAny Then %>
+			<% If SCSearchAny Then %>
 			<link REL="stylesheet" TYPE="text/css" HREF="../../css/mc_filtergrid.css">
-            <% End If %>
+			<% End If %>
 
-            <% If ReportStyleCSS = "" Then %>
+			<% If ReportStyleCSS = "" Then %>
 			<link REL="stylesheet" TYPE="text/css" HREF="../../css/mc_report.css">
 			<%
-		    Response.Write "<style>"
-		    Response.Write ReportStyleUDF
-		    Response.Write "</style>"
-            Else
-			    Response.Write "<style>"
-			    Response.Write ReportStyleCSS
-			    Response.Write ReportStyleUDF
-			    Response.Write "</style>"
+			Response.Write "<style>"
+			Response.Write ReportStyleUDF
+			Response.Write "</style>"
+			Else
+				Response.Write "<style>"
+				Response.Write ReportStyleCSS
+				Response.Write ReportStyleUDF
+				Response.Write "</style>"
 			End If %>
 			<link REL="stylesheet" TYPE="text/css" HREF="../../css/mc_report_edit.css">
 		<%
@@ -2181,22 +2181,22 @@ Sub OutputHeader()
 	  rw "<style type=""text/css"">"
 	  rw "  .blank_row {"
 	  If PO_REPORT_LINEHEIGHT = "MEDIUM" Then
-	    rw "    height:24px"
+		rw "    height:24px"
 	  ElseIf PO_REPORT_LINEHEIGHT = "LARGE" Then
-	    rw "    height:30px"
+		rw "    height:30px"
 	  End If
 	  rw "  }"
 	  rw "</style>"
 	End If
-    rw "<style type=""text/css"">"
-    rw "@media print "
-    rw "{"
-    rw "    .no-print, .no-print * "
-    rw "    {"
-    rw "        display: none !important;"
-    rw "    }"
-    rw "}"
-    rw "</style>"
+	rw "<style type=""text/css"">"
+	rw "@media print "
+	rw "{"
+	rw "    .no-print, .no-print * "
+	rw "    {"
+	rw "        display: none !important;"
+	rw "    }"
+	rw "}"
+	rw "</style>"
 	rw "</HEAD>"
 End Sub
 
@@ -2207,35 +2207,35 @@ Sub OutputWOHeaderRight(htype)
 	
 	Case "WO"
 		rw "<div style=""font-family:Arial;font-size:16px;color:#333333;font-weight:bold;margin-bottom:4px;"">"
-        If WOStatus = "OPEN" Then
-            rw "ESTIMATE"
-        Else
-            rw "INVOICE"
-        End If
+		If WOStatus = "OPEN" Then
+			rw "ESTIMATE"
+		Else
+			rw "INVOICE"
+		End If
 		'Response.Write "wostate: " & wostate & "<br>"
-        rw "</div>"
+		rw "</div>"
 		rw "<div style=""font-family:Arial;font-size:16px;color:#333333;font-weight:bold;margin-bottom:4px;"">" & _
 		   NullCheck(RS_WO("WOID")) & _
 			"</div>"
 		rw "<div style=""font-family:Arial;font-size:11px;font-weight:normal"">" & _
 			NullCheck(RS_WO("RepairCenterName")) & _
 			"</div>"
-        rw "<div style=""font-family:Arial;font-size:11px;color:#333333;font-weight:bold;margin-bottom:4px;"">"
-        If WOStatus = "OPEN" Then
-            rw "Upload Date: "
-        Else
-            uploadDate = RS_WO("Closed")
-            dateNumber = Weekday(uploadDate)
-            If dateNumber = 1 Then
-                 rw "Upload Date: " & DateNullCheck(DateAdd("d",1,uploadDate))
-            ElseIf dateNumber = 2 Then
-                rw "Upload Date: " & DateNullCheck(uploadDate)
-            Else
-               dateNumber = 9 - dateNumber
-               rw "Upload Date: " & DateNullCheck(DateAdd("d",dateNumber,uploadDate))
-            End If
-        End If
-        rw "</div>"
+		rw "<div style=""font-family:Arial;font-size:11px;color:#333333;font-weight:bold;margin-bottom:4px;"">"
+		If WOStatus = "OPEN" Then
+			rw "Upload Date: "
+		Else
+			uploadDate = RS_WO("Closed")
+			dateNumber = Weekday(uploadDate)
+			If dateNumber = 1 Then
+				 rw "Upload Date: " & DateNullCheck(DateAdd("d",1,uploadDate))
+			ElseIf dateNumber = 2 Then
+				rw "Upload Date: " & DateNullCheck(uploadDate)
+			Else
+			   dateNumber = 9 - dateNumber
+			   rw "Upload Date: " & DateNullCheck(DateAdd("d",dateNumber,uploadDate))
+			End If
+		End If
+		rw "</div>"
 		'If ((WO_REPORT_HEADER_SHOWSTATUS = "Yes") Or (WO_REPORT_HEADER_SHOWSUBSTATUS = "Yes")) Then
 		'  rw "<div style=""font-family:Arial;font-size:11px;font-weight:normal"">" 
 		'  If WO_REPORT_HEADER_SHOWSTATUS = "Yes" Then

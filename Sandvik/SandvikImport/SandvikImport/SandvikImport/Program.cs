@@ -17,6 +17,8 @@
 | 09/16/2016    | 1.0.1.1   |                     | Re-did the whole data import                              |
 | 09/19/2016    | 1.0.1.2   |                     | Get the DB prefix from the database (container table)     |
 |               |           |                     | Removed login by adding check the debug flag              |
+| 11/11/2016    | 1.0.2.1   |                     | Change the matching using the file line item and used     |
+|               |           |                     | Vendor name, partname and part ID for 3 way matching      |
 ---------------------------------------------------------------------------------------------------------------
 
 ToDo:

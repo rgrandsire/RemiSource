@@ -136,6 +136,7 @@ namespace SandvikImport
             }
             string zPKInvoice = "";
             string zPK = "";
+
             foreach (string line in File.ReadLines(ImportFilePath + importFileName))
             {
                 counter++;
@@ -146,16 +147,20 @@ namespace SandvikImport
                     errorLog.logMessage(Program.LogFilePathAndName, DateTime.Now.ToString() + " Data: " + line);
                     string[] words = line.Split('|');
                     zPOPK = (words[0]).Trim();///////////////// That's where I need to check if the POPK changes...
-                   // if (oldPOID == zPOPK) zFlag = false; else zFlag = true;
-                    string zLineItemNum = words[8].Trim();
+                    string zLineItemNum = "";
+                    string zPartID = words[5].Trim();
+                    string zPartName = words[4].Trim();
                     string zUnitPrice = words[6].Trim();
+                    string zTotalPrice = words[1].Trim();
+                    string zVendorName = words[3].Trim();
+                    Console.WriteLine("Total Price = " + zTotalPrice);
                     int zRows = 0;
                     //Getting the POPK from the POID
                     if (Program.debugflag == "Y")
                     {
                         errorLog.logMessage(Program.LogFilePathAndName, DateTime.Now.ToString() + " Getting the POPK from POID: " + zPOPK);
                     }
-                    sql = "select POPK from PurchaseOrder where POID=" + zPOPK;
+                    sql = "select POPK from PurchaseOrder WITH (NOLOCK) where POID=" + zPOPK +" and VendorName= '" + zVendorName +"';";    // Adding the vendor name for 3 way matching
                     cmd.CommandTimeout = 480;
                     cmd.CommandType = CommandType.Text;
                     cmd.Parameters.Clear();
@@ -206,13 +211,13 @@ namespace SandvikImport
                                 cmd.CommandText = sql;
                                 cmd.Parameters.Clear();
                                 cmd.Parameters.Add("@Total", SqlDbType.Float);
-                                cmd.Parameters["@Total"].Value = Convert.ToDouble("44.55");
+                                cmd.Parameters["@Total"].Value = Convert.ToDouble(zTotalPrice); 
                                 cmd.Parameters.Add("@POPK", SqlDbType.Int);
                                 cmd.Parameters["@POPK"].Value = zPOPK;
                                 cmd.Parameters.Add("@ReceiptNoInternal", SqlDbType.Int);
                                 cmd.Parameters["@ReceiptNoInternal"].Value = jj.ToString();
                                 cmd.Parameters.Add("@Receipt", SqlDbType.VarChar);
-                                cmd.Parameters["@Receipt"].Value = zPOPK + "-" + jj.ToString(); // ---> replace zLine num with Recordnointernal
+                                cmd.Parameters["@Receipt"].Value = zPOPK + "-" + jj.ToString(); 
                                 if (Program.debugflag == "Y")
                                 {
                                     Console.WriteLine("SQL1= " + cmd.CommandText.ToString());
@@ -227,7 +232,7 @@ namespace SandvikImport
                                     {
                                         errorLog.logMessage(Program.LogFilePathAndName, DateTime.Now.ToString() + " Row(s) affected= " + zRows.ToString());
                                     }
-                                    //////////// Let's get the PK and the PKInvoice
+                                    //////////// Let's get the PK and the PKInvoice 
                                     reader.Close();
                                 }
                                 catch (SqlException s)
@@ -237,7 +242,7 @@ namespace SandvikImport
                                 }
                             }
                             else jj--;
-                            sql = "select zPKInvoice= Convert(Varchar,PurchaseOrderInvoice.InvoicePK) from PurchaseOrderInvoice where POPK=" + zPOPK + " and ReceiptNoInternal= " + jj.ToString() + ";";
+                            sql = "select zPKInvoice= Convert(Varchar,PurchaseOrderInvoice.InvoicePK) from PurchaseOrderInvoice where POPK=" + zPOPK + " and PartName= '" + zPartName  + "'and PartID= '" + zPartID +"';";
                             cmd.Parameters.Clear();
                             cmd.CommandType = CommandType.Text;
                             Console.WriteLine("PKInvoice query: " + sql);
@@ -257,7 +262,7 @@ namespace SandvikImport
                                     }
                                     /// From there I need to insert the record into the POIdetail table
                                     cmd.Parameters.Clear();
-                                    sql = "select zPK= Convert(Varchar,PurchaseOrderDetail.PK) from PurchaseOrderDetail where POPK=" + zPOPK + " and LineItemNo=" + zLineItemNum + "; ";
+                                    sql = "select zPK= Convert(Varchar,PurchaseOrderDetail.PK), LineItemNo from PurchaseOrderDetail where POPK=" + zPOPK + " and PartID=" + zPartID + " and PartName = " +zPartName + "; ";
                                     cmd.CommandText = sql;
                                     if (Program.debugflag == "Y")
                                     {
@@ -269,6 +274,7 @@ namespace SandvikImport
                                         reader = cmd.ExecuteReader();
                                         if (reader.Read())
                                         {
+                                            zLineItemNum = reader.GetString(1);
                                             zPK = reader.GetString(0);
                                             if (Program.debugflag == "Y")
                                             {
