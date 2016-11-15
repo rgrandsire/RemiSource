@@ -10,6 +10,7 @@
 | 09/19/2016    | 1.0.0.4   |                     | Change the query to get the Entity name                   |
 |               |           |                     | Use the debug flag to write to log                        |
 | 09/21/2016    | 1.0.1.1   |                     | Use InterfaceLog table and stored procedure to load data  |
+| 11/14/2016    | 1.0.1.2   |                     | Calculate Meter to Miles (rounded) and seconds to hours   |
 ---------------------------------------------------------------------------------------------------------------
 */
 
@@ -57,8 +58,8 @@ namespace NavistarImport
         static string getMC_DB() 
         {
             string connSuccess = "";
-            string connKey = System.Configuration.ConfigurationSettings.AppSettings["connectionkey"];
-            string econnStr = System.Configuration.ConfigurationSettings.AppSettings["regdb"]; 
+            string connKey = System.Configuration.ConfigurationManager.AppSettings["connectionkey"];
+            string econnStr = System.Configuration.ConfigurationManager.AppSettings["regdb"]; 
             string entcontainercode = "";
             string zServer = "";
             string zSql = "SELECT [cr].[dbserver_name], rtrim([c].[container_type_code]) + [c].[Container_Code] FROM [dbo].[Container] [c] INNER JOIN [dbo].[container_resource] [cr] WITH (NOLOCK) ON [c].[container_guid]= [cr].[container_guid] WHERE [cr].[connection_key]=@conKey";
@@ -180,20 +181,20 @@ namespace NavistarImport
             }
             myLogFile = "C:\\temp\\GeoToNavistar_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".log";
             errorLog.logMessage(myLogFile, "Data extraction tool started");
-            int days4Files =  Convert.ToInt16(System.Configuration.ConfigurationSettings.AppSettings["DaysToKeep"]);
+            int days4Files =  Convert.ToInt16(System.Configuration.ConfigurationManager.AppSettings["DaysToKeep"]);
                         // Get the connection stuff
-            string geoUserName = System.Configuration.ConfigurationSettings.AppSettings["GeotabUser"];
-            string geoPassWord = System.Configuration.ConfigurationSettings.AppSettings["GeotabPassWord"]; 
-            string geoServer = System.Configuration.ConfigurationSettings.AppSettings["GeotabServer"];
-            string geoDB = System.Configuration.ConfigurationSettings.AppSettings["GeotabDB"];
-            string MCUserName = System.Configuration.ConfigurationSettings.AppSettings["entusername"];
+            string geoUserName = System.Configuration.ConfigurationManager.AppSettings["GeotabUser"];
+            string geoPassWord = System.Configuration.ConfigurationManager.AppSettings["GeotabPassWord"]; 
+            string geoServer = System.Configuration.ConfigurationManager.AppSettings["GeotabServer"];
+            string geoDB = System.Configuration.ConfigurationManager.AppSettings["GeotabDB"];
+            string MCUserName = System.Configuration.ConfigurationManager.AppSettings["entusername"];
             //string MCDB = "";  //  --> get from registration database
-            string MCPassword = System.Configuration.ConfigurationSettings.AppSettings["entpassword"];
+            string MCPassword = System.Configuration.ConfigurationManager.AppSettings["entpassword"];
             string DBSql = "";
             string odometerReading = "";
             string hourReading = "";
             string zVehicle = "";
-            zDebug = System.Configuration.ConfigurationSettings.AppSettings["Debug"];
+            zDebug = System.Configuration.ConfigurationManager.AppSettings["Debug"];
             var utcNow = DateTime.UtcNow;
             string[] arr1 = new string[] { "", "" };
             // Let's cleanup the log folder before doing anything
@@ -242,17 +243,18 @@ namespace NavistarImport
                     // Retrieve the odometer status data
                     IList<StatusData> statusMiles = api.Call<IList<StatusData>>("Get", typeof(StatusData), new { search = statusMilesSearch });
                     IList<StatusData> statusHours = api.Call<IList<StatusData>>("Get", typeof(StatusData), new { search = statusHoursSearch });
-                    odometerReading = (statusMiles[0].Data ?? 0).ToString();
-                    hourReading = (statusHours[0].Data ?? 0).ToString();
+                    double zMilesToday = Convert.ToDouble(statusMiles[0].Data * 0.000621371);
+                    odometerReading = (Math.Round(zMilesToday)).ToString();
+                    hourReading = ((statusHours[0].Data/3600) ?? 0).ToString();
                     zVehicle =  device.ToString();
                     string[] words = zVehicle.Split(':');
                     zVehicle = words[0].Substring(0, words[0].Length - 2);
                     errorLog.logMessage(myLogFile, zVehicle + "|" + odometerReading.ToString() + "|" + hourReading.ToString());
                     //Load the stuff in the database (tempory table now)
                     //DBSql = "update Asset set Meter1Reading=" + odometerReading.ToString() + ", Meter2Reading=" + hourReading.ToString() + " where AssetID='" + zVehicle.Trim() + "';";
+                    string zData = hourReading.ToString()+"|" + odometerReading.ToString()+ "|" + zVehicle.Trim();
                     DBSql = "insert into MC_InterfaceLog (Hours, Miles,  VehicleID, ImportID, RecordData, RecordNumber) Values ('" + 
-                            hourReading.ToString()+"','"+odometerReading.ToString() +"','" + zVehicle.Trim() + "','"+ importid+"', '"+ hourReading.ToString() + odometerReading.ToString() +
-                            zVehicle.Trim() + "','"+ (i+1).ToString()+"');";
+                            hourReading.ToString()+"','"+odometerReading.ToString() +"','" + zVehicle.Trim() + "','"+ importid+"', '"+ zData + "','"+ (i+1).ToString()+"');";
                     if (zDebug == "Y")
                     {
                         errorLog.logMessage(myLogFile, "Query: " + DBSql);
