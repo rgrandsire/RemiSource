@@ -19,12 +19,11 @@
 |               |           |                     | Removed login by adding check the debug flag              |
 | 11/11/2016    | 1.0.2.1   |                     | Change the matching using the file line item and used     |
 |               |           |                     | Vendor name, partname and part ID for 3 way matching      |
+| 11/15/2016    | 1.0.2.2   |                     | Remove the PartName match and clean reader close          |
 ---------------------------------------------------------------------------------------------------------------
 
 ToDo:
 - Move the log file path and stuff to the logfile function
-- Add the date and time to the login function
-- Check the debug flag in the log function 
 
 */
 using System;

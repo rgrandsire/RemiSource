@@ -1,9 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -23,8 +19,8 @@ namespace SandvikImport
         static string getMC_DB()
         { /////////Getting the ent database and sql server information from the Registration database
             string connSuccess = "111|000";
-            string connKey = System.Configuration.ConfigurationSettings.AppSettings["connectionkey"] ?? "Sandvik";
-            string econnStr = System.Configuration.ConfigurationSettings.AppSettings["regdb"] ?? "mcRegistrationSA";
+            string connKey = System.Configuration.ConfigurationManager.AppSettings["connectionkey"] ?? "Sandvik";
+            string econnStr = System.Configuration.ConfigurationManager.AppSettings["regdb"] ?? "mcRegistrationSA";
             string entcontainercode = "";
             string zServer = "";
             string zSql = "SELECT [cr].[dbserver_name], rtrim([c].[container_type_code]) + [c].[Container_Code] FROM [dbo].[Container] [c] INNER JOIN [dbo].[container_resource] [cr] WITH (NOLOCK) ON [c].[container_guid]= [cr].[container_guid] WHERE [cr].[connection_key]=@conKey";
@@ -186,6 +182,10 @@ namespace SandvikImport
                             try
                             {
                                 int count = (int)cmd.ExecuteScalar();
+                                if (!reader.IsClosed)
+                                {
+                                    reader.Close();
+                                }
                                 jj = count + 1;
                                 if (Program.debugflag == "Y")
                                 {
@@ -205,7 +205,7 @@ namespace SandvikImport
                             {
                                 // I need to insert the receipt and receipt number into PurchaseOrderInvoice
                                 firstRun = false;
-                                sql = "insert into PurchaseOrderInvoice (POPK, Subtotal, FreightCharge, TaxAmount, Total, ReceiptNo, ReceiptDate, Type, TypeDesc, ReceiptNoInternal) values " +     //  sql = "insert into PurchaseOrderInvoice (POPK, Subtotal, FreightCharge, TaxAmount, Total, ReceiptNo, ReceiptDate, Type) values " +
+                                sql = "insert into PurchaseOrderInvoice (POPK, Subtotal, FreightCharge, TaxAmount, Total, ReceiptNo, ReceiptDate, Type, TypeDesc, ReceiptNoInternal) values " + 
                                     "(@POPK, 0, 0, 0, @Total, @Receipt,Convert(varchar,Getdate(), 101), 'R', 'Receipt',@ReceiptNoInternal)";
                                 cmd.Parameters.Clear();
                                 cmd.CommandText = sql;
@@ -242,7 +242,7 @@ namespace SandvikImport
                                 }
                             }
                             else jj--;
-                            sql = "select zPKInvoice= Convert(Varchar,PurchaseOrderInvoice.InvoicePK) from PurchaseOrderInvoice where POPK=" + zPOPK + " and PartName= '" + zPartName  + "'and PartID= '" + zPartID +"';";
+                            sql = "select zPKInvoice= PurchaseOrderInvoice.InvoicePK from PurchaseOrderInvoice with (nolock) where PurchaseOrderInvoice.POPK=" + zPOPK + " and ReceiptNoInternal='" + jj.ToString() + "';";
                             cmd.Parameters.Clear();
                             cmd.CommandType = CommandType.Text;
                             Console.WriteLine("PKInvoice query: " + sql);
@@ -255,44 +255,61 @@ namespace SandvikImport
                                 reader = cmd.ExecuteReader();
                                 if (reader.Read())
                                 {
-                                    zPKInvoice = reader.GetString(0);
+                                    zPKInvoice = reader.GetValue(0).ToString();
+                                    if (!reader.IsClosed)
+                                    {
+                                        reader.Close();
+                                    }
                                     if (Program.debugflag == "Y")
                                     {
                                         errorLog.logMessage(Program.LogFilePathAndName, DateTime.Now.ToString() + " PKInvoice= " + zPKInvoice);
                                     }
                                     /// From there I need to insert the record into the POIdetail table
                                     cmd.Parameters.Clear();
-                                    sql = "select zPK= Convert(Varchar,PurchaseOrderDetail.PK), LineItemNo from PurchaseOrderDetail where POPK=" + zPOPK + " and PartID=" + zPartID + " and PartName = " +zPartName + "; ";
+                                    sql = "select zPK= Convert(Varchar,PurchaseOrderDetail.PK), LineItemNo from PurchaseOrderInvoice join PurchaseOrderDetail on PurchaseOrderDetail.POPK= PurchaseOrderInvoice.POPK where PurchaseOrderDetail.POPK=" + zPOPK + " and PurchaseOrderDetail.PartID='" + zPartID + "';";
                                     cmd.CommandText = sql;
                                     if (Program.debugflag == "Y")
                                     {
                                         errorLog.logMessage(Program.LogFilePathAndName, DateTime.Now.ToString() + " Retrieving the PK: " + sql);
                                     }
-                                    reader.Close();
+                                    if (!reader.IsClosed)
+                                    {
+                                        reader.Close();
+                                    }
                                     try
                                     {
                                         reader = cmd.ExecuteReader();
                                         if (reader.Read())
                                         {
-                                            zLineItemNum = reader.GetString(1);
                                             zPK = reader.GetString(0);
+                                            zLineItemNum = reader.GetInt32(1).ToString();
                                             if (Program.debugflag == "Y")
                                             {
                                                 errorLog.logMessage(Program.LogFilePathAndName, DateTime.Now.ToString() + " PK= " + zPK);
+                                            }
+                                            if (!reader.IsClosed)
+                                            {
+                                                reader.Close();
                                             }
                                         }
                                     } 
                                     catch (SqlException r)
                                     {
                                         errorLog.logMessage(Program.LogFilePathAndName, DateTime.Now.ToString() + " SqlError: " + r.Message);
+                                        if (!reader.IsClosed)
+                                        {
+                                            reader.Close();
+                                        }
                                         zErrNum++;
                                     }
-                                    ////////////////////////////
                                     sql = "insert into PurchaseOrderInvoiceDetail(InvoicePK, PurchaseOrderDetailPK, OrderUnitQtyReceived, OrderUnitQtyBackOrdered, OrderUnitQtyCanceled, Bin) values " +
-                                         "(" + zPKInvoice + ", " + zPK + ", " + words[10] + ", 0, 0, (select Bin from PurchaseOrderDetail where POPK=" + zPOPK + " and LineItemNo=" + zLineItemNum + "));";
+                                          "(" + zPKInvoice + ", " + zPK + ", " + words[10] + ", 0, 0, (select Bin from PurchaseOrderDetail where POPK=" + zPOPK + " and LineItemNo=" + zLineItemNum + "));";
                                     cmd.Parameters.Clear();
                                     cmd.CommandText = sql;
-                                    reader.Close();
+                                    if (!reader.IsClosed)
+                                    {
+                                        reader.Close();
+                                    }
                                     if (Program.debugflag == "Y")
                                     {
                                         errorLog.logMessage(Program.LogFilePathAndName, DateTime.Now.ToString() + " SQL4: " + sql);
@@ -304,12 +321,20 @@ namespace SandvikImport
                                     catch (SqlException a)
                                     {
                                         errorLog.logMessage(Program.LogFilePathAndName, DateTime.Now.ToString() + " SQL Error: " + a.Message);
+                                        if (!reader.IsClosed)
+                                        {
+                                            reader.Close();
+                                        }
                                         zErrNum++;
                                     }
                                     //////////////////// I need to update the price in 2 tables
-                                    sql = "update Part set LastOrderUnitPrice=" + zUnitPrice + " where PartID= '" + words[4].Trim() + "';";
+                                    sql = "update Part set LastOrderUnitPrice=" + zUnitPrice + " where PartID= '" + zPartID + "';";
                                     cmd.Parameters.Clear();
                                     cmd.CommandText = sql;
+                                    if (!reader.IsClosed)
+                                    {
+                                        reader.Close();
+                                    }
                                     if (Program.debugflag == "Y")
                                     {
                                         errorLog.logMessage(Program.LogFilePathAndName, DateTime.Now.ToString() + " SQL5: " + sql);
@@ -336,6 +361,10 @@ namespace SandvikImport
                             {
                                 errorLog.logMessage(Program.LogFilePathAndName, DateTime.Now.ToString() + " SQL Error: " + e.Message);
                                 errorLog.logMessage(Program.LogFilePathAndName, DateTime.Now.ToString() + " SQL: " + sql);
+                                if (!reader.IsClosed)
+                                {
+                                    reader.Close();
+                                }
                                 zErrNum++;
                             }
                         }
@@ -343,7 +372,10 @@ namespace SandvikImport
                         {
                             errorLog.logMessage(Program.LogFilePathAndName, DateTime.Now.ToString() + " Could not find the PO: " + zPOPK + " in the database, skip to next record");
                             noPOPK = true;
-                            reader.Close();
+                            if (!reader.IsClosed)
+                            {
+                                reader.Close();
+                            }
                         }
 
                     }
@@ -355,6 +387,7 @@ namespace SandvikImport
                         }
                         zErrNum++;
                     }
+
                 }
 
                 if ((zErrNum > 0) && (noPOPK== false))
@@ -362,8 +395,8 @@ namespace SandvikImport
                     errorLog.logMessage(LogFilePathAndName, DateTime.Now.ToString() + zErrNum.ToString() + " errors were reported");
                     errorLog.logMessage(LogFilePathAndName, DateTime.Now.ToString() + " ");
                     errorLog.logMessage(LogFilePathAndName, DateTime.Now.ToString() + " - " + importFileName + " Error while processing - Rolling back changes");
+                    cmd.Parameters.Clear();
                     cmd.CommandText = "delete from PurchaseOrderInvoice where POPK=" + zPOPK + ";";
-                    
                     cmd.ExecuteNonQuery();
                 }
             }

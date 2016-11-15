@@ -5,8 +5,8 @@ C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\Sandvik\SandvikI
 C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\Sandvik\SandvikImport\SandvikImport\SandvikImport\obj\Release\SandvikImport.pdb
 C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\Sandvik\SandvikImport\SandvikImport\SandvikImport\obj\Release\SandvikImport.csprojResolveAssemblyReference.cache
 C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\Sandvik\SandvikImport\SandvikImport\SandvikImport\bin\Release\SandvikImport.exe.config
-C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\Sandvik\SandvikImport\SandvikImport\SandvikImport\obj\Release\SandvikImport.exe
-C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\Sandvik\SandvikImport\SandvikImport\SandvikImport\obj\Release\SandvikImport.pdb
 C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\Sandvik\SandvikImport\SandvikImport\SandvikImport\bin\Release\SandvikImport.exe
 C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\Sandvik\SandvikImport\SandvikImport\SandvikImport\bin\Release\SandvikImport.pdb
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\Sandvik\SandvikImport\SandvikImport\SandvikImport\obj\Release\SandvikImport.exe
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\Sandvik\SandvikImport\SandvikImport\SandvikImport\obj\Release\SandvikImport.pdb
 C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\Sandvik\SandvikImport\SandvikImport\SandvikImport\obj\Release\SandvikImport.csprojResolveAssemblyReference.cache
