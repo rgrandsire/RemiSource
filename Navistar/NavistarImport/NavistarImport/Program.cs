@@ -10,7 +10,7 @@
 | 09/19/2016    | 1.0.0.4   |                     | Change the query to get the Entity name                   |
 |               |           |                     | Use the debug flag to write to log                        |
 | 09/21/2016    | 1.0.1.1   |                     | Use InterfaceLog table and stored procedure to load data  |
-| 11/14/2016    | 1.0.1.2   |                     | Calculate Meter to Miles (rounded) and seconds to hours   |
+| 11/14/2016    | 1.0.1.2   |                     | Calculate Meter to Miles and seconds to hours             |
 ---------------------------------------------------------------------------------------------------------------
 */
 
@@ -244,8 +244,9 @@ namespace NavistarImport
                     IList<StatusData> statusMiles = api.Call<IList<StatusData>>("Get", typeof(StatusData), new { search = statusMilesSearch });
                     IList<StatusData> statusHours = api.Call<IList<StatusData>>("Get", typeof(StatusData), new { search = statusHoursSearch });
                     double zMilesToday = Convert.ToDouble(statusMiles[0].Data * 0.000621371);
+                    double zTimeToday = Convert.ToDouble(statusHours[0].Data / 3600);
                     odometerReading = (Math.Round(zMilesToday)).ToString();
-                    hourReading = ((statusHours[0].Data/3600) ?? 0).ToString();
+                    hourReading = (Math.Round(zTimeToday,2)).ToString();
                     zVehicle =  device.ToString();
                     string[] words = zVehicle.Split(':');
                     zVehicle = words[0].Substring(0, words[0].Length - 2);
