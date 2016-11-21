@@ -10,3 +10,5 @@ C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\Sandv
 C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\Sandvik\SandvikImport\SandvikImport\SandvikImport\obj\Release\SandvikImport.exe
 C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\Sandvik\SandvikImport\SandvikImport\SandvikImport\obj\Release\SandvikImport.pdb
 C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\Sandvik\SandvikImport\SandvikImport\SandvikImport\obj\Release\SandvikImport.csprojResolveAssemblyReference.cache
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\Sandvik\SandvikImport\SandvikImport\SandvikImport\bin\Release\Renci.SshNet.dll
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\Sandvik\SandvikImport\SandvikImport\SandvikImport\bin\Release\Renci.SshNet.xml

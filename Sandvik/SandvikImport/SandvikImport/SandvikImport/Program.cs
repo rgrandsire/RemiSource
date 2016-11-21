@@ -20,6 +20,7 @@
 | 11/11/2016    | 1.0.2.1   |                     | Change the matching using the file line item and used     |
 |               |           |                     | Vendor name, partname and part ID for 3 way matching      |
 | 11/15/2016    | 1.0.2.2   |                     | Remove the PartName match and clean reader close          |
+| 11/17/2016    | 1.0.3.1   |                     | Add get files from sFTP and track file history            |
 ---------------------------------------------------------------------------------------------------------------
 
 ToDo:
@@ -117,6 +118,7 @@ namespace SandvikImport
             // Import the file data
             import i = new import();
             i.importPartInfo();
+           
 
             if (Program.debugflag == "Y")
             {

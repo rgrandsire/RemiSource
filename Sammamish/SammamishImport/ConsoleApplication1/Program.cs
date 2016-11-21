@@ -8,6 +8,7 @@
 | 10/28/2016    | 1.0.0.4    |                    | Replaced deprecated ConfigurationSettings with            |
 |               |            |                    | ConfigurationManager                                      |
 | 11/02/2016    | 1.0.0.5    |                    | Remove 3 custom fields from table to use RecordData       |
+| 11/18/2016    | 1.0.0.6    |                    | Change to pick any files and delete after import complete |
 ---------------------------------------------------------------------------------------------------------------
 
 */
@@ -28,7 +29,8 @@ namespace SammamishMeterImport
         public static string zDebug = "N";
         public static errorlogging errorLog = new errorlogging();
         public static Guid importid = System.Guid.NewGuid();
-        
+        public static DateTime iday;
+
         static void DBImport(string zSQL)       //This function updates the database with mileage and hours from file
         {
             //Putting data in the database
@@ -64,10 +66,9 @@ namespace SammamishMeterImport
             }
 
         }
-        static void cleanup(int daysToKeep)        // This function is used to clean up log files if needed
+        static void cleanup(int daysToKeep, string daPath)        // This function is used to clean up log files if needed
         {
-            string zFolder = Path.GetDirectoryName(myLogFile);
-            string[] xfiles = Directory.GetFiles(zFolder);
+            string[] xfiles = Directory.GetFiles(daPath);
             int days = Convert.ToInt32(daysToKeep);
             if (days > 0)
             {
@@ -162,37 +163,49 @@ namespace SammamishMeterImport
                 errorLog.logMessage(myLogFile, "Import Stored Procedure error: [" + e.ErrorCode + "] " + e.Message);
             }
         }
+
+        static void moveProcessedFile(string fname, string zPath)
+        {
+            // Move the file to the processed folder
+            string filenameDate = iday.ToString("MM-dd-yyyy.HHmm");
+            ////////////////// something is wrong
+            string sourceFile = (zPath + fname);
+            string destinationFile = ("C:/temp/Archive/" + fname);
+            System.IO.File.Move(sourceFile, destinationFile + "." + filenameDate);
+            errorLog.logMessage(myLogFile, fname + " has been archived and renamed to: " + destinationFile + "." + filenameDate);
+        }
+
         static void Main(string[] args)
         {
             Console.Title = "MC meter import utility";
+            iday = DateTime.Now;
             //Console.
             //Let's check if path exists
-            if (!Directory.Exists("C:\\temp\\"))
+            if (!Directory.Exists("C:/temp/Archive"))
             {
-                Directory.CreateDirectory("C:\\temp\\");
+                Directory.CreateDirectory("C:/temp/Archive");
             }
-            myLogFile = "C:\\temp\\SammamishMeterImport_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".log";
+
+            myLogFile = "C:/temp/SammamishMeterImport_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".log";
             errorLog.logMessage(myLogFile, "Data extraction tool started");
             int days4Files = Convert.ToInt16(System.Configuration.ConfigurationManager.AppSettings["DaysToKeep"]);
             // Get the connection stuff
-           string MCUserName = System.Configuration.ConfigurationManager.AppSettings["entusername"];
-           string MCPassword = System.Configuration.ConfigurationManager.AppSettings["entpassword"];
-           string zFile = System.Configuration.ConfigurationManager.AppSettings["ImportFilePath"]; 
-           string DBSql = "";
-           string odometerReading = "";
-           string hourReading = "";
-           string zVehicle = "";
-           int i = 0;
-           int zGood = 0;
-           int zBad = 0;
-            int VehicleOffset =Convert.ToInt16(System.Configuration.ConfigurationManager.AppSettings["VehicleOffset"]);
-           int MilesOffset = Convert.ToInt16(System.Configuration.ConfigurationManager.AppSettings["MilesOffset"]);
-           int HoursOffset = Convert.ToInt16(System.Configuration.ConfigurationManager.AppSettings["HoursOffset"]);
-           zDebug = System.Configuration.ConfigurationManager.AppSettings["Debug"];
-           var utcNow = DateTime.UtcNow;
-           string[] arr1 = new string[] { "", "" };
-           // Let's cleanup the log folder before doing anything
-           cleanup(days4Files);
+            string MCUserName = System.Configuration.ConfigurationManager.AppSettings["entusername"];
+            string MCPassword = System.Configuration.ConfigurationManager.AppSettings["entpassword"];
+            string zFile = System.Configuration.ConfigurationManager.AppSettings["ImportFilePath"];////// --> Replace zFile to get all files see Sandvik
+            string DBSql = "";
+            string odometerReading = "";
+            string hourReading = "";
+            string zVehicle = "";
+            int i = 0;
+            int zGood = 0;
+            int zBad = 0;
+            int VehicleOffset = Convert.ToInt16(System.Configuration.ConfigurationManager.AppSettings["VehicleOffset"]);
+            int MilesOffset = Convert.ToInt16(System.Configuration.ConfigurationManager.AppSettings["MilesOffset"]);
+            int HoursOffset = Convert.ToInt16(System.Configuration.ConfigurationManager.AppSettings["HoursOffset"]);
+            zDebug = System.Configuration.ConfigurationManager.AppSettings["Debug"];
+            var utcNow = DateTime.UtcNow;
+            string[] arr1 = new string[] { "", "" };
             if (zDebug == "Y")
             {
                 errorLog.logMessage(myLogFile, "MC User name: " + MCUserName);
@@ -200,7 +213,6 @@ namespace SammamishMeterImport
             }
             DBSql = getMC_DB();
             arr1 = DBSql.Split('|');
-            ///////////////"Server=localhost; Integrated Security=False; Database=mcregistrationSA; User Id=mczar; Password=mczar" />
             myConStr = "Server=" + arr1[1] + ";Database=" + arr1[0] + ";Integrated Security=False; User ID=" + MCUserName + "; Password=" + MCPassword;
             if (zDebug == "Y")
             {
@@ -211,53 +223,75 @@ namespace SammamishMeterImport
             errorLog.logMessage(myLogFile, "###########################################################################");
             Console.WriteLine("");
             Console.WriteLine("Retrieving data one vehicle at the time");
-            if (File.Exists(zFile))
-                foreach (string line in File.ReadLines(zFile))
-                    try
-                    {
-                        i++;
-                        string[] words = line.Split(',');
-                        Console.Write(".");
-                        odometerReading = words[MilesOffset].Trim();
-                        hourReading = words[HoursOffset].Trim();
-                        zVehicle = words[VehicleOffset].Trim(new Char[] { ' ', '*', '"' });
-                        errorLog.logMessage(myLogFile, zVehicle + "\t\t|" + odometerReading + "\\tt|" + hourReading);
-                        DBSql = "insert into MC_InterfaceLog (ImportID, FileName, RecordData, RecordNumber) Values ('" +
-                                importid + "','" + Path.GetFileName(zFile) + "', '" + hourReading+","+ odometerReading +","+
-                                zVehicle + "','" + (i).ToString() + "');";
-                        if (zDebug == "Y")
-                        {
-                            errorLog.logMessage(myLogFile, "Query: " + DBSql);
-                        }
-                        if (zVehicle.Length > 0)
-                        {
-                            zGood++;
-                            DBImport(DBSql);
-                        }
-                        else zBad++;
-                        // Execute the stored procedure to load the data to the asset table
-                        FileToMC();
-
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Error with import: " + e.Message);
-                    }
-            Console.WriteLine("");
-            Console.WriteLine(zGood.ToString()+  " records imported in the database");
-            Console.WriteLine(zBad.ToString()+ " records could not be imported");
-            Console.WriteLine("Retrieved all records and inserted them to the database");
-            errorLog.logMessage(myLogFile, "###########################################################################");
-            errorLog.logMessage(myLogFile, "");
-            cleanup(days4Files);
-            errorLog.logMessage(myLogFile, recUpdated.ToString() + " successfully updated");
-            errorLog.logMessage(myLogFile, recNotUdated.ToString() + " could not be updated");
-            errorLog.logMessage(myLogFile, "Import complete, check above for success or failure");
-            if (zDebug == "Y")
+            string[] files = Directory.GetFiles(zFile);
+            //get file count - if "0" then email sig
+            int filecount = files.Length;
+            if (filecount != 0)
             {
-                Console.WriteLine("Press any key to end this program");
-                Console.ReadKey();
+                // Loop through files and import
+                foreach (string file in files)
+                {
+                    FileInfo fi = new FileInfo(file);
+                    string fname = fi.Name;
+
+                    if (zDebug == "Y")
+                    {
+                        errorLog.logMessage(myLogFile, " Processing file: " + fname);
+                    }
+                    if (File.Exists(file))
+                        foreach (string line in File.ReadLines(file))
+                            try
+                            {
+                                i++;
+                                string[] words = line.Split(',');
+                                Console.Write(".");
+                                odometerReading = words[MilesOffset].Trim();
+                                hourReading = words[HoursOffset].Trim();
+                                zVehicle = words[VehicleOffset].Trim(new Char[] { ' ', '*', '"' });
+                                errorLog.logMessage(myLogFile, zVehicle + "\t\t|" + odometerReading + "\t\t|" + hourReading);
+                                DBSql = "insert into MC_InterfaceLog (ImportID, FileName, RecordData, RecordNumber) Values ('" +
+                                        importid + "','" + Path.GetFileName(zFile) + "', '" + hourReading + "," + odometerReading + "," +
+                                        zVehicle + "','" + (i).ToString() + "');";
+                                if (zDebug == "Y")
+                                {
+                                    errorLog.logMessage(myLogFile, "Query: " + DBSql);
+                                }
+                                if (zVehicle.Length > 0)
+                                {
+                                    zGood++;
+                                    DBImport(DBSql);
+                                }
+                                else zBad++;
+                                // Execute the stored procedure to load the data to the asset table
+                                FileToMC();
+
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine("Error with import: " + e.Message);
+                            }
+                    Console.WriteLine("");
+                    Console.WriteLine(zGood.ToString() + " records imported in the database");
+                    Console.WriteLine(zBad.ToString() + " records could not be imported");
+                    Console.WriteLine("Retrieved all records and inserted them to the database");
+                    errorLog.logMessage(myLogFile, "###########################################################################");
+                    errorLog.logMessage(myLogFile, "");
+                    errorLog.logMessage(myLogFile, recUpdated.ToString() + " successfully updated");
+                    errorLog.logMessage(myLogFile, recNotUdated.ToString() + " could not be updated");
+                    errorLog.logMessage(myLogFile, "Import complete, check above for success or failure");
+                    if (zDebug == "Y")
+                    {
+                        Console.WriteLine("Press any key to end this program");
+                        Console.ReadKey();
+                    }
+
+                    errorLog.logMessage(myLogFile, " Move processed file.");
+                    moveProcessedFile(fname, zFile);
+                cleanup(days4Files, "C:/Temp/Archive/");
+                cleanup(days4Files, "C:/Temp/");
+                }
             }
         }
     }
 }
+

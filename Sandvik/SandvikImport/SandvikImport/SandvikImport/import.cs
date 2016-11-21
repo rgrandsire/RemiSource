@@ -2,12 +2,13 @@
 using System.IO;
 using System.Data;
 using System.Data.SqlClient;
+using Renci.SshNet;
 
 namespace SandvikImport
 {
     class import
     {
-        errorlogging errorLog = new errorlogging();   // Next time put the date time stuff in the object rather than the call
+        static errorlogging errorLog = new errorlogging();   // Next time put the date time stuff in the object rather than the call
         string ImportFilePath = Program.importfilepath;
         string ImportFileArchivePath = Program.importarchivefilepath;
         string LogFilePathAndName = Program.LogFilePathAndName;
@@ -16,6 +17,121 @@ namespace SandvikImport
         string zPassword = Program.entpassword;
         string prodDB = "";
         
+
+        static bool checkForDupe(string zName)
+        {
+            string prodDB = getMC_DB();
+            string[] arr1 = prodDB.Split('|');
+            string dupe = "";
+            string sql = "SELECT '1' FROM MC_InterfaceLog WITH(nolock) WHERE fileName='"+ zName +"';";
+            string zServer = arr1[1];
+            prodDB = arr1[0];
+            Console.WriteLine("Server: " + zServer);
+            Console.WriteLine("Database: " + prodDB);
+            SqlConnection conn1 = new SqlConnection("Data Source=" + zServer + ";Initial Catalog=" + prodDB + ";Integrated Security=False; User ID=mczar; Password=mczar");
+            SqlCommand cmd = new SqlCommand(sql, conn1);
+            cmd.CommandTimeout = 480;
+            cmd.Parameters.Clear();
+            cmd.CommandText = sql;
+            try
+            {
+                if (conn1.State == ConnectionState.Closed)
+                {
+                    conn1.Open();
+                    Console.WriteLine("Connecting to MC DB to check for duplicate files");
+                }
+                ////////// Let's write the code for dupe check
+                SqlDataReader aReader = cmd.ExecuteReader();
+                ////// Get a reader object to get the data........
+                if (aReader.Read())
+                {
+                    dupe = aReader.GetString(0);
+                    Console.WriteLine("Got stuff: " + dupe);
+                    aReader.Close();
+                    sql = "insert into MC_InterfaceLog (ProcessDate, Filename, ErrorMessage, Processed) values (GetDate(), '" + zName + "', 'File already processed', 'N');";
+                    if (Program.debugflag == "Y")
+                    {
+                        errorLog.logMessage(Program.LogFilePathAndName, DateTime.Now.ToString() + "SQL: " + sql);
+                    }
+                    cmd.CommandText = sql;
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch (SqlException zEx)
+                    {
+                        errorLog.logMessage(Program.LogFilePathAndName, DateTime.Now.ToString() + "Sql Error: "+ zEx.Message);
+                    }
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine("Got nothing no Dupe");
+                    // I need to write the file name to the DB
+                    sql = "insert into MC_InterfaceLog (ProcessDate, Filename, ErrorMessage, Processed) values (GetDate(), '" + zName + "', 'File ready to be processed', 'Y');";
+                    cmd.CommandText = sql;
+                    if (Program.debugflag == "Y")
+                    {
+                        errorLog.logMessage(Program.LogFilePathAndName, DateTime.Now.ToString() + "SQL: " + sql);
+                    }
+                    aReader.Close();
+                    cmd.ExecuteNonQuery();
+                    return false;
+                }
+
+            }
+            catch (Exception er)
+            {
+                Console.WriteLine("Error with DB: " + er);
+                errorLog.logMessage(Program.LogFilePathAndName, DateTime.Now.ToString() + "Error with DB***: " + er);
+            }
+            if (conn1.State == ConnectionState.Open)
+            {
+                conn1.Close();
+            }
+            return true;
+        }
+
+        static void getTheFiles()
+        {
+            string UName= System.Configuration.ConfigurationManager.AppSettings["sFtpUser"] ?? "sandvik";
+            string PWord= System.Configuration.ConfigurationManager.AppSettings["sFtpPassword"] ?? "4kK0@o9I";
+            string zHost= System.Configuration.ConfigurationManager.AppSettings["sFtpHost"] ?? "ftp2.verian.net";
+            string remoteDirectory = "/training/MT_ReceivingPO/"; 
+            string localDirectory = @Program.importfilepath;
+
+            using (var sftp = new SftpClient(zHost, UName, PWord))
+            {
+              try
+                {
+                    sftp.Connect();
+                }
+                
+                catch(Exception aa)
+                {
+                    Console.WriteLine("Error connecting to sFTP server " + aa.Message);
+                    errorLog.logMessage(Program.LogFilePathAndName, DateTime.Now.ToString()+" Error with sFtpServer: " + aa.Message);
+                }
+                var files = sftp.ListDirectory(remoteDirectory);
+
+                foreach (var file in files)
+                {
+                    string remoteFileName = remoteDirectory + file.Name;
+                    string localFileName = localDirectory + file.Name;
+                    if ((!file.Name.StartsWith(".")) && !checkForDupe(file.Name))
+
+                        using (Stream file1 = File.OpenWrite(localFileName))
+                        {
+                            sftp.DownloadFile(remoteFileName, file1);
+                        }
+                    Console.WriteLine("new File: " + file.Name+ " saved in: " + localDirectory);
+                    errorLog.logMessage(Program.LogFilePathAndName, DateTime.Now.ToString() + " Getting new file: " + file.Name + " saved as: " + localDirectory);
+                }
+                sftp.Disconnect();
+            }
+
+        }
+
         static string getMC_DB()
         { /////////Getting the ent database and sql server information from the Registration database
             string connSuccess = "111|000";
@@ -70,6 +186,7 @@ namespace SandvikImport
         }
         public void importPartInfo()
         {
+            getTheFiles();   // sFtp transfer 
             string[] files = Directory.GetFiles(ImportFilePath);
             //get file count - if "0" then email sig
             int filecount = files.Length;
@@ -96,6 +213,7 @@ namespace SandvikImport
         }
         public void ProcessPartInformation(string importFileName)
         {
+
             string[] arr1 = new string[] { "", "" };
             int counter = 0;
             string zPOPK = "";
@@ -115,8 +233,7 @@ namespace SandvikImport
                 Console.WriteLine("entServer Server: " + zServer);
                 Console.WriteLine("ent DB: " + prodDB);
             }
-                SqlConnection conn = new SqlConnection("Data Source=" + zServer + ";Initial Catalog=" + prodDB + ";Integrated Security=False; User ID=" + zUser + "; Password=" + zPassword);
-            
+            SqlConnection conn = new SqlConnection("Data Source=" + zServer + ";Initial Catalog=" + prodDB + ";Integrated Security=False; User ID=" + zUser + "; Password=" + zPassword);
             SqlCommand cmd = new SqlCommand(sql, conn);
             try
             {
@@ -406,7 +523,7 @@ namespace SandvikImport
             }
             errorLog.logMessage(LogFilePathAndName, DateTime.Now.ToString() + "---------------------------------------------------------------------------------------------------------------------------------------------------");
             errorLog.logMessage(LogFilePathAndName, DateTime.Now.ToString() + " " + importFileName + " imported, " + (counter-1).ToString() + " rows in file.");
-            counter++;
+            counter++; 
        }
 
 
