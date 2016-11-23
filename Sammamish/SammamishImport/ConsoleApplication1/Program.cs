@@ -9,6 +9,8 @@
 |               |            |                    | ConfigurationManager                                      |
 | 11/02/2016    | 1.0.0.5    |                    | Remove 3 custom fields from table to use RecordData       |
 | 11/18/2016    | 1.0.0.6    |                    | Change to pick any files and delete after import complete |
+| 11/21/2016    | 1.0.0.7    |                    | Put log and archive in the Import folder (Archive and Log)|
+| 11/24/2016    | 1.0.0.8    |                    | Retrieve the hours from A- in a different column          |
 ---------------------------------------------------------------------------------------------------------------
 
 */
@@ -169,8 +171,8 @@ namespace SammamishMeterImport
             // Move the file to the processed folder
             string filenameDate = iday.ToString("MM-dd-yyyy.HHmm");
             ////////////////// something is wrong
-            string sourceFile = (zPath + fname);
-            string destinationFile = ("C:/temp/Archive/" + fname);
+            string sourceFile = (zPath +"\\"+ fname);
+            string destinationFile = (zPath+ "\\Archive\\" + fname);
             System.IO.File.Move(sourceFile, destinationFile + "." + filenameDate);
             errorLog.logMessage(myLogFile, fname + " has been archived and renamed to: " + destinationFile + "." + filenameDate);
         }
@@ -180,19 +182,23 @@ namespace SammamishMeterImport
             Console.Title = "MC meter import utility";
             iday = DateTime.Now;
             //Console.
-            //Let's check if path exists
-            if (!Directory.Exists("C:/temp/Archive"))
+            //Let's check if path existss
+            string zFile = System.Configuration.ConfigurationManager.AppSettings["ImportFilePath"];
+            if (!Directory.Exists(zFile+"/Archive"))
             {
-                Directory.CreateDirectory("C:/temp/Archive");
+                Directory.CreateDirectory(zFile+"/Archive");
             }
-
-            myLogFile = "C:/temp/SammamishMeterImport_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".log";
+            if (!Directory.Exists(zFile + "/Log"))
+            {
+                Directory.CreateDirectory(zFile + "/LOG");
+            }
+            myLogFile = zFile+"/Log/SammamishMeterImport_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".log";
             errorLog.logMessage(myLogFile, "Data extraction tool started");
             int days4Files = Convert.ToInt16(System.Configuration.ConfigurationManager.AppSettings["DaysToKeep"]);
             // Get the connection stuff
             string MCUserName = System.Configuration.ConfigurationManager.AppSettings["entusername"];
             string MCPassword = System.Configuration.ConfigurationManager.AppSettings["entpassword"];
-            string zFile = System.Configuration.ConfigurationManager.AppSettings["ImportFilePath"];////// --> Replace zFile to get all files see Sandvik
+            
             string DBSql = "";
             string odometerReading = "";
             string hourReading = "";
@@ -246,11 +252,23 @@ namespace SammamishMeterImport
                                 string[] words = line.Split(',');
                                 Console.Write(".");
                                 odometerReading = words[MilesOffset].Trim();
-                                hourReading = words[HoursOffset].Trim();
+                                //hourReading = words[HoursOffset].Trim();
+                                hourReading = words[HoursOffset].Trim(new Char[] { ' ', '*', '"' });
+                                //Console.WriteLine("Hours: " + hourReading);
+                                if (hourReading.Length > 2)
+                                {
+                                    string[] arr2 = hourReading.Split('-');
+                                    if (arr2[0] == "A")
+                                    {
+                                        hourReading = arr2[1];
+                                    }
+                                    else hourReading = "0";
+                                }
+                                else hourReading = "0";
                                 zVehicle = words[VehicleOffset].Trim(new Char[] { ' ', '*', '"' });
                                 errorLog.logMessage(myLogFile, zVehicle + "\t\t|" + odometerReading + "\t\t|" + hourReading);
                                 DBSql = "insert into MC_InterfaceLog (ImportID, FileName, RecordData, RecordNumber) Values ('" +
-                                        importid + "','" + Path.GetFileName(zFile) + "', '" + hourReading + "," + odometerReading + "," +
+                                        importid + "','" + fname + "', '" + hourReading + "," + odometerReading + "," +
                                         zVehicle + "','" + (i).ToString() + "');";
                                 if (zDebug == "Y")
                                 {
@@ -287,8 +305,8 @@ namespace SammamishMeterImport
 
                     errorLog.logMessage(myLogFile, " Move processed file.");
                     moveProcessedFile(fname, zFile);
-                cleanup(days4Files, "C:/Temp/Archive/");
-                cleanup(days4Files, "C:/Temp/");
+                cleanup(days4Files, zFile+"\\Archive\\");
+                cleanup(days4Files, zFile+"\\Log\\");
                 }
             }
         }
