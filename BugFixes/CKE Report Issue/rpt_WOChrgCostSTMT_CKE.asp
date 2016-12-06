@@ -45,6 +45,13 @@ Sub DoOutput()
 
 	Dim LaborRS, PartRS, ToolRS, OtherCostRS, DocumentRS, Field, IsGroup
 	
+    ''''''''''''''''''''''''''''' Added DEcember 2016 Agent bug fix RGG
+    If FromAgent and RS_WO.EOF and DoNotSendIfNoResults Then
+        Response.Clear
+        Response.Write "NO RECORDS"
+    Exit Sub
+    End If
+
 	Call OutputHeader()
 	Call OutputStandardBodyTag()		
 	Call OutputEmailMessage()
