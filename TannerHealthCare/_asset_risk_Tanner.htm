@@ -1,0 +1,1279 @@
+<% If False Then %>
+<!DOCTYPE html> 
+<html dir="ltr" lang="en-us">
+<head>
+    <meta name="GENERATOR" content="Microsoft Visual Studio 6.0">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
+    <meta content="text/html;charset=UTF-8" http-equiv="Content-type">
+    <meta content="text/javascript" http-equiv="content-script-type" />
+    <meta content="text/css" http-equiv="content-style-type" />
+    <meta content="favorite" name="save">
+    <meta content="noindex" name="robots">
+    <meta content="no" name="allow-search" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../css/mc_css.css">
+
+</head>
+
+<body bgcolor="#808080" topmargin="0" leftmargin="0">
+
+    <form id="mcform" name="mcform">
+        <input type="hidden" name="txtAsset" value="">
+        <table border="0" cellpadding="0" width="100%" bordercolor="#FFFFFF" bordercolorlight="#FFFFFF" bordercolordark="#CCCCCC" cellspacing="0" height="98%">
+            <tr>
+                <td bgcolor="#808080" valign="top" width="0"></td>
+                <td class="mcbgcolor" valign="top"></td>
+            </tr>
+        </table>
+        <%
+       End If
+        Set MyTabControl = New TabControl
+        MyTabControl.Build "AS_RISK_TAB","Details"
+        %>
+
+        <script type="text/javascript">
+            function TabControl2_changeTabsAction(tab) {
+                //top.refreshcurrentrecord();
+                switch (tab.id.toUpperCase()) {
+                    case "TABCONTROL2_T1":
+                        {
+                            break;
+                        }
+                    case "TABCONTROL2_T2":
+                        {
+                            break;
+                        }
+
+                }
+            }
+
+            function calculRisk() {
+                /////////////
+                var ser1 = self.document.getElementById('RemiRisk1').value;
+                //alert("from Risk1: " + ser1)
+                var ser2 = self.document.getElementById('RemiRisk2').value;
+                if (ser1 == "") { ser1 = "0" };
+                if (ser2 == "") { ser2 = "0" };
+                var zTotal = parseInt(ser1) + parseInt(ser2);
+                //alert("Total: " + zTotal)
+                self.document.getElementById('RemiRisk20').value = zTotal;
+                if (zTotal > 5) {
+                    self.document.getElementById('RemiRisk21').value = "YES";
+                }
+                else {
+                    self.document.getElementById('RemiRisk21').value = "NO";
+                } 
+            }
+
+            function calcscore(t, obj, noriskvalueset) {
+
+
+                if (noriskvalueset == null) {
+                    noriskvalueset = false;
+                }
+                if (t == 'CE') {
+                    var rf1 = self.document.getElementById('AGCE1');
+                    var rf2 = self.document.getElementById('AGCE2');
+                    var rf3 = self.document.getElementById('AGCE3');
+                    var rf4 = self.document.getElementById('AGCE4');
+                    var rf5 = self.document.getElementById('AGCE5');
+
+                    try {
+                        self.document.getElementById('AGCE1Score').innerHTML = rf1.options[rf1.options.selectedIndex].getAttribute('riskscore');
+
+                    }
+                    catch (e) { }
+
+                    try {
+                        self.document.getElementById('AGCE2Score').innerText = rf2.options[rf2.options.selectedIndex].getAttribute('riskscore');
+                    }
+                    catch (e) { }
+
+                    try {
+                        self.document.getElementById('AGCE3Score').innerText = rf3.options[rf3.options.selectedIndex].getAttribute('riskscore');
+                    }
+                    catch (e) { }
+
+                    try {
+                        self.document.getElementById('AGCE4Score').innerText = rf4.options[rf4.options.selectedIndex].getAttribute('riskscore');
+                    }
+                    catch (e) { }
+
+                    try {
+                        self.document.getElementById('AGCE5Score').innerText = rf5.options[rf5.options.selectedIndex].getAttribute('riskscore');
+                    }
+                    catch (e) { }
+
+                    document.mcform.AGCE1ScoreH.value = self.AGCE1Score.innerText;
+                    document.mcform.AGCE2ScoreH.value = self.AGCE2Score.innerText;
+                    document.mcform.AGCE3ScoreH.value = self.AGCE3Score.innerText;
+                    document.mcform.AGCE4ScoreH.value = self.AGCE4Score.innerText;
+                    document.mcform.AGCE5ScoreH.value = self.AGCE5Score.innerText;
+
+                    if (self.document.getElementById('AGCE1Score').innerText != '-' &&
+                        self.document.getElementById('AGCE2Score').innerText != '-' &&
+                        self.document.getElementById('AGCE3Score').innerText != '-' &&
+                        self.document.getElementById('AGCE4Score').innerText != '-' &&
+                        self.document.getElementById('AGCE5Score').innerText != '-') {
+                        var tcalc = parseInt(self.document.getElementById('AGCE1Score').innerText) +
+                                    parseInt(self.document.getElementById('AGCE2Score').innerText) +
+                                    parseFloat(((parseInt(self.document.getElementById('AGCE3Score').innerText) +
+                                    parseInt(self.document.getElementById('AGCE4Score').innerText) +
+                                    parseInt(self.document.getElementById('AGCE5Score').innerText)) / 3));
+
+                        tcalc = top.mc_math_round_decimals(tcalc.toString(), 2);
+                        self.document.getElementById('AGCERiskScore').innerText = tcalc;                   // 'Remi'
+                        document.mcform.AGCERiskScoreH.value = tcalc;
+                        tcalc = parseFloat(tcalc);
+                        var risklevel = 0;
+
+                        self.clearriskassessmentscores();
+
+                        if (tcalc >= 18) {
+                            risklevel = 1
+                            self.document.getElementById('AGRL1').style.backgroundColor = '#D0D7E8';
+                        }
+                        else if (tcalc >= 15) {
+                            risklevel = 2
+                            self.document.getElementById('AGRL2').style.backgroundColor = '#D0D7E8';
+                        }
+                        else if (tcalc >= 12) {
+                            risklevel = 3
+                            self.document.getElementById('AGRL3').style.backgroundColor = '#D0D7E8';
+                        }
+                        else if (tcalc >= 6) {
+                            risklevel = 4
+                            self.document.getElementById('AGRL4').style.backgroundColor = '#D0D7E8';
+                        }
+                        else if (tcalc >= 0) {
+                            risklevel = 5
+                            self.document.getElementById('AGRL5').style.backgroundColor = '#D0D7E8';
+                        }
+                        if (noriskvalueset == false) {
+                            //CB AUTOCALC FIX 1/10/2013
+
+                            if (document.mcform.txtRiskLevelAutoCalc == null || document.mcform.txtRiskLevelAutoCalc.checked == true) {
+                                document.mcform.txtRiskLevel.value = risklevel.toString();
+                            }
+
+                            //CB AUTOCALC FIX 1/10/2013
+
+                            if (document.mcform.txtPMRequiredAutoCalc == null || document.mcform.txtPMRequiredAutoCalc.checked == true) {
+                                if (tcalc >= 11) {
+                                    document.mcform.txtPMRequired.checked = true;
+                                }
+                                else {
+                                    document.mcform.txtPMRequired.checked = false;
+                                }
+                                self.SetPMRequired(document.mcform.txtPMRequired);
+                            }
+                        }
+                    }
+                    else {
+                        self.clearriskassessmentscores();
+                        self.document.getElementById('AGCERiskScore').innerText = 'Please Fill Out All Risk Factors';    
+                    }
+                }
+                else if (t == 'F') {
+
+                    var rf1 = self.document.getElementById('AGF1');
+                    var rf2 = self.document.getElementById('AGF2');
+                    var rf3 = self.document.getElementById('AGF3');
+                    var rf4 = self.document.getElementById('AGF4');
+                    var rf5 = self.document.getElementById('AGF5');
+
+                    self.document.getElementById('AGF1Score').innerText = rf1.options[rf1.options.selectedIndex].getAttribute('riskscore');
+                    self.document.getElementById('AGF2Score').innerText = rf2.options[rf2.options.selectedIndex].getAttribute('riskscore');
+                    self.document.getElementById('AGF3Score').innerText = rf3.options[rf3.options.selectedIndex].getAttribute('riskscore');
+                    self.document.getElementById('AGF4Score').innerText = rf4.options[rf4.options.selectedIndex].getAttribute('riskscore');
+                    self.document.getElementById('AGF5Score').innerText = rf5.options[rf5.options.selectedIndex].getAttribute('riskscore');
+
+                    document.mcform.AGF1ScoreH.value = self.document.getElementById('AGF1Score').innerText;
+                    document.mcform.AGF2ScoreH.value = self.document.getElementById('AGF2Score').innerText;
+                    document.mcform.AGF3ScoreH.value = self.document.getElementById('AGF3Score').innerText;
+                    document.mcform.AGF4ScoreH.value = self.document.getElementById('AGF4Score').innerText;
+                    document.mcform.AGF5ScoreH.value = self.document.getElementById('AGF5Score').innerText;
+
+                    if (self.document.getElementById('AGF1Score').innerText != '-' &&
+                        self.document.getElementById('AGF2Score').innerText != '-' &&
+                        self.document.getElementById('AGF3Score').innerText != '-' &&
+                        self.document.getElementById('AGF4Score').innerText != '-' &&
+                        self.document.getElementById('AGF5Score').innerText != '-') {
+                        var tcalc = parseInt(self.document.getElementById('AGF1Score').innerText) +
+                                    parseInt(self.document.getElementById('AGF2Score').innerText) +
+                                    parseInt(self.document.getElementById('AGF3Score').innerText) +
+                                    parseInt(self.document.getElementById('AGF4Score').innerText);
+
+                        tcalc = top.mc_math_round_decimals(tcalc.toString(), 2);
+                        self.document.getElementById('AGFRiskScore').innerText = tcalc;
+                        document.mcform.AGFRiskScoreH.value = tcalc;
+                        tcalc = parseFloat(tcalc);
+                        var risklevel = 0;
+
+                        self.clearriskassessmentscores();
+
+                        if (tcalc >= 18) {
+                            risklevel = 1
+                            self.document.getElementById('AGRL1').style.backgroundColor = '#D0D7E8';
+                        }
+                        else if (tcalc >= 15) {
+                            risklevel = 2
+                            self.document.getElementById('AGRL2').style.backgroundColor = '#D0D7E8';
+                        }
+                        else if (tcalc >= 12) {
+                            risklevel = 3
+                            self.document.getElementById('AGRL3').style.backgroundColor = '#D0D7E8';
+                        }
+                        else if (tcalc >= 6) {
+                            risklevel = 4
+                            self.document.getElementById('AGRL4').style.backgroundColor = '#D0D7E8';
+                        }
+                        else if (tcalc >= 0) {
+                            risklevel = 5
+                            self.document.getElementById('AGRL5').style.backgroundColor = '#D0D7E8';
+                        }
+                        if (noriskvalueset == false) {
+
+                            //CB AUTOCALC FIX 1/10/2013
+
+                            if (document.mcform.txtRiskLevelAutoCalc == null || document.mcform.txtRiskLevelAutoCalc.checked == true) {
+                                document.mcform.txtRiskLevel.value = risklevel.toString();
+                            }
+
+                            //CB AUTOCALC FIX 1/10/2013
+
+                            if (document.mcform.txtPMRequiredAutoCalc == null || document.mcform.txtPMRequiredAutoCalc.checked == true) {
+                                if (tcalc >= 11) {
+                                    document.mcform.txtPMRequired.checked = true;
+                                }
+                                else {
+                                    document.mcform.txtPMRequired.checked = false;
+                                }
+                                self.SetPMRequired(document.mcform.txtPMRequired);
+                            }
+                        }
+                    }
+                    else {
+                        self.clearriskassessmentscores();
+                        self.document.getElementById('AGFRiskScore').innerText = 'Please Fill Out All Risk Factors';
+                    }
+                }
+                if (obj != null) {
+                    top.fieldvalid(obj);
+                    self.focus();
+                }
+            }
+
+            function clearriskassessmentscores() {
+                self.document.getElementById('AGRL1').style.backgroundColor = '';
+                self.document.getElementById('AGRL2').style.backgroundColor = '';
+                self.document.getElementById('AGRL3').style.backgroundColor = '';
+                self.document.getElementById('AGRL4').style.backgroundColor = '';
+                self.document.getElementById('AGRL5').style.backgroundColor = '';
+            }
+
+            function resetriskfactors(t) {
+
+                if (t == 'CE') {
+                    var rf1 = self.document.getElementById('AGCE1');
+                    var rf2 = self.document.getElementById('AGCE2');
+                    var rf3 = self.document.getElementById('AGCE3');
+                    var rf4 = self.document.getElementById('AGCE4');
+                    var rf5 = self.document.getElementById('AGCE5');
+                }
+                else if (t == 'F') {
+
+                    var rf1 = self.document.getElementById('AGF1');
+                    var rf2 = self.document.getElementById('AGF2');
+                    var rf3 = self.document.getElementById('AGF3');
+                    var rf4 = self.document.getElementById('AGF4');
+                    var rf5 = self.document.getElementById('AGF5');
+                }
+                rf1.selectedIndex = 0;
+                rf2.selectedIndex = 0;
+                rf3.selectedIndex = 0;
+                rf4.selectedIndex = 0;
+                rf5.selectedIndex = 0;
+                self.calcscore(t);
+            }
+
+            function setriskfactors(t) {
+                self.document.getElementById('AGCE').style.display = 'none';
+                self.document.getElementById('AGF').style.display = 'none';
+                if (t == 'CE') {
+                    self.document.getElementById('AGCE').style.display = '';
+                }
+                if (t == 'F') {
+                    self.document.getElementById('AGF').style.display = '';
+                }
+                self.calcscore(t);
+            }
+
+            function SetPMRequired(obj) {
+                if (obj.checked == true) {
+                    self.document.getElementById('PMRequired').style.color = 'RED';
+                    self.document.getElementById('PMRequired').style.fontWeight = 'Bold';
+                }
+                else {
+                    self.document.getElementById('PMRequired').style.color = '';
+                    self.document.getElementById('PMRequired').style.fontWeight = '';
+                }
+            }
+
+        </script>
+        <div id="TabControl2_TAB_Details" style="display: none;">
+            <table border="0" cellspacing="0" width="100%" cellpadding="0">
+                <tr>
+                    <td valign="top">
+                        <table border="0" cellspacing="0" cellpadding="0" width="100%">
+                            <tr>
+                                <td valign="top" style="padding-right:25px;" width="40%">
+                                    <table border="0" cellspacing="0" cellpadding="0" style="border-collapse: collapse" bordercolor="#111111">
+                                        <tr>
+                                            <td colspan="2" class="fieldsheader" style="border-bottom:1px solid #A2A2A2;">
+                                                General Info
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td nowrap valign="top" style="padding-top:10px;">
+                                                <label for="txtClassification" accesskey="">
+                                                    <a href="javascript:void(0);" class="fieldlabel" onclick="return top.showhelp('Asset','ClassIndustry','Asset Details',document.getElementById('txtClassIndustry'));this.blur();" tabindex="-1">
+                                                        <font face="arial">Healthcare Class:</font>
+                                                    </a>
+                                                </label>&nbsp;
+                                            </td>
+                                            <td valign="top" style="padding-bottom:4px;padding-top:10px;">
+                                                <input class="required" mctype="C" maxlength="25" mcrequired="Y" type="text" name="txtClassIndustry" id="txtClassIndustry" tabindex="1" size="17" onchange="top.codevalid('classindustryhealthcare',this,'Healthcare Class');" onfocus="top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.checkKey(this);">
+                                                <img id="imgClassIndustry" src="../../images/lookupiconxp3.gif" border="0" align="absbottom" onclick="top.showpopup('classindustryhealthcare','Healthcare Class',226,159,this,txtClassIndustry,null,true)" class="lookupicon" width="16" height="20">
+                                                <span id="txtClassIndustryDesc" class="mc_lookupdesc"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td nowrap valign="top" style="padding-top:0px;">
+                                                <label for="txtRiskAssessmentGroup" accesskey="">
+                                                    <a href="javascript:void(0);" class="fieldlabel" onclick="return top.showhelp('Asset','RiskAssessmentGroup','Asset Details',document.getElementById('txtRiskAssessmentGroup'));this.blur();" tabindex="-1">
+                                                        <font face="arial">Risk Group:</font>
+                                                    </a>
+                                                </label>&nbsp;
+                                            </td>
+                                            <td valign="top" style="padding-bottom:8px;padding-top:0px;">
+                                                <input class="required" mctype="C" maxlength="25" mcrequired="Y" type="text" name="txtRiskAssessmentGroup" id="txtRiskAssessmentGroup" tabindex="2" size="17" onchange="top.codevalid('riskassessmentgroup',this,'Risk Group');self.setriskfactors(this.value);" onfocus="top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.checkKey(this);">
+                                                <img id="imgRiskAssessmentGroup" src="../../images/lookupiconxp3.gif" border="0" align="absbottom" onclick="top.showpopup('riskassessmentgroup','Risk Group',226,129,this,txtRiskAssessmentGroup,null,true)" class="lookupicon" width="16" height="20">
+                                                <span id="txtRiskAssessmentGroupDesc" class="mc_lookupdesc"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" class="fieldsheader" style="padding-top:10px; border-bottom:1px solid #A2A2A2;">
+                                                Risk Assessment
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="padding-top:5px;">
+
+                                                <table cellspacing="0" cellpadding="0" border="0">
+
+                                                    <tr>
+                                                        <td>
+                                                            <input class="mccheckbox" mctype="B" mcrequired="N" type="checkbox" value="ON" name="txtRiskAssessmentRequired" id="txtRiskAssessmentRequired" tabindex="3" onclick="top.togglecb(this);">
+                                                        </td>
+                                                        <td style="padding-top:3px;padding-left:4px;">
+                                                            <label for="txtRiskAssessmentRequired" accesskey="">
+                                                                <a href="javascript:void(0);" class="fieldlabel" onclick="top.togglecheckbox(this);" title="Right-Click for Help" oncontextmenu="return top.showhelp('Asset','RiskAssessmentRequired','Asset Details',document.getElementById('txtRiskAssessmentRequired'));this.blur();" tabindex="-1">
+                                                                    <font face="arial">
+                                                                        Risk Assessment Required
+                                                                    </font>
+                                                                </a>
+                                                            </label>
+                                                        </td>
+                                                    </tr>
+
+                                                </table>
+
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td nowrap valign="top" style="padding-top:10px;">
+                                                <label for="txtAssessedBy" accesskey="">
+                                                    <a href="javascript:void(0);" class="fieldlabel" onclick="return top.showhelp('Asset','AssessedBy','Asset Details',document.getElementById('txtAssessedBy'));this.blur();" tabindex="-1">
+                                                        <font face="arial">Assessed By:</font>
+                                                    </a>
+                                                </label>
+                                            </td>
+                                            <td valign="top" style="padding-bottom:4px; padding-top:10px;">
+                                                <input class="normal" mctype="C" maxlength="25" mcrequired="N" type="text" name="txtAssessedBy" id="txtAssessedBy" tabindex="4" size="17" onchange="top.dovalid('LA',this,'AS');" onfocus="top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.checkKey(this);" ondrop="top.dragdrop_from_list();" ondragenter="top.dragover_from_list();" ondragover="top.dragover_from_list();" ondblclick="top.fielddblclick(this);" oncontextmenu="top.FK_OnContextMenu(this);return false;" fkm="LA">
+                                                <img id="imgAssessedBy" src="../../images/lookupiconxp3fk.gif" border="0" align="absbottom" onclick="top.dolookup('LA',txtAssessedBy,'AS')" class="lookupicon" width="16" height="20">
+                                                <span id="txtAssessedByDesc" class="mc_lookupdesc"></span>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td nowrap valign="top" style="padding-top:0px;">
+                                                <label for="txtLastAssessed" accesskey="">
+                                                    <a href="javascript:void(0);" class="fieldlabel" onclick="return top.showhelp('Asset','LastAssessed','Asset Details',document.getElementById('txtLastAssessed'));this.blur();" tabindex="-1">
+                                                        <font face="arial">Last Assessed:</font>
+                                                    </a>
+                                                </label>
+                                            </td>
+                                            <td valign="top" style="padding-bottom:8px; padding-top:0px;">
+                                                <input class="normal" mctype="D" maxlength="10" mcrequired="N" type="text" name="txtLastAssessed" id="txtLastAssessed" tabindex="5" size="17" onchange="top.fieldvalid(this);" onfocus="top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.checkKey(this);">
+                                                <img id="imgLastAssessed" src="../../images/lookupiconxp3.gif" border="0" onclick="top.showpopup('calendar','Calendar',172,160,this,txtLastAssessed,null,true)" align="absbottom" class="lookupicon" width="16" height="20">
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td colspan="2" class="fieldsheader" style="padding-top:15px; border-bottom:1px solid #A2A2A2;">
+                                                Statement of Conditions
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td colspan="2" style="padding-top:5px;">
+
+                                                <table cellspacing="0" cellpadding="0" border="0">
+
+                                                    <tr>
+                                                        <td>
+                                                            <input class="mccheckbox" mctype="B" mcrequired="N" type="checkbox" value="ON" name="txtStatementOfConditions" id="txtStatementOfConditions" tabindex="6" onclick="top.togglecb(this);">
+                                                        </td>
+                                                        <td style="padding-top:3px;padding-left:4px;">
+                                                            <label for="txtStatementOfConditions" accesskey="">
+                                                                <a href="javascript:void(0);" class="fieldlabel" onclick="top.togglecheckbox(this);" title="Right-Click for Help" oncontextmenu="return top.showhelp('Asset','StatementOfConditions','Asset Details',document.getElementById('txtStatementOfConditions'));this.blur();" tabindex="-1">
+                                                                    <font face="arial">
+                                                                        Statement of Conditions
+                                                                    </font>
+                                                                </a>
+                                                            </label>
+                                                        </td>
+                                                    </tr>
+
+                                                </table>
+
+                                                <table cellspacing="0" cellpadding="0" border="0">
+
+                                                    <tr>
+                                                        <td style="padding-left:19px;">
+                                                            <input class="mccheckbox" mctype="B" mcrequired="N" type="checkbox" value="ON" name="txtStatementOfConditionsCompliant" id="txtStatementOfConditionsCompliant" tabindex="7" onclick="top.togglecb(this);">
+                                                        </td>
+                                                        <td style="padding-top:3px;padding-left:4px;">
+                                                            <label for="txtStatementOfConditionsCompliant" accesskey="">
+                                                                <a href="javascript:void(0);" class="fieldlabel" onclick="top.togglecheckbox(this);" title="Right-Click for Help" oncontextmenu="return top.showhelp('Asset','StatementOfConditionsCompliant','Asset Details',document.getElementById('txtStatementOfConditionsCompliant'));this.blur();" tabindex="-1">
+                                                                    <font face="arial">
+                                                                        Compliant
+                                                                    </font>
+                                                                </a>
+                                                            </label>
+                                                        </td>
+                                                    </tr>
+
+                                                </table>
+
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td colspan="2" class="fieldsheader" style="padding-top:20px; border-bottom:1px solid #A2A2A2;">
+                                                HIPAA
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td colspan="2" style="padding-top:5px;">
+
+                                                <table cellspacing="0" cellpadding="0" border="0">
+
+                                                    <tr>
+                                                        <td>
+                                                            <input class="mccheckbox" mctype="B" mcrequired="N" type="checkbox" value="ON" name="txtHIPPARelated" id="txtHIPPARelated" tabindex="8" onclick="top.togglecb(this);">
+                                                        </td>
+                                                        <td style="padding-top:3px;padding-left:4px;">
+                                                            <label for="txtHIPPARelated" accesskey="">
+                                                                <a href="javascript:void(0);" class="fieldlabel" onclick="top.togglecheckbox(this);" title="Right-Click for Help" oncontextmenu="return top.showhelp('Asset','HIPPARelated','Asset Details',document.getElementById('txtHIPPARelated'));this.blur();" tabindex="-1">
+                                                                    <font face="arial">
+                                                                        HIPAA Related
+                                                                    </font>
+                                                                </a>
+                                                            </label>
+                                                        </td>
+                                                    </tr>
+
+                                                </table>
+
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td colspan="2" class="fieldsheader" style="padding-top:20px; border-bottom:1px solid #A2A2A2;">
+                                                Plan for Improvement
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td colspan="2" style="padding-top:5px;">
+
+                                                <table cellspacing="0" cellpadding="0" border="0">
+
+                                                    <tr>
+                                                        <td>
+                                                            <input class="mccheckbox" mctype="B" mcrequired="N" type="checkbox" value="ON" name="txtPlanForImprovement" id="txtPlanForImprovement" tabindex="9" onclick="top.togglecb(this);">
+                                                        </td>
+                                                        <td style="padding-top:3px;padding-left:4px;">
+                                                            <label for="txtPlanForImprovement" accesskey="">
+                                                                <a href="javascript:void(0);" class="fieldlabel" onclick="top.togglecheckbox(this);" title="Right-Click for Help" oncontextmenu="return top.showhelp('Asset','PlanForImprovement','Asset Details',document.getElementById('txtPlanForImprovement'));this.blur();" tabindex="-1">
+                                                                    <font face="arial">
+                                                                        Plan for Improvement
+                                                                    </font>
+                                                                </a>
+                                                            </label>
+                                                        </td>
+                                                    </tr>
+
+                                                </table>
+                                            </td>
+                                        </tr>
+
+                                    </table>
+                                <td valign="top" width="60%">
+                                    <div id="AGCE" class="clsBtnOn_G" style="margin-top:0px;border-width:1px;width:400px;padding:10px;">
+                                        <table width="375" border="0" cellspacing="0" cellpadding="0" style="border-collapse: collapse" bordercolor="#111111">
+                                            <tr>
+                                                <td colspan="2" class="fieldsheader" style="color:green;">
+                                                    Risk Factors (Clinical Engineering / Biomedical)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fieldlabel" style="color:green;padding-top:10px;">
+                                                    Equipment Function:
+                                                </td>
+                                                <td align="center" class="fieldsheader" style="width:30px;border-bottom:solid 1px gray; padding-top:10px;color:green;font-weight:bold;">
+                                                    Score&nbsp;
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding-right:10px;">
+                                                    <select size="1" name="AGCE1" id="AGCE1" style="width:325px;" class="explorerselects " onchange="self.calcscore('CE',this);">
+                                                        <option riskscore="-" value="" selected>Select...</option>
+                                                        <%=GetRiskDropdown("AGCE1") %>
+                                                    </select>
+                                                    <input type="hidden" name="AGCE1ScoreH" value="">
+                                                </td>
+                                                <td id="AGCE1Score" class="fieldsheader" align="center" style="color:green;font-weight:bold;">
+                                                    -
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fieldlabel" style="color:green;padding-top:4px;">
+                                                    Clinical Application:
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <select size="1" name="AGCE2" id="AGCE2" style="width:325px;" class="explorerselects " onchange="self.calcscore('CE',this);">
+                                                        <option riskscore="-" value="" selected>Select...</option>
+                                                        <%=GetRiskDropdown("AGCE2") %>
+                                                    </select>
+                                                    <input type="hidden" name="AGCE2ScoreH" value="">
+                                                </td>
+                                                <td id="AGCE2Score" class="fieldsheader" align="center" style="color:green;font-weight:bold;">
+                                                    -
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fieldlabel" style="color:green;padding-top:4px;">
+                                                    Maintenance Requirement:
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <select size="1" name="AGCE3" id="AGCE3" style="width:325px;" class="explorerselects " onchange="self.calcscore('CE',this);">
+                                                        <option riskscore="-" value="" selected>Select...</option>
+                                                        <%=GetRiskDropdown("AGCE3") %>
+                                                    </select>
+                                                    <input type="hidden" name="AGCE3ScoreH" value="">
+                                                </td>
+                                                <td id="AGCE3Score" class="fieldsheader" align="center" style="color:green;font-weight:bold;">
+                                                    -
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fieldlabel" style="color:green;padding-top:4px;">
+                                                    Incident History:
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <select size="1" name="AGCE4" id="AGCE4" style="width:325px;" class="explorerselects " onchange="self.calcscore('CE',this);">
+                                                        <option riskscore="-" value="" selected>Select...</option>
+                                                        <%=GetRiskDropdown("AGCE4") %>
+                                                    </select>
+                                                    <input type="hidden" name="AGCE4ScoreH" value="">
+                                                </td>
+                                                <td id="AGCE4Score" class="fieldsheader" align="center" style="color:green;font-weight:bold;">
+                                                    -
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fieldlabel" style="color:green;padding-top:4px;">
+                                                    Environmental Use Area:
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <select size="1" name="AGCE5" id="AGCE5" style="width:325px;" class="explorerselects " onchange="self.calcscore('CE',this);">
+                                                        <option riskscore="-" value="" selected>Select...</option>
+                                                        <%=GetRiskDropdown("AGCE5") %>
+                                                    </select>
+                                                    <input type="hidden" name="AGCE5ScoreH" value="">
+                                                </td>
+                                                <td id="AGCE5Score" class="fieldsheader" align="center" style="color:green;font-weight:bold;">
+                                                    -
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td class="mc_lookupdesc" style="color:green;padding-top:10px;" colspan="2">
+                                                    <u>Risk Assessment Score Formula (Clinical Engineering / Biomedical):</u>
+                                                    <br>EquipmentFunction + ClinicalApplication + ( ( Maintenance Requirement + Incident History + Environmental Use Classification ) / 3 )
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td class="fieldsheader" style="color:green;font-weight:bold;">
+                                                    Risk
+                                                    Assessment Score:&nbsp;&nbsp;
+                                                </td>
+                                                <td id="AGCERiskScore" class="fieldsheader" style="background-color:white;padding-left:5px;padding-right:5px;padding-top:2px;padding-bottom:2px; border:1px solid #279A01;color:green;font-weight:bold;">
+                                                    0
+                                                    <input type="hidden" name="AGCERiskScoreH" id="AGCERiskScoreH" value="">
+                                                </td>
+                                                    
+                                                <td valign="bottom" onclick="self.resetriskfactors('CE');" align="right" class="fieldlabel" style="color:green;">
+                                                    <u>Reset</u>
+                                                </td>
+                                            </tr>
+
+                                        </table>
+                                    </div>
+
+                                    <div id="AGF" class="clsBtnOn_G" style="display:none;margin-top:0px;border-width:1px;width:400px;padding:10px;">
+                                        <table width="375" border="0" cellspacing="0" cellpadding="0" style="border-collapse: collapse" bordercolor="#111111">
+                                            <tr>
+                                                <td colspan="2" class="fieldsheader" style="color:green;">
+                                                    Risk Factors (Facilities)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fieldlabel" style="color:green;padding-top:10px;">
+                                                    Equipment Function:
+                                                </td>
+                                                <td align="center" class="fieldsheader" style="width:30px;border-bottom:solid 1 gray; padding-top:10px;color:green;font-weight:bold;">
+                                                    Score&nbsp;
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding-right:10px;">
+                                                    <select size="1" name="AGF1" id="AGF1" style="width:325px;" class="explorerselects" onchange="self.calcscore('F',this);">
+                                                        <option riskscore="-" value="" selected>Select...</option>
+                                                        <%=GetRiskDropdown("AGF1") %>
+                                                    </select>
+                                                    <input type="hidden" name="AGF1ScoreH" id="AGF1ScoreH" value="">
+                                                </td>
+                                                <td id="AGF1Score" class="fieldsheader" align="center" style="color:green;font-weight:bold;">
+                                                    -
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fieldlabel" style="color:green;padding-top:4px;">
+                                                    Clinical Application:
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <select size="1" name="AGF2" id="AGF2" style="width:325px;" class="explorerselects" onchange="self.calcscore('F',this);">
+                                                        <option riskscore="-" value="" selected>Select...</option>
+                                                        <%=GetRiskDropdown("AGF2") %>
+                                                    </select>
+                                                    <input type="hidden" name="AGF2ScoreH" id="AGF2ScoreH" value="">
+                                                </td>
+                                                <td id="AGF2Score" class="fieldsheader" align="center" style="color:green;font-weight:bold;">
+                                                    -
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fieldlabel" style="color:green;padding-top:4px;">
+                                                    Maintenance Requirement:
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <select size="1" name="AGF3" id="AGF3" style="width:325px;" class="explorerselects" onchange="self.calcscore('F',this);">
+                                                        <option riskscore="-" value="" selected>Select...</option>
+                                                        <%=GetRiskDropdown("AGF3") %>
+                                                    </select>
+                                                    <input type="hidden" name="AGF3ScoreH" id="AGF3ScoreH" value="">
+                                                </td>
+                                                <td id="AGF3Score" class="fieldsheader" align="center" style="color:green;font-weight:bold;">
+                                                    -
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fieldlabel" style="color:green;padding-top:4px;">
+                                                    Incident History:
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <select size="1" name="AGF4" id="AGF4" style="width:325px;" class="explorerselects" onchange="self.calcscore('F',this);">
+                                                        <option riskscore="-" value="" selected>Select...</option>
+                                                        <%=GetRiskDropdown("AGF4") %>
+                                                    </select>
+                                                    <input type="hidden" name="AGF4ScoreH" id="AGF4ScoreH" value="">
+                                                </td>
+                                                <td id="AGF4Score" class="fieldsheader" align="center" style="color:green;font-weight:bold;">
+                                                    -
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fieldlabel" style="color:green;padding-top:4px;">
+                                                    Environmental Use Area:
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <select size="1" name="AGF5" id="AGF5" style="width:325px;" class="explorerselects" onchange="self.calcscore('F',this);">
+                                                        <option riskscore="-" value="" selected>Select...</option>
+                                                        <%=GetRiskDropdown("AGF5") %>
+                                                    </select>
+                                                    <input type="hidden" name="AGF5ScoreH" id="AGF5ScoreH" value="">
+                                                </td>
+                                                <td id="AGF5Score" class="fieldsheader" align="center" style="color:green;font-weight:bold;">
+                                                    -
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td class="mc_lookupdesc" style="color:green;padding-top:10px;" colspan="2">
+                                                    <u>Risk Assessment Score Formula (Facilities):</u>
+                                                    <br>EquipmentFunction + ClinicalApplication +
+                                                    Maintenance Requirement +
+                                                    <br>
+                                                    Incident History
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td colspan="1" style="padding-top:10px;">
+                                                    <table border="0" cellspacing="0" cellpadding="0" style="border-collapse: collapse" bordercolor="#111111">
+                                                        <tr>
+                                                            <td style="color:green;font-weight:bold;font-size:9pt;padding-right:15px">
+                                                                Risk Assessment Score:
+                                                            </td>
+                                                            <td id="AGFRiskScore" class="fieldsheader" style="font-size:9pt;background-color:white;padding-left:5px;padding-right:5px;padding-top:2px;padding-bottom:2px; border:1px solid #279A01;color:green;font-weight:bold;">
+                                                                0
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <input type="hidden" name="AGFRiskScoreH" value="">
+                                                </td>
+                                                <td valign="bottom" onclick="self.resetriskfactors('F');" align="right" class="fieldlabel" style="color:green;">
+                                                    <u>Reset</u>
+                                                </td>
+                                            </tr>
+
+
+                                        </table>
+
+                                    </div>
+
+                                    <div class="clsBtnOn_B" style="margin-top:10px;border-width:1px;width:400px;padding:10px;">
+                                        <table width="375" border="0" cellspacing="0" cellpadding="0" style="border-collapse: collapse" bordercolor="#111111">
+                                            <tr>
+                                                <td valign="top">
+                                                    <table border="0" cellspacing="0" cellpadding="0" style="border-collapse: collapse" bordercolor="#111111">
+                                                        <tr>
+                                                            <td nowrap valign="top" style="padding-top:0px;">
+                                                                <label for="txtRiskLevel" accesskey="h">
+                                                                    <a href="javascript:void(0);" class="fieldlabel" onclick="return top.showhelp('Asset','RiskLevel','Asset Details',document.getElementById('txtRiskLevel'));this.blur();" tabindex="-1">
+                                                                        <font face="arial"><b>Risk Level:</b></font>
+                                                                    </a>
+                                                                </label>&nbsp;
+                                                            </td>
+                                                            <!-- CB AUTOCALC FIX 1/10/2013 -->
+                                                            <td valign="top" style="padding-bottom:0px;padding-top:0px;">
+                                                                <input style="font-weight:bold;" class="normal" mctype="N" maxlength="12" mcrequired="N" type="text" name="txtRiskLevel" id="txtRiskLevel" tabindex="10" size="3" onchange="top.fieldvalid(this);" onfocus="if (document.mcform.txtRiskLevelAutoCalc.checked == true) {alert('Before changing this field you need to set Auto-Calc Risk Level off.');this.blur();return false;};top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.fnTrapAlpha(this);">
+                                                                <img id="imgRiskLevel" src="../../images/lookupiconxp3.gif" border="0" onclick="if (document.mcform.txtRiskLevelAutoCalc.checked == true) {alert('Before changing this field you need to set Auto-Calc Risk Level off.');this.blur();return false;};top.showpopup('calculator','Calculator',125,100,this,txtRiskLevel)" align="absbottom" class="lookupicon" width="16" height="20">
+                                                                <span id="txtRiskLevelErr" class="mc_lookupdesc"></span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="2" style="padding-top:0px;">
+
+                                                                <table cellspacing="0" cellpadding="0" border="0">
+
+                                                                    <!-- CB AUTOCALC FIX 1/10/2013 -->
+                                                                    <tr>
+                                                                        <td style="padding-top:0px;">
+                                                                            <input class="mccheckbox" mctype="B" mcrequired="N" type="checkbox" value="ON" name="txtRiskLevelAutoCalc" id="txtRiskLevelAutoCalc" tabindex="11" onclick="top.togglecb(this);self.setriskfactors(document.mcform.txtRiskAssessmentGroup.value);">
+                                                                        </td>
+                                                                        <td style="padding-top:3px;padding-left:4px;">
+                                                                            <label for="txtRiskLevelAutoCalc" accesskey="">
+                                                                                <a href="javascript:void(0);" class="fieldlabel" onclick="top.togglecheckbox(this);" title="Right-Click for Help" oncontextmenu="return top.showhelp('Asset','RiskLevelAutoCalc','Asset Details',document.getElementById('txtRiskLevelAutoCalc'));this.blur();" tabindex="-1">
+                                                                                    <font face="arial">
+                                                                                        <span id="RiskLevelAutoCalc">Auto-Calc Risk Level</span>
+                                                                                    </font>
+                                                                                </a>
+                                                                            </label>
+                                                                        </td>
+                                                                    </tr>
+
+                                                                    <!-- CB AUTOCALC FIX 1/10/2013 -->
+                                                                    <tr>
+                                                                        <td style="padding-top:6px;">
+                                                                            <input class="mccheckbox" mctype="B" mcrequired="N" type="checkbox" value="ON" name="txtPMRequired" id="txtPMRequired" tabindex="11" onfocus="if (document.mcform.txtPMRequiredAutoCalc.checked == true) {alert('Before changing this field you need to set Auto-Calc PM Required off.');this.blur();return false;};" onclick="top.togglecb(this);self.SetPMRequired(this);">
+                                                                        </td>
+                                                                        <td style="padding-top:9px;padding-left:4px;">
+                                                                            <label for="txtPMRequired" accesskey="">
+                                                                                <a href="javascript:void(0);" class="fieldlabel" onfocus="if (document.mcform.txtPMRequiredAutoCalc.checked == true) {alert('Before changing this field you need to set Auto-Calc PM Required off.');this.blur();return false;};" onclick="top.togglecheckbox(this);" title="Right-Click for Help" oncontextmenu="return top.showhelp('Asset','PMRequired','Asset Details',document.getElementById('txtPMRequired'));this.blur();" tabindex="-1">
+                                                                                    <font face="arial">
+                                                                                        <span id="PMRequired">PM Required</span>
+                                                                                    </font>
+                                                                                </a>
+                                                                            </label>
+                                                                        </td>
+                                                                    </tr>
+
+                                                                    <!-- CB AUTOCALC FIX 1/10/2013 -->
+                                                                    <tr>
+                                                                        <td style="padding-top:0px;">
+                                                                            <input class="mccheckbox" mctype="B" mcrequired="N" type="checkbox" value="ON" name="txtPMRequiredAutoCalc" id="txtPMRequiredAutoCalc" tabindex="11" onclick="top.togglecb(this);self.setriskfactors(document.mcform.txtRiskAssessmentGroup.value);">
+                                                                        </td>
+                                                                        <td style="padding-top:3px;padding-left:4px;">
+                                                                            <label for="txtPMRequiredAutoCalc" accesskey="">
+                                                                                <a href="javascript:void(0);" class="fieldlabel" onclick="top.togglecheckbox(this);" title="Right-Click for Help" oncontextmenu="return top.showhelp('Asset','PMRequiredAutoCalc','Asset Details',document.getElementById('txtPMRequiredAutoCalc'));this.blur();" tabindex="-1">
+                                                                                    <font face="arial">
+                                                                                        <span id="PMRequiredAutoCalc">Auto-Calc PM Required</span>
+                                                                                    </font>
+                                                                                </a>
+                                                                            </label>
+                                                                        </td>
+                                                                    </tr>
+
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+
+                                                    </table>
+                                                </td>
+                                                <td align="right" style="padding-top:0px;">
+                                                    <table class="fieldsheader" border="0" cellspacing="0" cellpadding="0" style="border-collapse: collapse" bordercolor="#111111">
+                                                        <tr>
+                                                            <td style="border-bottom:1px solid royalblue;">
+                                                                Risk Assessment Score
+                                                            </td>
+                                                            <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                                            <td style="border-bottom:1px solid royalblue;">
+                                                                Risk Level
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr id="AGRL5">
+                                                            <td style="font-weight:normal;padding-top:2px;">
+                                                                0 - 5.99
+                                                            </td>
+                                                            <td>&nbsp;</td>
+                                                            <td align="center" style="font-weight:normal;padding-top:2px;">
+                                                                5
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr id="AGRL4">
+                                                            <td style="font-weight:normal;">
+                                                                6 - 11.99
+                                                            </td>
+                                                            <td>&nbsp;</td>
+                                                            <td align="center" style="font-weight:normal;">
+                                                                4
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr id="AGRL3">
+                                                            <td style="font-weight:normal;">
+                                                                12 - 14.99
+                                                            </td>
+                                                            <td>&nbsp;</td>
+                                                            <td align="center" style="font-weight:normal;">
+                                                                3
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr id="AGRL2">
+                                                            <td style="font-weight:normal;">
+                                                                15 - 17.99
+                                                            </td>
+                                                            <td>&nbsp;</td>
+                                                            <td align="center" style="font-weight:normal;">
+                                                                2
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr id="AGRL1">
+                                                            <td style="font-weight:normal;">
+                                                                18 or greater
+                                                            </td>
+                                                            <td>&nbsp;</td>
+                                                            <td align="center" style="font-weight:normal;">
+                                                                1
+                                                            </td>
+                                                        </tr>
+
+                                                    </table>
+
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="TabControl2_TAB_AEM Program" style="display:none;">
+            <table style="border: 0px solid black;" width="100%">
+                <tr height="8px"></tr>
+                <tr width="100%">
+                    <td colspan="2" class="fieldsheader" align="center" style="background: #CCCCFF; border: 0px solid black;" width="40%">
+                        Equipment risk
+                    </td>
+                    <td colspan="2" class="fieldsheader" align="center" style="background:#9C9C9C; border: 0px solid black;">
+                        AEM Program Inclusion
+                    </td>
+                </tr>
+                <tr>
+                    <td id="lblRisk1_RiskText" style="background: #C6E2FF;">
+                        <label for="Risk1_RiskText">
+                            <font>Risk1_RiskText Label Text</font>
+                        </label>
+                    </td>
+                    <td valign="top" style="padding-bottom:4px;padding-top:10px; background: #C6E2FF; border: 0px solid black;">
+                        <input class="required" mctype="C" maxlength="25" mcrequired="Y" type="text" name="RemiRisk1" id="RemiRisk1" tabindex="1" size="17" onchange="top.codevalid('R1_Risk', this, 'Healthcare Class'); self.calculRisk();" onfocus="top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.checkKey(this);">
+                        <img id="imgClassIndustry" src="../../images/lookupiconxp3.gif" border="0" align="absbottom" onclick="top.showpopup('R1_Risk','',226,159,this,RemiRisk1,null,true)" class="lookupicon" width="16" height="20">
+                        <span id="RemiRisk1Desc" mchidden="n" class="mc_lookupdesc"></span>
+                    </td>
+                    <td id="lblRisk6_RiskText" style="background: #DCDCDC;">
+                        <label for="Risk6_RiskText">
+                            <font>Risk6_RiskText Label Text</font>
+                        </label>
+                    </td>
+                    <td valign="top" style="padding-bottom:4px;padding-top:10px; background: #DCDCDC;">
+                        <input class="required" mctype="C" maxlength="25" mcrequired="Y" type="text" name="RemiRisk6" id="RemiRisk6" tabindex="2" size="17" onchange="top.codevalid('R6_Risk', this, 'Healthcare Class');" onfocus="top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.checkKey(this);">
+                        <img id="imgClassIndustry" src="../../images/lookupiconxp3.gif" border="0" align="absbottom" onclick="top.showpopup('R6_Risk','',226,159,this,RemiRisk6,null,true)" class="lookupicon" width="16" height="20">
+                        <span id="RemiRisk6Desc" mchidden="n" class="mc_lookupdesc"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="lblRisk2_RiskText" style="background: #C6E2FF;">
+                        <label for="Risk2_RiskText">
+                            <font>Risk2_RiskText Label Text</font>
+                        </label>
+                    </td>
+                    <td valign="top" style="padding-bottom:4px;padding-top:10px; background: #C6E2FF;">
+                        <input class="required" mctype="C" maxlength="25" mcrequired="Y" type="text" name="RemiRisk2" id="RemiRisk2" tabindex="1" size="17" onchange="top.codevalid('R2_Risk', this, 'Healthcare Class'); self.calculRisk();" onfocus="    top.fieldfocus(this);" onblur="    top.fieldblur(this);" onkeypress="    return top.checkKey(this);">
+                        <img id="imgClassIndustry" src="../../images/lookupiconxp3.gif" border="0" align="absbottom" onclick="top.showpopup('R2_Risk','',226,159,this,RemiRisk2,null,true)" class="lookupicon" width="16" height="20">
+                        <span id="RemiRisk2Desc" mchidden="n" class="mc_lookupdesc"></span>
+                    </td>
+                    <td id="lblRisk7_RiskText" style="background:#DCDCDC;">
+                        <label for="Risk7_RiskText">
+                            <font>Risk7_RiskText Label Text</font>
+                        </label>
+                    </td>
+                    <td valign="top" style="padding-bottom:4px;padding-top:10px; background:#DCDCDC;">
+                        <input class="required" mctype="C" maxlength="25" mcrequired="Y" type="text" name="RemiRisk7" id="RemiRisk7" tabindex="1" size="17" onchange="top.codevalid('R7_Risk',this,'Healthcare Class');" onfocus="top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.checkKey(this);">
+                        <img id="imgClassIndustry" src="../../images/lookupiconxp3.gif" border="0" align="absbottom" onclick="top.showpopup('R7_Risk','',226,159,this,RemiRisk7,null,true)" class="lookupicon" width="16" height="20">
+                        <span id="RemiRisk7Desc"  mchidden="n" class="mc_lookupdesc"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="lblRisk3_RiskText" style="background: #C6E2FF;">
+                        <label for="Risk3_RiskText">
+                            <font>Risk3_RiskText Label Text</font>
+                        </label>
+                    </td>
+                    <td valign="top" style="padding-bottom:4px;padding-top:10px; background: #C6E2FF;">
+                        <input class="required" mctype="C" maxlength="25" mcrequired="Y" type="text" name="RemiRisk3" id="RemiRisk3" tabindex="1" size="17" onchange="top.codevalid('R3_Risk',this,'Healthcare Class');" onfocus="top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.checkKey(this);">
+                        <img id="imgClassIndustry" src="../../images/lookupiconxp3.gif" border="0" align="absbottom" onclick="top.showpopup('R3_Risk','',226,159,this,RemiRisk3,null,true)" class="lookupicon" width="16" height="20">
+                        <span id="RemiRisk3Desc" mchidden="n" class="mc_lookupdesc"></span>
+                    </td>
+                    <td id="lblRisk8_RiskText" style="background:#DCDCDC;">
+                        <label for="Risk8_RiskText">
+                            <font>Risk8_RiskText Label Text</font>
+                        </label>
+                    </td>
+                    <td valign="top" style="padding-bottom:4px;padding-top:10px;background:#DCDCDC;">
+                        <input class="mccheckbox" mctype="B" mcrequired="N" type="checkbox" value="ON" name="txtMaintenanceHistory" id="txtMaintenanceHistory" tabindex="3" onclick="top.togglecb(this);">
+                        <label for="cbox1">
+                            <a href="javascript:void(0);" class="fieldlabel" onclick="top.togglecheckbox(this);" title="Right-Click for Help" oncontextmenu="return top.showhelp('Asset','MaintenanceHistory','Asset Details',document.getElementById('txtMaintenanceHistory'));this.blur();" tabindex="-1">
+                                <font face="arial">
+                                    Maintenance History from MC History tab
+                                </font>
+                            </a>
+                        </label>
+                        <br />
+                        <input class="mccheckbox" mctype="B" mcrequired="N" type="checkbox" value="ON" name="txtAssistantDirector" id="txtAssistantDirector" tabindex="3" onclick="top.togglecb(this);">
+                        <label for="cbox2">
+                            <a href="javascript:void(0);" class="fieldlabel" onclick="top.togglecheckbox(this);" title="Right-Click for Help" oncontextmenu="return top.showhelp('Asset', 'AssistantDirector', 'Asset Details', document.getElementById('txtAssistantDirector')); this.blur();" tabindex="-1">
+                                <font face="arial">
+                                    Director or Assistant Director Decision
+                                </font>
+                            </a>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="lblRisk4_RiskText" style="background: #C6E2FF;">
+                        <label for="Risk4_RiskText">
+                            <font>Risk4_RiskText Label Text</font>
+                        </label>
+                    </td>
+                    <td valign="top" style="padding-bottom:4px;padding-top:10px; background: #C6E2FF;">
+                        <input class="normal" mctype="C" maxlength="25" mcrequired="N" type="text" name="txtSetBy1" id="txtSetBy1" tabindex="4" size="17" onchange="top.dovalid('LA',this,'AS');" onfocus="top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.checkKey(this);" ondrop="top.dragdrop_from_list();" ondragenter="top.dragover_from_list();" ondragover="top.dragover_from_list();" ondblclick="top.fielddblclick(this);" oncontextmenu="top.FK_OnContextMenu(this);return false;" fkm="LA">
+                        <img id="imgSetBy" src="../../images/lookupiconxp3fk.gif" border="0" align="absbottom" onclick="top.dolookup('LA',txtSetBy1,'AS')" class="lookupicon" width="16" height="20">
+                        <span id="txtSetBy1Desc" mchidden="n" class="mc_lookupdesc"></span>
+                    </td>
+                    <td id="lblRisk12_RiskText" style="background:#DCDCDC;">
+                        <label for="Risk12_RiskText">
+                            <font>Risk12_RiskText Label Text</font>
+                        </label>
+                    </td>
+                    <td valign="top" style="padding-bottom:4px;padding-top:10px; background:#DCDCDC;">
+                        <input class="required" mctype="C" maxlength="25" mcrequired="Y" type="text" name="RemiRisk12" id="RemiRisk12" tabindex="1" size="17" onchange="top.codevalid('R12_Risk',this,'Healthcare Class');" onfocus="top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.checkKey(this);">
+                        <img id="imgClassIndustry" src="../../images/lookupiconxp3.gif" border="0" align="absbottom" onclick="top.showpopup('R12_Risk','',226,159,this,RemiRisk12,null,true)" class="lookupicon" width="16" height="20">
+                        <span id="RemiRisk12Desc" mchidden="n" class="mc_lookupdesc"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="lblRisk5_RiskText" style="background: #C6E2FF;">
+                        <label for="Risk5_RiskText">
+                            <font>Risk5_RiskText Label Text</font>
+                        </label>
+                    </td>
+                    <td valign="top" style="padding-bottom:4px;padding-top:10px; background: #C6E2FF;">
+                        <input class="normal" mctype="D" maxlength="10" mcrequired="N" type="text" name="txtDate" id="txtDate" tabindex="5" size="17" onchange="top.fieldvalid(this);" onfocus="top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.checkKey(this);">
+                        <img id="imgLastAssessed" src="../../images/lookupiconxp3.gif" border="0" onclick="top.showpopup('calendar','Calendar',172,160,this,txtDate,null,true)" align="absbottom" class="lookupicon" width="16" height="20">
+                    </td>
+                    <td id="lblRisk10_RiskText" style="background:#DCDCDC;">
+                        <label for="Risk10_RiskText">
+                            <font>Risk10_RiskText Label Text</font>
+                        </label>
+                    </td>
+                    <td valign="top" style="padding-bottom:4px;padding-top:10px; background:#DCDCDC;">
+                        <input class="required" mctype="C" maxlength="25" mcrequired="Y" type="text" name="RemiRisk10" id="RemiRisk10" tabindex="1" size="17" onchange="top.codevalid('R10_Risk',this,'Healthcare Class');" onfocus="top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.checkKey(this);">
+                        <img id="imgClassIndustry" src="../../images/lookupiconxp3.gif" border="0" align="absbottom" onclick="top.showpopup('R10_Risk','',226,159,this,RemiRisk10,null,true)" class="lookupicon" width="16" height="20">
+                        <span id="RemiRisk10Desc" mchidden="n" class="mc_lookupdesc"></span>
+                    </td>
+                    </tr>
+                    <tr>
+                    <td id="EMPTY" colspan="2" style="background: #C6E2FF;"></td>
+                    <td id="lblRisk9_RiskText" style="background:#DCDCDC;">
+                        <label for="Risk9_RiskText">
+                            <font>Risk9_RiskText Label Text</font>
+                        </label>
+                    </td>
+                    <td valign="top" style="padding-bottom:0px;padding-top:10px; background:#DCDCDC;">
+                        <input class="required" mctype="C" maxlength="25" mcrequired="Y" type="text" name="RemiRisk9" id="RemiRisk9" tabindex="1" size="17" onchange="top.codevalid('R9_Risk',this,'Healthcare Class');" onfocus="top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.checkKey(this);">
+                        <img id="imgClassIndustry" src="../../images/lookupiconxp3.gif" border="0" align="absbottom" onclick="top.showpopup('R9_Risk','',226,159,this,RemiRisk9,null,true)" class="lookupicon" width="16" height="20">
+                        <span id="RemiRisk9Desc" mchidden="n" class="mc_lookupdesc"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="EMPTY" colspan="2" style="background: #C6E2FF;"></td>
+                    <td id="lblRisk11_RiskText" style="background:#DCDCDC;">
+                        <label for="Risk11_RiskText">
+                            <font>Risk11_RiskText Label Text</font>
+                        </label>
+                    </td>
+                    <td valign="top" style="padding-bottom:4px;padding-top:10px;background:#DCDCDC;">
+                        <input class="required" mctype="C" maxlength="25" mcrequired="Y" type="text" name="RemiRisk11" id="RemiRisk11" tabindex="1" size="17" onchange="top.codevalid('R11_Risk',this,'Healthcare Class');" onfocus="top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.checkKey(this);">
+                        <img id="imgClassIndustry" src="../../images/lookupiconxp3.gif" border="0" align="absbottom" onclick="top.showpopup('R11_Risk','',226,159,this,RemiRisk11,null,true)" class="lookupicon" width="16" height="20">
+                        <span id="RemiRisk11Desc" mchidden="n" class="mc_lookupdesc"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="EMPTY" colspan="2" style="background: #C6E2FF;"></td>
+                    <td colspan="1" id="lblRisk18_RiskText" style="background:#DCDCDC;">
+                        <label for="Risk18_RiskText">
+                            <font>Risk18_RiskText Label Text</font>
+                        </label>
+                    </td>
+                    <td valign="top" style="padding-bottom:4px;padding-top:10px; background: #DCDCDC;">
+                        <input class="normal" mctype="C" maxlength="25" mcrequired="N" type="text" name="txtSetBy3" id="txtSetBy3" tabindex="4" size="17" onchange="top.dovalid('LA',this,'AS');" onfocus="top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.checkKey(this);" ondrop="top.dragdrop_from_list();" ondragenter="top.dragover_from_list();" ondragover="top.dragover_from_list();" ondblclick="top.fielddblclick(this);" oncontextmenu="top.FK_OnContextMenu(this);return false;" fkm="LA">
+                        <img id="imgSetBy3" src="../../images/lookupiconxp3fk.gif" border="0" align="absbottom" onclick="top.dolookup('LA',txtSetBy3,'AS')" class="lookupicon" width="16" height="20">
+                        <span id="txtSetBy3Desc" mchidden="n" class="mc_lookupdesc"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="EMPTY" colspan="2" style="background: #C6E2FF;"></td>
+                    <td style="background:#DCDCDC;">
+                        <label>
+                            <font>Date:</font>
+                        </label>
+                    </td>
+                    <td valign="top" style="padding-bottom:4px;padding-top:10px; background: #DCDCDC;">
+                        <input class="normal" mctype="D" maxlength="10" mcrequired="N" type="text" name="txtDate2" id="txtDate2" tabindex="18" size="17" onchange="top.fieldvalid(this);" onfocus="top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.checkKey(this);">
+                        <img id="imgLastAssessed" src="../../images/lookupiconxp3.gif" border="0" onclick="top.showpopup('calendar','Calendar',172,160,this,txtDate2,null,true)" align="absbottom" class="lookupicon" width="16" height="20">
+                    </td>
+                </tr>
+            </table>
+            <table style="border: 0px solid black;" width="100%">
+                <tr>
+
+                    <td colspan="4" class="fieldsheader" align="center" style="background:#F4A460;">
+                        Yearly evaluation of equipement using AEM program
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="1" id="lblRisk13_RiskText" style="background:#FFE4C4;">
+                        <label for="Risk13_RiskText">
+                            <font>Risk13_RiskText Label Text</font>
+                        </label>
+                    </td>
+                    <td colspan="1" valign="top" style="padding-bottom:4px;padding-top:10px;background:#FFE4C4;" width="30%">
+                        <textarea class="required" rows="3" cols="40" mctype="C" mcrequired="Y" type="text" name="RemiRisk13" id="RemiRisk13" tabindex="1" size="30" height="4" onchange=""></textarea>
+                        <span id="RemiRisk13Desc" mchidden="n" class="mc_lookupdesc"></span>
+                    </td>
+                    <td colspan="1" id="lblRisk14_RiskText" style="background:#FFE4C4;">
+                        <label for="Risk14_RiskText">
+                            <font>Risk14_RiskText Label Text</font>
+                        </label>
+                    </td>
+                    <td colspan="1" valign="top" style="padding-bottom:4px;padding-top:10px;background:#FFE4C4;" width="30%">
+                        <input class="required" mctype="C" maxlength="25" mcrequired="Y" type="text" readonly name="RemiRisk21" id="RemiRisk21" tabindex="1" size="17" onchange="top.codevalid('R21_Risk',this,'Healthcare Class');" onfocus="top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.checkKey(this);">
+                        <span id="RemiRisk21Desc"  mchidden="n" class="mc_lookupdesc">
+                            <br />
+                            If Total Score 1-5, then --> NO<br />
+                            If Total Score 6-10, then --> YES
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="1" id="lblRisk15_RiskText" style="background:#FFE4C4;">
+                        <label for="Risk15_RiskText">
+                            <font>Risk15_RiskText Label Text</font>
+                        </label>
+                    </td>
+                    <td colspan="1" valign="top" style="padding-bottom:4px;padding-top:10px;background:#FFE4C4;" width="30%">
+                        <textarea class="required" rows="3" cols="40" mctype="C" mcrequired="Y" type="text" name="RemiRisk15" id="RemiRisk15" tabindex="1" size="30" height="4" onchange=""></textarea>
+                        <span id="Desc" mchidden="n" class="mc_lookupdesc"></span>
+                    </td>
+                    <td colspan="1" id="lblRisk16_RiskText" style="background:#FFE4C4;">
+                        <label for="Risk16_RiskText">
+                            <font>Risk16_RiskText Label Text</font>
+                        </label>
+                    </td>
+                    <td colspan="1" valign="top" style="padding-bottom:4px;padding-top:10px;background:#FFE4C4;" width="30%">
+                        <input class="required" mctype="C" maxlength="25" mcrequired="Y" type="text" name="RemiRisk16" id="RemiRisk16" tabindex="1" size="17" onchange="top.codevalid('R16_Risk',this,'Healthcare Class');" onfocus="top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.checkKey(this);">
+                        <img id="imgClassIndustry" src="../../images/lookupiconxp3.gif" border="0" align="absbottom" onclick="top.showpopup('R16_Risk','',226,159,this,RemiRisk16,null,true)" class="lookupicon" width="16" height="20">
+                        <span id="RemiRisk16Desc" mchidden="n" class="mc_lookupdesc"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="1" id="lblRisk17_RiskText" style="background:#FFE4C4;">
+                        <label for="Risk17_RiskText">
+                            <font>Risk17_RiskText Label Text</font>
+                        </label>
+                    </td>
+                    <td colspan="1" valign="top" style="padding-bottom:4px;padding-top:10px;background:#FFE4C4;" width="30%">
+                        <textarea class="required" rows="3" cols="40" mctype="C" mcrequired="Y" type="text" name="RemiRisk17" id="RemiRisk17" tabindex="1" size="30" height="4" onchange=""></textarea>
+                        <span id="RemiRisk17Desc" mchidden="n" class="mc_lookupdesc"></span>
+                    </td>
+                    <td colspan="1" id="lblRisk18_RiskText" style="background:#FFE4C4;">
+                        <label for="Risk18_RiskText">
+                            <font>Risk18_RiskText Label Text</font>
+                        </label>
+                    </td>
+                    <td valign="top" style="padding-bottom:4px;padding-top:10px; background: #FFE4C4;">
+                        <input class="normal" mctype="C" maxlength="25" mcrequired="N" type="text" name="txtSetBy2" id="txtSetBy2" tabindex="4" size="17" onchange="top.dovalid('LA',this,'AS');" onfocus="top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.checkKey(this);" ondrop="top.dragdrop_from_list();" ondragenter="top.dragover_from_list();" ondragover="top.dragover_from_list();" ondblclick="top.fielddblclick(this);" oncontextmenu="top.FK_OnContextMenu(this);return false;" fkm="LA">
+                        <img id="imgSetBy2" src="../../images/lookupiconxp3fk.gif" border="0" align="absbottom" onclick="top.dolookup('LA',txtSetBy2,'AS')" class="lookupicon" width="16" height="20">
+                        <span id="txtSetBy2Desc" mchidden="n" class="mc_lookupdesc"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="lblRisk19_RiskText" style="background: #FFE4C4;">
+                        <label for="Risk19_RiskText">
+                            <font>Risk19_RiskText Label Text</font>
+                        </label>
+                    </td>
+                    <td colspan="1" valign="top" style="padding-bottom:4px;padding-top:10px;background:#FFE4C4;" width="30%">
+                        <textarea class="required" rows="3" cols="40" mctype="C" mcrequired="Y" type="text" name="RemiRisk19" id="RemiRisk19" tabindex="1" size="30" height="4" onchange=""></textarea>
+                        <span id="RemiRisk19Desc" mchidden="n" class="mc_lookupdesc"></span>
+                    </td>
+                    <td style="background:#FFE4C4;">
+                        <label>
+                            <font>Date:</font>
+                        </label>
+                    </td>
+                    <td valign="top" style="padding-bottom:4px;padding-top:10px; background: #FFE4C4;">
+                        <input class="normal" mctype="D" maxlength="10" mcrequired="N" type="text" name="txtDate3" id="txtDate3" tabindex="18" size="17" onchange="top.fieldvalid(this);" onfocus="top.fieldfocus(this);" onblur="top.fieldblur(this);" onkeypress="return top.checkKey(this);">
+                        <img id="imgLastAssessed" src="../../images/lookupiconxp3.gif" border="0" onclick="top.showpopup('calendar','Calendar',172,160,this,txtDate3,null,true)" align="absbottom" class="lookupicon" width="16" height="20">
+                    </td>
+                </tr>
+                <tr>
+                    <td id="lblRisk20_RiskText" style="background: #FFE4C4;">
+                        <label for="Risk20_RiskText">
+                            <font>Total score:</font>
+                        </label>
+                    </td>
+                    <td colspan="3" valign="top" style="padding-bottom:4px;padding-top:10px;background:#FFE4C4;" width="30%">
+                        <input class="required" maxlength="4" readonly mctype="C" mcrequired="Y" type="text" name="RemiRisk20" id="RemiRisk20" tabindex="19" size="10" height="4" onchange="" />
+                        <span id="RemiRisk20Desc" mchidden="n" class="mc_lookupdesc"></span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table>
+            
+            <tr>
+                <td width="35%" valign="top" style="padding-bottom:10px;padding-top:0px;">
+                    <b>
+                        <font face="Arial" color="#CCCCCC" size="2">
+                            <img border="0" onclick="top.reloadpage(top.fraTopic,true);" src="../../images/icons/equipxp_g.gif" width="15" height="13">
+                        </font>
+                        <font face="Arial" size="1" color="#AAAAAA">
+                            Asset Risk
+                        </font>
+                    </b>
+                </td>
+                <td width="100%" valign="top" align="right">
+                    <font face="Verdana,Arial,Helvetica" size="0" color="#AAAAAA" class="Footer">
+                        <script language="javascript">
+                            document.write(top.copyrightmessage)
+                        </script>
+                    </font>
+                </td>
+            </tr>
+
+        </table>    
+        <%
+        MyTabControl.EndTabs
+        %>
+        <%
+        Set MyTabControl = Nothing
+        %>
+
+    </form>
+</body>
+
+</html>
+
