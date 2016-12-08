@@ -11,7 +11,7 @@ Class TabControl
 	Private MainDivStyle
 	Public Debug
 	Public ControlName
-
+    '''''Init "TabControl2", "100%", "0" , "transparent", sSelectedTab, False, "TabContentsNoBorder", 15, ""
 	Public Sub Init (sControlName, Width, Height, BackColor, sSelectedTab, bAmIStatic, sTCClass, nHeightSubtract, sMainDivStyle)
 		BGColor=BackColor
 		TabHeight=Height

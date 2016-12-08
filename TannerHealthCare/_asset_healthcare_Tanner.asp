@@ -2222,6 +2222,7 @@ Sub OutputDefaults(rs,section)
 							case "Review" 
 								Response.Write("    top.fraTopic.document.getElementById('lblRisk4_RiskText').getElementsByTagName('font')[0].innerText='" & JSEncode(riskRs("Comments")) & "';")+nl
                                 Response.Write("    top.fraTopic.document.getElementById('lblRisk18_RiskText').getElementsByTagName('font')[0].innerText='" & JSEncode(riskRs("Comments")) & "';")+nl
+                                Response.Write("    top.fraTopic.document.getElementById('lblRisk21_RiskText').getElementsByTagName('font')[0].innerText='" & JSEncode(riskRs("Comments")) & "';")+nl
 							case "Hospital"
 								Response.Write("    top.fraTopic.document.getElementById('lblRisk6_RiskText').getElementsByTagName('font')[0].innerText='" & JSEncode(riskRs("Comments")) & "';")+nl
 							case "Equipment"
