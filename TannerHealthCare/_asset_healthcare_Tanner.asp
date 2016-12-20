@@ -2,7 +2,7 @@
 <% Option Explicit %>
 
 <!--#INCLUDE FILE="../common/mc_all_cache.asp" -->
-<!--#INCLUDE FILE="../common/mc_tabcontrol_Tanner.asp" -->
+<!--#INCLUDE FILE="../common/_mc_tabcontrol_Tanner.asp" -->
 
 <%
 Dim keyvalue,keyvalues,asclass,asdefault,lastaction,errorfield,errortabinfo,returnmessage,returnclass,newrecord,duprecord,mcmode,findtabtext,treefiltervalue,norecord,firstload,curtab
@@ -930,9 +930,9 @@ Function SetupFields(themode,justdata)
 			Response.Write("	myform.txtType.disabled = false;")+nl
 
 			Call OutputUDFLabels(Null,"Asset")
-
+            On Error Resume Next
 			Response.Write("	myform.txtClassIndustry.value = 'F-G';")+nl
-			Response.Write("	top.setdesc(myframe.document.getElementById('txtClassIndustryDesc'),'Facility - General');")+nl
+            Response.Write("	top.setdesc(myframe.document.getElementById('txtClassIndustryDesc'),'Facility - General');")+nl
 
 			'CB AUTOCALC FIX 1/10/2013
 			'============================================================================================================================
@@ -2159,39 +2159,45 @@ Sub OutputDefaults(rs,section)
 		End If
 		'============================================================================================================================
 
-		''''''''''''''''''''''''''''''''''''''' Start of changes by Remi
-        Response.Write("	myform.RemiRisk1.value = '" & RS(JSEncode("UDFChar11")) & "';")+nl
-        Response.Write("	myform.RemiRisk6.value = '" & RS(JSEncode("UDFChar12")) & "';")+nl
-		Response.Write("	myform.RemiRisk2.value = '" & RS(JSEncode("UDFChar13")) & "';")+nl
-        Response.Write("	myform.RemiRisk7.value = '" & RS(JSEncode("UDFChar14")) & "';")+nl
-        Response.Write("	myform.RemiRisk3.value = '" & RS(JSEncode("UDFChar15")) & "';")+nl
-        Response.Write("	myform.RemiRisk9.value = '" & RS(JSEncode("UDFChar16")) & "';")+nl
-        Response.Write("	myform.RemiRisk10.value = '" & RS(JSEncode("UDFChar18")) & "';")+nl
-        Response.Write("	myform.RemiRisk11.value = '" & RS(JSEncode("UDFChar19")) & "';")+nl
-        Response.Write("	myform.RemiRisk12.value = '" & RS(JSEncode("UDFChar20")) & "';")+nl
-        Response.Write("	myform.RemiRisk16.value = '" & RS(JSEncode("UDFChar31")) & "';")+nl
-        Response.Write("	myform.RemiRisk13.value = '" & RS(JSEncode("UDFChar32")) & "';")+nl
-        Response.Write("	myform.RemiRisk15.value = '" & RS(JSEncode("UDFChar33")) & "';")+nl
-        Response.Write("	myform.RemiRisk17.value = '" & RS(JSEncode("UDFChar34")) & "';")+nl
-        Response.Write("	myform.RemiRisk19.value = '" & RS(JSEncode("UDFChar35")) & "';")+nl
-        Response.Write("	myform.RemiRisk20.value = '" & RS(JSEncode("UDFChar36")) & "';")+nl
-        Response.Write("	myform.RemiRisk21.value = '" & RS(JSEncode("UDFChar37")) & "';")+nl  
-        Response.Write("	myform.txtSetBy1.value = '" & RS(JSEncode("UDFChar38")) & "';")+nl
+		''''''''''''''''''''''''''''''''''''''' Start custom Risk page WO85594 12/2016
+
+       '''''''''''' Loading text
+        Response.Write("	myform.AEMRisk1.value = '" & RS(JSEncode("UDFChar11")) & "';")+nl
+        Response.Write("	myform.AEMRisk6.value = '" & RS(JSEncode("UDFChar12")) & "';")+nl
+		Response.Write("	myform.AEMRisk2.value = '" & RS(JSEncode("UDFChar13")) & "';")+nl
+        Response.Write("	myform.AEMRisk7.value = '" & RS(JSEncode("UDFChar14")) & "';")+nl
+        Response.Write("	myform.AEMRisk3.value = '" & RS(JSEncode("UDFChar15")) & "';")+nl
+        Response.Write("	myform.AEMRisk9.value = '" & RS(JSEncode("UDFChar16")) & "';")+nl
+        Response.Write("	myform.AEMRisk10.value = '" & RS(JSEncode("UDFChar18")) & "';")+nl
+        Response.Write("	myform.AEMRisk11.value = '" & RS(JSEncode("UDFChar19")) & "';")+nl
+        Response.Write("	myform.AEMRisk12.value = '" & RS(JSEncode("UDFChar20")) & "';")+nl
+        Response.Write("	myform.AEMRisk16.value = '" & RS(JSEncode("UDFChar31")) & "';")+nl
+        Response.Write("	myform.AEMRisk13.value = '" & RS(JSEncode("UDFChar32")) & "';")+nl
+        Response.Write("	myform.AEMRisk15.value = '" & RS(JSEncode("UDFChar33")) & "';")+nl
+        Response.Write("	myform.AEMRisk17.value = '" & RS(JSEncode("UDFChar34")) & "';")+nl
+        Response.Write("	myform.AEMRisk19.value = '" & RS(JSEncode("UDFChar35")) & "';")+nl
+        Response.Write("	myform.AEMRisk20.value = '" & RS(JSEncode("UDFChar36")) & "';")+nl
+        Response.Write("	myform.AEMRisk21.value = '" & RS(JSEncode("UDFChar37")) & "';")+nl  
+        Response.Write("	myform.AEMRisk22.value = '" & RS(JSEncode("UDFChar51")) & "';")+nl  
+        Response.Write("	myform.txtSetBy1.value = '" & RS(JSEncode("UDFChar50")) & "';")+nl
         Response.Write("	myform.txtSetBy2.value = '" & RS(JSEncode("UDFChar42")) & "';")+nl
         Response.Write("	myform.txtDate.value = '" & RS(JSEncode("UDFChar44")) & "';")+nl
         Response.Write("	myform.txtDate2.value = '" & RS(JSEncode("UDFChar48")) & "';")+nl
         Response.Write("	myform.txtDate3.value = '" & RS(JSEncode("UDFChar45")) & "';")+nl
         Response.Write("	myform.txtSetBy3.value = '" & RS(JSEncode("UDFChar46")) & "';")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('RemiRisk1Desc'),'" & JSENCODE(RS("UDFChar21")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('RemiRisk6Desc'),'" & JSENCODE(RS("UDFChar22")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('RemiRisk2Desc'),'" & JSENCODE(RS("UDFChar23")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('RemiRisk7Desc'),'" & JSENCODE(RS("UDFChar24")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('RemiRisk3Desc'),'" & JSENCODE(RS("UDFChar25")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('RemiRisk9Desc'),'" & JSENCODE(RS("UDFChar26")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('RemiRisk10Desc'),'" & JSENCODE(RS("UDFChar28")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('RemiRisk11Desc'),'" & JSENCODE(RS("UDFChar29")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('RemiRisk12Desc'),'" & JSENCODE(RS("UDFChar30")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('RemiRisk16Desc'),'" & JSENCODE(RS("UDFChar41")) & "');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk1Desc'),'" & JSENCODE(RS("UDFChar21")) & "');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk6Desc'),'" & JSENCODE(RS("UDFChar22")) & "');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk2Desc'),'" & JSENCODE(RS("UDFChar23")) & "');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk7Desc'),'" & JSENCODE(RS("UDFChar24")) & "');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk3Desc'),'" & JSENCODE(RS("UDFChar25")) & "');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk9Desc'),'" & JSENCODE(RS("UDFChar26")) & "');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk10Desc'),'" & JSENCODE(RS("UDFChar28")) & "');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk11Desc'),'" & JSENCODE(RS("UDFChar29")) & "');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk12Desc'),'" & JSENCODE(RS("UDFChar30")) & "');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk15Desc'),'" & JSENCODE(RS("UDFChar49")) & "');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk16Desc'),'" & JSENCODE(RS("UDFChar41")) & "');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk17Desc'),'" & JSENCODE(RS("UDFChar50")) & "');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk22Desc'),'" & JSENCODE(RS("UDFChar52")) & "');")+nl
         Response.Write("	top.setdesc(myframe.document.getElementById('txtSetBy1Desc'),'" & JSENCODE(RS("UDFChar39")) & "');")+nl
         Response.Write("	top.setdesc(myframe.document.getElementById('txtSetBy2Desc'),'" & JSENCODE(RS("UDFChar43")) & "');")+nl
         Response.Write("	top.setdesc(myframe.document.getElementById('txtSetBy3Desc'),'" & JSENCODE(RS("UDFChar47")) & "');")+nl
@@ -2249,18 +2255,20 @@ Sub OutputDefaults(rs,section)
 								Response.Write("    top.fraTopic.document.getElementById('lblRisk17_RiskText').getElementsByTagName('font')[0].innerText='" & JSEncode(riskRs("Comments")) & "';")+nl
 							case "Why" 
 								Response.Write("    top.fraTopic.document.getElementById('lblRisk19_RiskText').getElementsByTagName('font')[0].innerText='" & JSEncode(riskRs("Comments")) & "';")+nl
-                            case else 
-                                Response.Write("Error")
-						    End Select
+                            case "History"
+                                Response.Write("    top.fraTopic.document.getElementById('AEMCB1').getElementsByTagName('font')[0].innerText='" & JSEncode(riskRs("Comments")) & "';")+nl
+                            case "Director"
+                                Response.Write("    top.fraTopic.document.getElementById('AEMCB2').getElementsByTagName('font')[0].innerText='" & JSEncode(riskRs("Comments")) & "';")+nl    
+						    case "Included" 
+								Response.Write("    top.fraTopic.document.getElementById('lblRisk22_RiskText').getElementsByTagName('font')[0].innerText='" & JSEncode(riskRs("Comments")) & "';")+nl
+							End Select
                         riskRS.MoveNext
 					Loop
-        Response.Write("        top.fraTopic.document.getElementById('lblRisk5_RiskText').getElementsByTagName('font')[0].innerText='Date';")+nl
-		Set riskRS = Nothing
-        'Response.Write("	top.setdesc(myframe.document.getElementById('txtsetby2'),'" & JSEncode(RS("txtSetBy2")) & "');")+nl
-		'Response.Write("	myform.txtRiskLevel.value = '" & JSEncode(RS("RiskLevel")) & "';")+nl
+        Response.Write("top.fraTopic.document.getElementById('lblRisk5_RiskText').getElementsByTagName('font')[0].innerText='Date';")+nl
 
-		''''''''''''''''''''''''''''' End of changes by Remi
 
+        Set riskRS = Nothing
+        ''''''''''''''''''''''''''''' End custom Risk page WO85594 12/2016
 
         If RS("PMRequired") Then
 		Response.Write("	myform.txtPMRequired.checked = true;")+nl
@@ -3282,65 +3290,71 @@ Sub db_master(db)
 		
 	End If
 
-    ' Saving new values  Remi
+    ' Saving new values  custom Risk page WO85594 12/2016
     '============================================================================================================================
-        If Not IsEmpty(Request.Form("RemiRisk1")) Then
-			rs("UDFChar11") = Trim(Mid(Request.Form("RemiRisk1"),1,50))	' Nullable: YES Type: varchar
-            rs("UDFChar21") = Trim(Mid(Request.Form("RemiRisk1DescH").Item,1,50)) 
+        If Not IsEmpty(Request.Form("AEMRisk1")) Then
+			rs("UDFChar11") = Trim(Mid(Request.Form("AEMRisk1"),1,50))	' Nullable: YES Type: varchar
+            rs("UDFChar21") = Trim(Mid(Request.Form("AEMRisk1DescH").Item,1,50)) 
         End If
-        If Not IsEmpty(Request.Form("RemiRisk6")) Then
-			rs("UDFChar12") = Trim(Mid(Request.Form("RemiRisk6"),1,50))	' Nullable: YES Type: varchar
-			rs("UDFChar22") = Trim(Mid(Request.Form("RemiRisk6DescH").Item,1,50))	' Nullable: YES Type: varchar
+        If Not IsEmpty(Request.Form("AEMRisk6")) Then
+			rs("UDFChar12") = Trim(Mid(Request.Form("AEMRisk6"),1,50))	' Nullable: YES Type: varchar
+			rs("UDFChar22") = Trim(Mid(Request.Form("AEMRisk6DescH").Item,1,50))	' Nullable: YES Type: varchar
 		End If
-        If Not IsEmpty(Request.Form("RemiRisk2")) Then
-			rs("UDFChar13") = Trim(Mid(Request.Form("RemiRisk2"),1,50))	' Nullable: YES Type: varchar
-            rs("UDFChar23") = Trim(Mid(Request.Form("RemiRisk2DescH").Item,1,50))	' Nullable: YES Type: varchar
+        If Not IsEmpty(Request.Form("AEMRisk2")) Then
+			rs("UDFChar13") = Trim(Mid(Request.Form("AEMRisk2"),1,50))	' Nullable: YES Type: varchar
+            rs("UDFChar23") = Trim(Mid(Request.Form("AEMRisk2DescH").Item,1,50))	' Nullable: YES Type: varchar
 		End If
-        If Not IsEmpty(Request.Form("RemiRisk7")) Then
-			rs("UDFChar14") = Trim(Mid(Request.Form("RemiRisk7"),1,50))	' Nullable: YES Type: varchar
-            rs("UDFChar24") = Trim(Mid(Request.Form("RemiRisk7DescH").Item,1,50))	' Nullable: YES Type: varchar
+        If Not IsEmpty(Request.Form("AEMRisk7")) Then
+			rs("UDFChar14") = Trim(Mid(Request.Form("AEMRisk7"),1,50))	' Nullable: YES Type: varchar
+            rs("UDFChar24") = Trim(Mid(Request.Form("AEMRisk7DescH").Item,1,50))	' Nullable: YES Type: varchar
 		End If
-        If Not IsEmpty(Request.Form("RemiRisk3")) Then
-			rs("UDFChar15") = Trim(Mid(Request.Form("RemiRisk3"),1,50))	' Nullable: YES Type: varchar
-            rs("UDFChar25") = Trim(Mid(Request.Form("RemiRisk3DescH").Item,1,50))	' Nullable: YES Type: varchar
+        If Not IsEmpty(Request.Form("AEMRisk3")) Then
+			rs("UDFChar15") = Trim(Mid(Request.Form("AEMRisk3"),1,50))	' Nullable: YES Type: varchar
+            rs("UDFChar25") = Trim(Mid(Request.Form("AEMRisk3DescH").Item,1,50))	' Nullable: YES Type: varchar
 		End If
-        If Not IsEmpty(Request.Form("RemiRisk9")) Then
-			rs("UDFChar16") = Trim(Mid(Request.Form("RemiRisk9"),1,50))	' Nullable: YES Type: varchar
-            rs("UDFChar26") = Trim(Mid(Request.Form("RemiRisk9DescH").Item,1,50))	' Nullable: YES Type: varchar
+        If Not IsEmpty(Request.Form("AEMRisk9")) Then
+			rs("UDFChar16") = Trim(Mid(Request.Form("AEMRisk9"),1,50))	' Nullable: YES Type: varchar
+            rs("UDFChar26") = Trim(Mid(Request.Form("AEMRisk9DescH").Item,1,50))	' Nullable: YES Type: varchar
         End If
-        If Not IsEmpty(Request.Form("RemiRisk10")) Then
-			rs("UDFChar18") = Trim(Mid(Request.Form("RemiRisk10"),1,50))	' Nullable: YES Type: varchar
-            rs("UDFChar28") = Trim(Mid(Request.Form("RemiRisk10DescH").Item,1,50))	' Nullable: YES Type: varchar
+        If Not IsEmpty(Request.Form("AEMRisk10")) Then
+			rs("UDFChar18") = Trim(Mid(Request.Form("AEMRisk10"),1,50))	' Nullable: YES Type: varchar
+            rs("UDFChar28") = Trim(Mid(Request.Form("AEMRisk10DescH").Item,1,50))	' Nullable: YES Type: varchar
         End If
-        If Not IsEmpty(Request.Form("RemiRisk11")) Then
-			rs("UDFChar19") = Trim(Mid(Request.Form("RemiRisk11"),1,50))	' Nullable: YES Type: varchar
-            rs("UDFChar29") = Trim(Mid(Request.Form("RemiRisk11DescH").Item,1,50))	' Nullable: YES Type: varchar
+        If Not IsEmpty(Request.Form("AEMRisk11")) Then
+			rs("UDFChar19") = Trim(Mid(Request.Form("AEMRisk11"),1,50))	' Nullable: YES Type: varchar
+            rs("UDFChar29") = Trim(Mid(Request.Form("AEMRisk11DescH").Item,1,50))	' Nullable: YES Type: varchar
         End If
-        If Not IsEmpty(Request.Form("RemiRisk12")) Then
-			rs("UDFChar20") = Trim(Mid(Request.Form("RemiRisk12"),1,50))	' Nullable: YES Type: varchar
-            rs("UDFChar30") = Trim(Mid(Request.Form("RemiRisk12DescH").Item,1,50))	' Nullable: YES Type: varchar
+        If Not IsEmpty(Request.Form("AEMRisk12")) Then
+			rs("UDFChar20") = Trim(Mid(Request.Form("AEMRisk12"),1,50))	' Nullable: YES Type: varchar
+            rs("UDFChar30") = Trim(Mid(Request.Form("AEMRisk12DescH").Item,1,50))	' Nullable: YES Type: varchar
         End If
-        If Not IsEmpty(Request.Form("RemiRisk16")) Then
-			rs("UDFChar31") = Trim(Mid(Request.Form("RemiRisk16"),1,50))	' Nullable: YES Type: varchar
-            rs("UDFChar41") = Trim(Mid(Request.Form("RemiRisk16DescH").Item,1,50))	' Nullable: YES Type: varchar
+                If Not IsEmpty(Request.Form("AEMRisk13")) Then
+			rs("UDFChar32") = JSEncode(Trim(Mid(Request.Form("AEMRisk13"),1,50)))	' Nullable: YES Type: varchar
         End If
-        If Not IsEmpty(Request.Form("RemiRisk13")) Then
-			rs("UDFChar32") = Trim(Mid(Request.Form("RemiRisk13"),1,50))	' Nullable: YES Type: varchar
+        If Not IsEmpty(Request.Form("AEMRisk16")) Then
+			rs("UDFChar31") = Trim(Mid(Request.Form("AEMRisk16"),1,50))	' Nullable: YES Type: varchar
+            rs("UDFChar41") = Trim(Mid(Request.Form("AEMRisk16DescH").Item,1,50))	' Nullable: YES Type: varchar
         End If
-        If Not IsEmpty(Request.Form("RemiRisk15")) Then
-			rs("UDFChar33") = Trim(Mid(Request.Form("RemiRisk15"),1,50))	' Nullable: YES Type: varchar
+        If Not IsEmpty(Request.Form("AEMRisk15")) Then
+			rs("UDFChar33") = Trim(Mid(Request.Form("AEMRisk15"),1,50))	' Nullable: YES Type: varchar
+            rs("UDFChar49") = Trim(Mid(Request.Form("AEMRisk15DescH").Item,1,50))	' Nullable: YES Type: varchar
         End If
-        If Not IsEmpty(Request.Form("RemiRisk17")) Then
-			rs("UDFChar34") = Trim(Mid(Request.Form("RemiRisk17"),1,50))	' Nullable: YES Type: varchar
+        If Not IsEmpty(Request.Form("AEMRisk17")) Then
+			rs("UDFChar34") = Trim(Mid(Request.Form("AEMRisk17"),1,50))	' Nullable: YES Type: varchar
+            rs("UDFChar50") = Trim(Mid(Request.Form("AEMRisk17DescH").Item,1,50))	' Nullable: YES Type: varchar
         End If
-        If Not IsEmpty(Request.Form("RemiRisk19")) Then
-			rs("UDFChar35") = Trim(Mid(Request.Form("RemiRisk19"),1,50))	' Nullable: YES Type: varchar
+        If Not IsEmpty(Request.Form("AEMRisk19")) Then
+			rs("UDFChar35") = JSEncode(Trim(Mid(Request.Form("AEMRisk19"),1,50)))	' Nullable: YES Type: varchar
         End If
-        If Not IsEmpty(Request.Form("RemiRisk20")) Then
-			rs("UDFChar36") = Trim(Mid(Request.Form("RemiRisk20"),1,50))	' Nullable: YES Type: varchar
+        If Not IsEmpty(Request.Form("AEMRisk20")) Then
+			rs("UDFChar36") = Trim(Mid(Request.Form("AEMRisk20"),1,50))	' Nullable: YES Type: varchar
         End If
-        If Not IsEmpty(Request.Form("RemiRisk21")) Then
-			rs("UDFChar37") = Trim(Mid(Request.Form("RemiRisk21"),1,50))	' Nullable: YES Type: varchar
+        If Not IsEmpty(Request.Form("AEMRisk21")) Then
+			rs("UDFChar37") = Trim(Mid(Request.Form("AEMRisk21"),1,50))	' Nullable: YES Type: varchar
+        End If
+        If Not IsEmpty(Request.Form("AEMRisk22")) Then
+			rs("UDFChar51") = Trim(Mid(Request.Form("AEMRisk22"),1,50))	' Nullable: YES Type: varchar
+            rs("UDFChar52") = Trim(Mid(Request.Form("AEMRisk22DescH"),1,50))	' Nullable: YES Type: varchar
         End If
         If Not IsEmpty(Request.Form("txtSetBy1")) Then
 			rs("UDFChar38") = Trim(Mid(Request.Form("txtSetBy1"),1,50))	' Nullable: YES Type: varchar
@@ -3365,9 +3379,8 @@ Sub db_master(db)
         End If
         rs("UDFChar17") = Not Request.Form("txtMaintenanceHistory") = ""
         rs("UDFChar27") = Not Request.Form("txtAssistantDirector") = ""
-        'rs("PlanForImprovement") =  Request.Form("txtPlanForImprovement") = ""	' Nullable: YES Type: bit
-            ''''''''''''''''''''''''''rs("UDFChar27") = Trim(Mid(Request.Form("RemiRisk4DescH").Item,1,50))	' Nullable: YES Type: varchar
-		'''''''''End If
+
+		'''''''''End custom Risk page WO85594 12/2016
 
 
 	'CB AUTOCALC FIX 1/10/2013

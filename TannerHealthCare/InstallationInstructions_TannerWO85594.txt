@@ -1,0 +1,30 @@
+#################################################################################################################
+#     Date     #   version   #      Author      #                   Comments 
+#---------------------------------------------------------------------------------------------------------------- 
+#  12/08/2016  #   1.0.0.1   # Remi G Grandsire # Original version 
+#################################################################################################################
+
+
+1) SQL Updates:
+Using the MSSMS run the SQL called WO85594-AllSQL.sql
+Note: Make sure you select the proper Entity database
+
+This script will add:
+
+- New Columns to the asset table to store the AEM data for each Asset
+- Add new specifications to the database to display the custom captions and such
+- Set Action and Form page to the new ASP page
+- Adds the Lookup tables
+
+2) Website Update
+
+Place:
+* _asset_healthcare_Tanner.asp
+* _asset_risk_Tanner.htm
+In 
+..\Maintenance Connection\mc_iis\mapp_v12\modules\asset\
+
+And
+* _mc_tabcontrol_Tanner.asp
+In 
+..\Maintenance Connection\mc_iis\mapp_v12\modules\common\
