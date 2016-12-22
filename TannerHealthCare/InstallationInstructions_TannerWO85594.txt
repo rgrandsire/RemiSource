@@ -6,7 +6,7 @@
 
 
 1) SQL Updates:
-Using the MSSMS run the SQL called WO85594-AllSQL.sql
+Using the MSSMS run the SQL scripts (in their naming order)
 Note: Make sure you select the proper Entity database
 
 This script will add:

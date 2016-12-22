@@ -54,7 +54,5 @@ ADD UDFChar11 VARCHAR(75) NULL
    ,UDFChar51 VARCHAR(75) NULL
    ,UDFChar52 VARCHAR(75) NULL;
 
--- Update Data Dic:
-EXEC ADM_UpdateDataDict;
 
 -- Complete

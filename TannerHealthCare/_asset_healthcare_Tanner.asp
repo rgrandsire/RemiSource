@@ -2185,22 +2185,22 @@ Sub OutputDefaults(rs,section)
         Response.Write("	myform.txtDate2.value = '" & RS(JSEncode("UDFChar48")) & "';")+nl
         Response.Write("	myform.txtDate3.value = '" & RS(JSEncode("UDFChar45")) & "';")+nl
         Response.Write("	myform.txtSetBy3.value = '" & RS(JSEncode("UDFChar46")) & "';")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk1Desc'),'" & JSENCODE(RS("UDFChar21")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk6Desc'),'" & JSENCODE(RS("UDFChar22")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk2Desc'),'" & JSENCODE(RS("UDFChar23")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk7Desc'),'" & JSENCODE(RS("UDFChar24")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk3Desc'),'" & JSENCODE(RS("UDFChar25")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk9Desc'),'" & JSENCODE(RS("UDFChar26")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk10Desc'),'" & JSENCODE(RS("UDFChar28")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk11Desc'),'" & JSENCODE(RS("UDFChar29")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk12Desc'),'" & JSENCODE(RS("UDFChar30")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk15Desc'),'" & JSENCODE(RS("UDFChar49")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk16Desc'),'" & JSENCODE(RS("UDFChar41")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk17Desc'),'" & JSENCODE(RS("UDFChar50")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk22Desc'),'" & JSENCODE(RS("UDFChar52")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('txtSetBy1Desc'),'" & JSENCODE(RS("UDFChar39")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('txtSetBy2Desc'),'" & JSENCODE(RS("UDFChar43")) & "');")+nl
-        Response.Write("	top.setdesc(myframe.document.getElementById('txtSetBy3Desc'),'" & JSENCODE(RS("UDFChar47")) & "');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk1Desc'),'" & JSENCODE(RS("UDFChar21")) & " ');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk6Desc'),'" & JSENCODE(RS("UDFChar22")) & " ');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk2Desc'),'" & JSENCODE(RS("UDFChar23")) & " ');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk7Desc'),'" & JSENCODE(RS("UDFChar24")) & " ');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk3Desc'),'" & JSENCODE(RS("UDFChar25")) & " ');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk9Desc'),'" & JSENCODE(RS("UDFChar26")) & " ');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk10Desc'),'" & JSENCODE(RS("UDFChar28")) & " ');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk11Desc'),'" & JSENCODE(RS("UDFChar29")) & " ');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk12Desc'),'" & JSENCODE(RS("UDFChar30")) & " ');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk15Desc'),'" & JSENCODE(RS("UDFChar49")) & " ');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk16Desc'),'" & JSENCODE(RS("UDFChar41")) & " ');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk17Desc'),'" & JSENCODE(RS("UDFChar50")) & " ');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('AEMRisk22Desc'),'" & JSENCODE(RS("UDFChar52")) & " ');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('txtSetBy1Desc'),'" & JSENCODE(RS("UDFChar39")) & " ');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('txtSetBy2Desc'),'" & JSENCODE(RS("UDFChar43")) & " ');")+nl
+        Response.Write("	top.setdesc(myframe.document.getElementById('txtSetBy3Desc'),'" & JSENCODE(RS("UDFChar47")) & " ');")+nl
         If RS("UDFChar17") Then
 		Response.Write("	myform.txtMaintenanceHistory.checked = true;")+nl
         Else 

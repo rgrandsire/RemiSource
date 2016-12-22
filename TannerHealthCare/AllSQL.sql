@@ -52,10 +52,9 @@ ADD UDFChar11 VARCHAR(75) NULL
    ,UDFChar49 VARCHAR(75) NULL
    ,UDFChar50 VARCHAR(75) NULL
    ,UDFChar51 VARCHAR(75) NULL
-   ,UDFChar52 VARCHAR(75) NULL
-
--- Complete
-
+   ,UDFChar52 VARCHAR(75) NULL;
+-- Script 1 complete
+   
 /*****************************************************************************************************************
 #################################################################################################################
 #     Date     #   version   #      Author      #                   Comments 
@@ -69,118 +68,178 @@ ADD UDFChar11 VARCHAR(75) NULL
 -- This script inserts the custom caption for the new AEM Risk Tab
 
 
-INSERT INTO Specification
+INSERT INTO specification
   ([SpecificationName]
   ,[Description]
-  ,[Comments]
   ,[TrackHistory]
   ,[Active]
+  ,[Comments]
+  ,[UseLookupTable]
+  ,[LookupTable]
   )
 VALUES
   ('Consequences'
   ,'Risk_Tab'
-  ,'Likely consequences of equipment failure or malfunction including seriousness of and prevalence of harm'
   ,'False'
   ,'True'
+  ,'Likely consequences of equipment failure or malfunction including seriousness of and prevalence of harm'
+  ,'True'
+  ,'Consequences'
   ),
   ('Degraded'
   ,'Risk_Tab'
-  ,'Does the AEM result in degraded performance of equipment?'
   ,'False'
   ,'True'
+  ,'Does the AEM result in degraded performance of equipment?'
+  ,'False'
+  ,'NULL'
+  ),
+  ('Director'
+  ,'Risk_Tab'
+  ,'False'
+  ,'True'
+  ,'Director or Assistant Director Decision'
+  ,'False'
+  ,'NULL'
   ),
   ('Effectiveness'
   ,'Risk_Tab'
-  ,'Effectiveness of AEM Program methods this equipment is based on. Check all that apply'
   ,'False'
   ,'True'
+  ,'Effectiveness of AEM Program methods this equipment is based on. Check all that apply'
+  ,'False'
+  ,'NULL'
   ),
   ('Equipment'
   ,'Risk_Tab'
-  ,'How is the equipment/ component used, Check one'
   ,'False'
   ,'True'
+  ,'How is the equipment/ component used, Check one'
+  ,'False'
+  ,'NULL'
   ),
   ('Evaluation'
   ,'Risk_Tab'
-  ,'Equipment / component evaluation to determine if AEM program needs to be altered.'
   ,'False'
   ,'True'
+  ,'Equipment / component evaluation to determine if AEM program needs to be altered.'
+  ,'False'
+  ,'NULL'
   ),
   ('Failure'
   ,'Risk_Tab'
+  ,'False'
+  ,'True'
   ,'Previous service and failure request?'
   ,'False'
-  ,'True'
+  ,'NULL'
   ),
-  ('Hospital'
+  ('History'
   ,'Risk_Tab'
-  ,'How does hospital assess if AEM Program uses appropriate maintenance strategies?'
   ,'False'
   ,'True'
+  ,'Maintenance History from MC History tab'
+  ,'False'
+  ,'NULL'
+  ),
+  ('Hospital'
+  ,'RIsk_Tab'
+  ,'False'
+  ,'True'
+  ,'How does hospital assess if AEM Program uses appropriate maintenance strategies?'
+  ,'False'
+  ,'NULL'
+  ),
+  ('Included'
+  ,'Risk_Tab'
+  ,'False'
+  ,'True'
+  ,'Included in the AEM program'
+  ,'False'
+  ,'NULL'
   ),
   ('Maintenance'
   ,'Risk_Tab'
-  ,'Are maintenance requirements simple or complex'
   ,'False'
   ,'True'
+  ,'Are maintenance requirements simple or complex'
+  ,'False'
+  ,'NULL'
   ),
   ('Malfunction'
   ,'Risk_Tab'
-  ,'Could the malfunction have been prevented?'
   ,'False'
   ,'True'
+  ,'Could the malfunction have been prevented?'
+  ,'False'
+  ,'NULL'
   ),
   ('Modified'
   ,'Risk_Tab'
-  ,'Why are manufacture requirements being modified? Check one'
   ,'False'
   ,'True'
+  ,'Why are manufacture requirements being modified? Check one'
+  ,'False'
+  ,'NULL'
   ),
   ('Remove'
   ,'Risk_Tab'
-  ,'Remove equipment /component from service when no longer safe or suitable for intended service if warranted.'
   ,'False'
   ,'True'
+  ,'Remove equipment /component from service when no longer safe or suitable for intended service if warranted.'
+  ,'False'
+  ,'NULL'
   ),
   ('Requirements'
   ,'Risk_Tab'
-  ,'How much of manufactures requirements are being changed? Check one'
   ,'False'
   ,'True'
+  ,'How much of manufactures requirements are being changed? Check one'
+  ,'False'
+  ,'NULL'
   ),
   ('Review'
   ,'Risk_Tab'
-  ,'Reviewed by:'
   ,'False'
   ,'True'
+  ,'Reviewed by:'
+  ,'True'
+  ,'Labor'
   ),
   ('Score'
   ,'Risk_Tab'
-  ,'Score of 8 is Classed as Critical/ High Risk'
   ,'False'
   ,'True'
+  ,'Score of 8 is Classed as Critical/ High Risk'
+  ,'False'
+  ,'NULL'
   ),
   ('Seriousness'
   ,'Risk_Tab'
-  ,'Seriousness and prevalence of harm during normal use:'
   ,'False'
   ,'True'
+  ,'Seriousness and prevalence of harm during normal use:'
+  ,'True'
+  ,'RemiRisk1'
   ),
   ('Timeliness'
   ,'Risk_Tab'
-  ,'Timeliness of alternate or Back-up equipment in the event of a failure. Check one'
   ,'False'
   ,'True'
+  ,'Timeliness of alternate or Back-up equipment in the event of a failure. Check one'
+  ,'False'
+  ,'NULL'
   ),
   ('Why'
   ,'Risk_Tab'
-  ,'Why or How?'
   ,'False'
   ,'True'
+  ,'Why or How?'
+  ,'False'
+  ,'NULL'
   )
-
--- Complete
+   
+-- Script 2 complete
 
 
 /*****************************************************************************************************************
@@ -200,139 +259,245 @@ INSERT INTO LookupTable
   ,[Description]
   ,[CodeWidth]
   ,[DescriptionWidth]
+  ,[Internal]
   ,[Enabled]
   ,[CanModify]
+  ,[SkipValidation]
+  ,[NoCascadeUpdate]
+  ,[RowVersionDate]
+  ,[NotViewableInLookupTableMgr]
   )
 VALUES
-  ('R1_Risk'
-  ,'SERIOUSNESS'
+  ('R1_RISK1'
+  ,'R1_RISK1 TABLE'
   ,25
-  ,100
+  ,50
+  ,'False'
   ,'True'
   ,'True'
+  ,'False'
+  ,'False'
+  ,GETDATE()
+  ,'False'
   ),
   ('R10_RISK'
   ,'R10_RISK TABLE'
   ,25
   ,100
+  ,'False'
   ,'True'
   ,'True'
+  ,'False'
+  ,'False'
+  ,GETDATE()
+  ,'False'
   ),
   ('R11_RISK'
   ,'R11_RISK TABLE'
   ,25
   ,100
+  ,'False'
   ,'True'
   ,'True'
+  ,'False'
+  ,'False'
+  ,GETDATE()
+  ,'False'
   ),
   ('R12_RISK'
   ,'R12_RISK TABLE'
   ,25
   ,100
+  ,'False'
   ,'True'
   ,'True'
+  ,'False'
+  ,'False'
+  ,GETDATE()
+  ,'False'
   ),
   ('R13_RISK'
   ,'R13_RISK TABLE'
   ,25
   ,100
+  ,'False'
   ,'True'
   ,'True'
+  ,'False'
+  ,'False'
+  ,GETDATE()
+  ,'False'
   ),
   ('R14_RISK'
   ,'R14_RISK TABLE'
   ,25
   ,100
+  ,'False'
   ,'True'
   ,'True'
+  ,'False'
+  ,'False'
+  ,GETDATE()
+  ,'False'
   ),
   ('R15_RISK'
   ,'R15_RISK TABLE'
   ,25
   ,100
+  ,'False'
   ,'True'
   ,'True'
+  ,'False'
+  ,'False'
+  ,GETDATE()
+  ,'False'
   ),
   ('R16_RISK'
   ,'R16_RISK TABLE'
   ,25
   ,100
+  ,'False'
   ,'True'
   ,'True'
+  ,'False'
+  ,'False'
+  ,GETDATE()
+  ,'False'
   ),
   ('R17_RISK'
   ,'R17_RISK TABLE'
   ,25
   ,100
+  ,'False'
   ,'True'
   ,'True'
+  ,'False'
+  ,'False'
+  ,GETDATE()
+  ,'False'
   ),
   ('R19_RISK'
   ,'R19_RISK TABLE'
   ,25
   ,100
+  ,'False'
   ,'True'
   ,'True'
+  ,'False'
+  ,'False'
+  ,GETDATE()
+  ,'False'
   ),
   ('R2_RISK'
   ,'R2_RISK TABLE'
   ,25
   ,100
+  ,'False'
   ,'True'
   ,'True'
+  ,'False'
+  ,'False'
+  ,GETDATE()
+  ,'False'
   ),
   ('R21_RISK'
   ,'R21_RISK TABLE'
   ,25
   ,100
+  ,'False'
   ,'True'
   ,'True'
+  ,'False'
+  ,'False'
+  ,GETDATE()
+  ,'False'
+  ),
+  ('R22_RISK'
+  ,'R22_RISK TABLE'
+  ,25
+  ,50
+  ,'False'
+  ,'True'
+  ,'True'
+  ,'False'
+  ,'False'
+  ,GETDATE()
+  ,'False'
   ),
   ('R3_RISK'
   ,'R3_RISK TABLE'
   ,25
   ,100
+  ,'False'
   ,'True'
   ,'True'
+  ,'False'
+  ,'False'
+  ,GETDATE()
+  ,'False'
   ),
   ('R6_RISK'
   ,'R6_RISK TABLE'
   ,25
   ,100
+  ,'False'
   ,'True'
   ,'True'
+  ,'False'
+  ,'False'
+  ,GETDATE()
+  ,'False'
   ),
   ('R7_RISK'
   ,'R7_RISK TABLE'
   ,25
   ,100
+  ,'False'
   ,'True'
   ,'True'
+  ,'False'
+  ,'False'
+  ,GETDATE()
+  ,'False'
   ),
   ('R9_RISK'
   ,'R9_RISK TABLE'
   ,25
   ,100
+  ,'False'
   ,'True'
   ,'True'
+  ,'False'
+  ,'False'
+  ,GETDATE()
+  ,'False'
   ),
-  ('Risk2_Risk'
-  ,'CONSEQUENCES'
+  ('REMIRISK1'
+  ,'REMIRISK1 TABLE'
   ,25
-  ,100
+  ,50
+  ,'False'
   ,'True'
   ,'True'
+  ,'False'
+  ,'False'
+  ,GETDATE()
+  ,'False'
   ),
-  ('Risk3_Risk'
-  ,'CONSEQUENCES'
+  ('RISK1'
+  ,'RISK1 TABLE'
   ,25
-  ,100
+  ,50
+  ,'False'
   ,'True'
   ,'True'
+  ,'False'
+  ,'False'
+  ,GETDATE()
+  ,'False'
   )
 
--- Done
-
+-- Script 3 complete
 
 /*****************************************************************************************************************
 #################################################################################################################
@@ -351,9 +516,13 @@ SET
    FormPage = '_asset_healthcare_Tanner.asp'
   ,ActionPage = '_asset_healthcare_Tanner.asp'
 WHERE  ModuleID = 'AS'
-
--- Done need to update the Data dic
-
+   
+   
+-- script 4 complete   
+   
+   
+   
+-- Update Data Dic:
 EXEC ADM_UpdateDataDict;
 
--- @end
+-- Complete
