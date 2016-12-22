@@ -1,5 +1,7 @@
 Deployment instructions
 
+Make a database backup!!!
+
 This script is too big to be run through MSSMS.
 This script needs to be run throgh the command line using the SQLCMD utility.
 
