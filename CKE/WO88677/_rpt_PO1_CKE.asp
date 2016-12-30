@@ -253,7 +253,9 @@ Sub DoOutput()
                                 
                 dim zSQL                
                 dim RS_Labor
-                zSQL = "select DepartmentID from Labor where LaborName= '" & techName & "'"
+                dim techPK
+                techPK = NullCheck(RS_PO("BuyerPK"))
+                zSQL = "select DepartmentID from Labor where LaborPK= '" & techPK & "'"
                 Set RS_Labor = db.runSQLReturnRS(zSQL,"")
                 dim zDepartment 
                 zDepartment= RS_Labor("DepartmentID")
@@ -298,7 +300,7 @@ Sub DoOutput()
 				    'End If
 				'  If NullCheck(RS_PO("Issued")) <> "" Then
 				'    rw "<tr>"
-					    rw "<td class=""headingPO"" valign=""top"" style=""padding-left:10px;padding-right:10px;"">Issued:</td>"
+					    rw "<td class=""headingPO"" valign=""top"" style=""padding-left:10px;padding-right:10px;"">Date of Issue:</td>"
 		                rw "<td class=""data"" valign=""top"" style=""padding-left:0px;padding-right:0px"">"&NullCheck(RS_PO("Issued"))  & "</td>"
         'rw "<td class=""data"" valign=""top"" style=""padding-left:0px;padding-right:0px"">"&NullCheck(RS_PO("Issued"))&" by " & NullCheck(RS_PO("IssuedBy")) & "</td>"
 				'    rw "</tr>"
@@ -317,8 +319,8 @@ Sub DoOutput()
  
 				rw "</table>"
                 rw "</td>"
-                rw "<td>"
-                rw "<table width= ""100%"" style=""valign:top;"">"
+                rw "<td>"            
+                rw "<table style=""width:100%;vertical-align:top;"">"
                 rw "<tr>"
 				'If PO_REPORT_SHOWENDETAIL = "Yes" Then
 				'	rw "<td valign=""top"" width=""33%"">"
@@ -378,7 +380,7 @@ Sub DoOutput()
 				'  rw "</table>"
 				'End If
 				'rw "</td>"
-                rw "<td class=""headingPO"" valign=""top"" style=""padding-left:0px;width:14%; padding-right:20px;padding-top:0px;text-align: left;"">HED Order #:</td>"
+                rw "<td class=""headingPO"" valign=""top"" style=""padding-left:0px;width:14%; padding-right:20px;padding-top:0px;text-align: left;"">HED ORDER #:</td>"
 				rw "</tr>"
 			'rw "</table>"
 			'rw "<br>"
@@ -595,15 +597,15 @@ Sub DoOutput()
 			'End If
 
 			'PO_REPORT_SHOWLIC2IU, PO_REPORT_SHOWLIAC, PO_REPORT_SHOWLISAC, PO_REPORT_SHOWLIDISC, PO_REPORT_SHOWLILOC
-            rw "</td></tr></table></td></tr></table>"
+            rw "</td></tr></table></td></tr></table><br>"
 			rw "<table width=""100%"" style=""border:1px solid #CCCCCC; border-collapse:collapse;"" cellpadding=""2"" cellspacing=""0"">"
 				rw "<tr>"
-				rw "<td valign=""top"" class=""heading"" align=""left"" width=""5%"" style=""border-bottom:1px solid gray;"">Line #</td>"
-                rw "<td valign=""top"" class=""heading"" align=""left"" width=""10%"" style=""border-bottom:1px solid gray;"">CKE Part #</td>"
-                rw "<td valign=""top"" class=""heading"" align=""left"" width=""10%"" style=""border-bottom:1px solid gray;"">HED Part #</td>"
-                rw "<td valign=""top"" class=""heading"" align=""left"" style=""border-bottom:1px solid gray;"">Description</td>"
-                rw "<td valign=""top"" class=""heading"" align=""left"" width=""5%"" style=""border-bottom:1px solid gray;"">Order Qty</td>"
-                rw "<td valign=""top"" class=""heading"" align=""left"" width=""10%"" style=""border-bottom:1px solid gray;"">Back Order Qty</td>"
+				rw "<td class=""heading""  style=""border-bottom:1px solid gray;vertical-align:top; text-align:left;width:5%;"">Line #</td>"
+                rw "<td class=""heading""  style=""border-bottom:1px solid gray;vertical-align:top; text-align:center;width:8%;"">CKE Part #</td>"
+                rw "<td class=""heading""  style=""border-bottom:1px solid gray;vertical-align:top; text-align:left;width:10%;"">HED Part #</td>"
+                rw "<td class=""heading""  style=""border-bottom:1px solid gray;vertical-align:top; text-align:left;"">Description</td>"
+                rw "<td class=""heading""  style=""border-bottom:1px solid gray;vertical-align:top; text-align:left;width:6%"">Order Qty</td>"
+                rw "<td class=""heading""  style=""border-bottom:1px solid gray;vertical-align:top; text-align:left;width:10%"">Back Order Qty</td>"
 					'If PO_Barcode_PartID Then
 					'	numCols = numCols + 1
 					'	rw "<td valign=""top"" class=""heading"" width=""1%"" style=""border-bottom:1px solid gray;"">Item Barcode</td>"
@@ -667,10 +669,10 @@ Sub DoOutput()
 					End If
 
 					rw "<TR bgColor=""" & altBgColor & """>"
-					rw "<td style=""padding-right:10px;padding-left:10px;"" valign=""top"" class=""data"" align=""left"">" & NullCheck(RS_PODetails("LineItemNo")) & "</td>"
-                    rw "<td style=""padding-right:10px;padding-left:10px;"" valign=""top"" class=""data"" align=""leftt"">" & NullCheck(RS_PODetails("PartID")) & "</td>"
-                    rw "<td style=""padding-right:10px;padding-left:10px;"" valign=""top"" class=""data"" align=""left"">" & NullCheck(RS_PODetails("VendorPartNumber")) & "</td>"
-                    rw "<td style=""padding-right:10px;padding-left:10px;"" valign=""top"" class=""data"" align=""left"">" & NullCheck(RS_PODetails("PartName")) & "</td>"
+					rw "<td style=""vertical-align:top;text-align:center;"" class=""data"">" & NullCheck(RS_PODetails("LineItemNo")) & "</td>"
+                    rw "<td style=""vertical-align:top;text-align:center;"" class=""data"">" & NullCheck(RS_PODetails("PartID")) & "</td>"
+                    rw "<td style=""vertical-align:top;text-align:left;"" class=""data"">" & NullCheck(RS_PODetails("VendorPartNumber")) & "</td>"
+                    rw "<td style=""vertical-align:top;text-align:left;"" class=""data"">" & NullCheck(RS_PODetails("PartName")) & "</td>"
 					'If PO_Barcode_PartID Then
 					'	rw "<td style=""padding-right:10px;"" valign=""top"" class=""data"">"
 					'	    If Not UCase(NullCheck(RS_PODetails("PartID"))) = "MANUAL ENTRY" Then
@@ -989,7 +991,7 @@ Sub SetupPOData()
 		sql = "SELECT DISTINCT PurchaseOrder.POPK, PurchaseOrder.POID, PurchaseOrder.POName, PurchaseOrder.AuthLevelsRequired, PurchaseOrder.RepairCenterName, PurchaseOrder.Currency, PurchaseOrder.CurrencySymbol, " &_
 		"PurchaseOrder.PriorityDesc, PurchaseOrder.StatusDesc, PurchaseOrder.PODate, PurchaseOrder.Subtotal, PurchaseOrder.FreightCharge, PurchaseOrder.TaxAmount, "&_
 		"PurchaseOrder.Total, PurchaseOrder.BillToPK, PurchaseOrder.BillToName, PurchaseOrder.BillToAddress1, PurchaseOrder.BillToAddress2, PurchaseOrder.BillToAttention, "&_
-		"PurchaseOrder.BuyerName, PurchaseOrder.BillToAddress3, PurchaseOrder.ShipToName, PurchaseOrder.ShipToAttention, PurchaseOrder.ShipToPK, PurchaseOrder.ShipToAddress1, "&_
+		"PurchaseOrder.BuyerName, PurchaseOrder.BuyerPK, PurchaseOrder.BillToAddress3, PurchaseOrder.ShipToName, PurchaseOrder.ShipToAttention, PurchaseOrder.ShipToPK, PurchaseOrder.ShipToAddress1, "&_
 		"PurchaseOrder.ShipToAddress2, PurchaseOrder.ShipToAddress3, PurchaseOrder.Comments, PurchaseOrder.VendorID, PurchaseOrder.Issued, PurchaseOrder.Requested, "&_
 		"PurchaseOrder.ShippingMethodDesc, PurchaseOrder.FreightTermsDesc, PurchaseOrder.TermsDesc, Company.CompanyName, Company.Address AS CompanyAddress1, "&_
 		"Company.Address2 AS CompanyAddress2, Company.City AS CompanyCity, Company.State AS CompanyState, Company.Zip AS CompanyZip, Company.Attention AS CompanyAttn, "&_
