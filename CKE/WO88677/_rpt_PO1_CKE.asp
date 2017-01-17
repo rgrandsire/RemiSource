@@ -237,9 +237,9 @@ Sub DoOutput()
 				If PO_REPORT_SHOWENDETAIL = "Yes" Then
 				  rw "<td width=""33%"">"
 				Else
-				  rw "<td width=""85%"">"
+				  rw "<td width=""78%"">"
 				End If
-				rw "<table cellspacing=""0"" cellpadding=""0"" border=""0"" width=""30%"">"
+				rw "<table cellspacing=""0"" cellpadding=""0"" border=""0"" width=""50%"">"
                 dim techName
                 techName = NullCheck(RS_PO("BuyerName"))
 				rw "<tr>"
@@ -320,8 +320,8 @@ Sub DoOutput()
 				rw "</table>"
                 rw "</td>"
                 rw "<td>"            
-                rw "<table style=""width:100%;vertical-align:top;"">"
-                rw "<tr>"
+               ' rw "<table style=""width:100%;vertical-align:top;"">"
+                'rw "<tr>"
 				'If PO_REPORT_SHOWENDETAIL = "Yes" Then
 				'	rw "<td valign=""top"" width=""33%"">"
 				'		rw "<table cellspacing=""0"" cellpadding=""0"" border=""0"">"
@@ -380,7 +380,8 @@ Sub DoOutput()
 				'  rw "</table>"
 				'End If
 				'rw "</td>"
-                rw "<td class=""headingPO"" valign=""top"" style=""padding-left:0px;width:14%; padding-right:20px;padding-top:0px;text-align: left;"">HED ORDER #:</td>"
+                rw "<td class=""headingPO"" valign=""middle"" style=""padding-left:0px; padding-right:0px;padding-top:0px;text-align: left;"">HED ORDER #:</td>"
+                rw "<td style=""width:50""></td>"
 				rw "</tr>"
 			'rw "</table>"
 			'rw "<br>"
@@ -600,12 +601,12 @@ Sub DoOutput()
             rw "</td></tr></table></td></tr></table><br>"
 			rw "<table width=""100%"" style=""border:1px solid #CCCCCC; border-collapse:collapse;"" cellpadding=""2"" cellspacing=""0"">"
 				rw "<tr>"
-				rw "<td class=""heading""  style=""border-bottom:1px solid gray;vertical-align:top; text-align:left;width:5%;"">Line #</td>"
-                rw "<td class=""heading""  style=""border-bottom:1px solid gray;vertical-align:top; text-align:center;width:8%;"">CKE Part #</td>"
-                rw "<td class=""heading""  style=""border-bottom:1px solid gray;vertical-align:top; text-align:left;width:10%;"">HED Part #</td>"
+				rw "<td class=""heading""  style=""border-bottom:1px solid gray;vertical-align:top; text-align:left;width:6%;"">Line #</td>"
+                rw "<td class=""heading""  style=""border-bottom:1px solid gray;vertical-align:top; text-align:center;width:14%;"">CKE Part #</td>"
+                rw "<td class=""heading""  style=""border-bottom:1px solid gray;vertical-align:top; text-align:left;width:15%;"">HED Part #</td>"
                 rw "<td class=""heading""  style=""border-bottom:1px solid gray;vertical-align:top; text-align:left;"">Description</td>"
-                rw "<td class=""heading""  style=""border-bottom:1px solid gray;vertical-align:top; text-align:left;width:6%"">Order Qty</td>"
-                rw "<td class=""heading""  style=""border-bottom:1px solid gray;vertical-align:top; text-align:left;width:10%"">Back Order Qty</td>"
+                rw "<td class=""heading""  style=""border-bottom:1px solid gray;vertical-align:top; text-align:left;width:10%"">Order Qty</td>"
+                rw "<td class=""heading""  style=""border-bottom:1px solid gray;vertical-align:top; text-align:center;width:12%"">Back Order Qty</td>"
 					'If PO_Barcode_PartID Then
 					'	numCols = numCols + 1
 					'	rw "<td valign=""top"" class=""heading"" width=""1%"" style=""border-bottom:1px solid gray;"">Item Barcode</td>"
