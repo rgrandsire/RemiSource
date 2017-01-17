@@ -75,7 +75,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>iZg1WIL613P5jRaJTuKlXui+CsAVhesa8B/IXR9Dy8Q=</dsig:DigestValue>
+        <dsig:DigestValue>sXts7g4yez4L9kcmg/D++rQBhgP0FAaSD6Wt/hDJ15c=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -100,13 +100,13 @@
       <dsig:DigestValue>EQfgG120pke8X6w+4r9eBxCV+hKGxhW/vrd7EFCO7Hg=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="NavistarImport.exe.config" size="875">
+  <file name="NavistarImport.exe.config" size="876">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>t5WM12Mjbe9wVmngi9BYifR6T8u+xKJZ+/XruOuvoGc=</dsig:DigestValue>
+      <dsig:DigestValue>HIo0bC9clz+n1WU29ylLD0jK8M3iH3ocWhvCbu8A/MY=</dsig:DigestValue>
     </hash>
   </file>
   <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">

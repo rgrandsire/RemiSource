@@ -251,10 +251,10 @@ namespace NavistarImport
                     string[] words = zVehicle.Split(':');
                     zVehicle = words[0].Substring(0, words[0].Length - 2);
                     errorLog.logMessage(myLogFile, zVehicle + "|" + odometerReading.ToString() + "|" + hourReading.ToString());
-                    //Load the stuff in the database (tempory table now)
+                    //Load the stuff in the database (MC_InterfaceLog table now)
                     //DBSql = "update Asset set Meter1Reading=" + odometerReading.ToString() + ", Meter2Reading=" + hourReading.ToString() + " where AssetID='" + zVehicle.Trim() + "';";
                     string zData = hourReading.ToString()+"|" + odometerReading.ToString()+ "|" + zVehicle.Trim();
-                    DBSql = "insert into MC_InterfaceLog (Hours, Miles,  VehicleID, ImportID, RecordData, RecordNumber) Values ('" + 
+                    DBSql = "insert into MC_InterfaceLog with (Rowlock) (Hours, Miles,  VehicleID, ImportID, RecordData, RecordNumber) Values ('" + 
                             hourReading.ToString()+"','"+odometerReading.ToString() +"','" + zVehicle.Trim() + "','"+ importid+"', '"+ zData + "','"+ (i+1).ToString()+"');";
                     if (zDebug == "Y")
                     {
@@ -263,7 +263,7 @@ namespace NavistarImport
                     DBImport(DBSql);
                 }
                 // Execute the stored procedure to load the data to the asset table
-                GeoTabToMC();
+                //GeoTabToMC();
                 Console.WriteLine();
                 Console.WriteLine("Retrieved all records and inserted them to the database");
             }
