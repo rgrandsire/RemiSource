@@ -21,6 +21,10 @@
 |               |           |                     | Vendor name, partname and part ID for 3 way matching      |
 | 11/15/2016    | 1.0.2.2   |                     | Remove the PartName match and clean reader close          |
 | 11/17/2016    | 1.0.3.1   |                     | Add get files from sFTP and track file history            |
+| 01/04/2017    | 1.0.3.2   |                     | Make the remote folder configurable (sFTP root)           |
+| 01/12/2017    | 1.0.4.1   |                     | Move most pre-loading tasks to a new class                |
+| 01/13/2017    |           |                     | Created new error Reporting using the MC_InterfaceLog     |
+|               |           |                     | Prevented Nulls from the database for select queries      |
 ---------------------------------------------------------------------------------------------------------------
 
 ToDo:
@@ -37,7 +41,6 @@ namespace SandvikImport
 {
     class Program
     {
-        public static string prodDB;
         public static string entusername;
         public static string entpassword;
         public static string rootfilepath;
@@ -117,7 +120,7 @@ namespace SandvikImport
 
             // Import the file data
             import i = new import();
-            i.importPartInfo();
+            i.importPOInfo();
            
 
             if (Program.debugflag == "Y")
@@ -130,7 +133,7 @@ namespace SandvikImport
             {
                 errorLog.logMessage(LogFilePathAndName, DateTime.Now.ToString() + " Cleaning up old files.");
             }
-            cleanup();
+            extraStuff.cleanup();
 
             // Export Started
             errorLog.logMessage(LogFilePathAndName, DateTime.Now.ToString() + " ********************************** Import Complete **********************************");
@@ -167,23 +170,7 @@ namespace SandvikImport
             }
             
         }
-        public static void cleanup()
-        {
-            //Start Error Log
-            errorlogging errorLog = new errorlogging();
-
-            errorLog.logMessage(LogFilePathAndName, DateTime.Now.ToString() + " - Cleanup of outdated Log files.");
-            string[] xfiles = Directory.GetFiles(Program.Logfilepath);
-
-            int days = Convert.ToInt32(Program.DaysToKeepLogFiles);
-
-            foreach (string file in xfiles)
-            {
-                FileInfo fi = new FileInfo(file);
-                if (fi.LastAccessTime < DateTime.Now.AddDays(days))
-                    fi.Delete();
-            }
-        }
+        
     }
 }
 
