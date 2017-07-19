@@ -1,0 +1,9 @@
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\FireSomething\FireSomething\bin\Debug\FireSomething.exe.config
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\FireSomething\FireSomething\bin\Debug\FireSomething.exe
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\FireSomething\FireSomething\bin\Debug\FireSomething.pdb
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\FireSomething\FireSomething\obj\Debug\FireSomething.csprojResolveAssemblyReference.cache
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\FireSomething\FireSomething\obj\Debug\FireSomething.Form1.resources
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\FireSomething\FireSomething\obj\Debug\FireSomething.Properties.Resources.resources
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\FireSomething\FireSomething\obj\Debug\FireSomething.csproj.GenerateResource.Cache
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\FireSomething\FireSomething\obj\Debug\FireSomething.exe
+C:\Users\R3miG\OneDrive\Documents\MaintenanceConnection\Project\RemiSource\FireSomething\FireSomething\obj\Debug\FireSomething.pdb
