@@ -69,6 +69,7 @@ namespace FireSomething
                 DirectoryInfo zDir = new DirectoryInfo(textBox1.Text);
                 foreach (FileInfo zFile in zDir.GetFiles("*.zpl"))
                 {
+                    loadZPLFile(Path.Combine(textBox1.Text, zFile.Name));
                     listView1.View = View.Details;
                     ListViewItem newItem = new ListViewItem(DateTime.Now.ToString());
                     newItem.SubItems.Add(zFile.Name);
