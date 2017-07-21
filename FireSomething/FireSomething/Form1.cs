@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Diagnostics;
 using System.Configuration;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -17,6 +18,24 @@ namespace FireSomething
         public Form1()
         {
             InitializeComponent();
+        }
+
+        private void loadZPLFile(string zFileName)
+        {
+            Process myProcess = new Process();
+
+            try
+            {
+                myProcess.StartInfo.UseShellExecute = false;
+                myProcess.StartInfo.FileName = textBox2.Text;
+                myProcess.StartInfo.Arguments = zFileName;
+                myProcess.StartInfo.CreateNoWindow = false;
+                myProcess.Start();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
