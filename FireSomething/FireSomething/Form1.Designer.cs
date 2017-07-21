@@ -71,7 +71,6 @@
             this.textBox1.ReadOnly = true;
             this.textBox1.Size = new System.Drawing.Size(449, 26);
             this.textBox1.TabIndex = 2;
-            this.textBox1.Text = "C:\\Users\\R3miG\\OneDrive\\Documents\\TSYS_Files\\FDX";
             // 
             // button2
             // 
@@ -133,7 +132,6 @@
             // 
             // button4
             // 
-            this.button4.Enabled = false;
             this.button4.Location = new System.Drawing.Point(16, 620);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(306, 33);
@@ -173,6 +171,7 @@
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "FileDiscoveryTool";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

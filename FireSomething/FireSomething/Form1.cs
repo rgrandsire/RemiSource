@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Configuration;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -56,6 +57,12 @@ namespace FireSomething
                     label3.Text = "There are " + listView1.Items.Count.ToString() + " ZPL files";
                 }
             }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            textBox1.Text = ConfigurationSettings.AppSettings["FolderProcess"];      
+            textBox2.Text = ConfigurationSettings.AppSettings["ProcessExecutable"];
         }
     }
 }
